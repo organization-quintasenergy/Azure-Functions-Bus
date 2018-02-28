@@ -7,14 +7,11 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 
-namespace AFBus
+namespace AFBus.Tests
 {
-    public class Bus : IBus
+    internal class QueueReader
     {
-        /// <summary>
-        /// Sends a message to a queue named like the service.
-        /// </summary>
-        public async Task SendAsync<T>(T input, string serviceName)
+        internal static async Task<string> ReadFromQueue(string serviceName)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
@@ -22,13 +19,10 @@ namespace AFBus
 
             CloudQueue queue = queueClient.GetQueueReference(serviceName.ToLower());
             queue.CreateIfNotExists();
-                       
-            await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(input, new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
-            }))).ConfigureAwait(false);
-           
+
+            var message = await queue.GetMessageAsync().ConfigureAwait(false);
+
+            return message.AsString;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace ServiceA.Host.Handlers
 {
     public class MessageExampleHandler : IFunction<MessageExample>
     {       
-        public Task InvokeAsync(MessageExample input, ITraceWriter Log)
+        public Task InvokeAsync(IBus bus, MessageExample input, ITraceWriter Log)
         {
             Log.Info("function called");
 

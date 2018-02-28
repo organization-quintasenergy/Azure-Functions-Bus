@@ -19,7 +19,7 @@ namespace AFBus
         /// </summary>
         public FunctionContainer()
         {
-
+            
             var ifunctionTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes())
                                 .Where(x => x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition()==typeof(IFunction<>)));
 
@@ -66,7 +66,7 @@ namespace AFBus
             {
                 var handler = Activator.CreateInstance(t);
 
-                object[] parametersArray = new object[] { message, log };
+                object[] parametersArray = new object[] { new Bus(), message, log };
 
                
                 var methodsToInvoke = t.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType()));
@@ -77,12 +77,8 @@ namespace AFBus
 
             return Task.CompletedTask;
 
-        }
-
-        public void Dispose()
-        {
-            
-        }
+        }     
+       
 
 
     }

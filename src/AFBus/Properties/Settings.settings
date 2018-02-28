@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="StorageConnectionString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">UseDevelopmentStorage=True</Value>
+      <Value Profile="(Default)">UseDevelopmentStorage=true</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -10,7 +10,7 @@ namespace AFUtils.Tests.TestClasses
     public class TestMessageHandler : IFunction<TestMessage>
     {       
 
-        public Task InvokeAsync(TestMessage input, ITraceWriter Log)
+        public Task InvokeAsync(IBus bus,TestMessage input, ITraceWriter Log)
         {
             InvocationCounter.Instance.AddOne();
 

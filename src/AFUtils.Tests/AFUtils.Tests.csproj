@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="FunctionContainer_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestClasses\AnotherTestMessage.cs" />
     <Compile Include="TestClasses\InvocationCounter.cs" />
     <Compile Include="TestClasses\TestMessage.cs" />
     <Compile Include="TestClasses\TestMessageHandler.cs" />

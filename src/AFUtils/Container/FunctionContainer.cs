@@ -47,9 +47,7 @@ namespace AFUtils
                     handlerTypeList.Add(t);
                     messageHandlersDictionary[messageType]= handlerTypeList;
                 }
-
-
-                
+                               
 
             }
                                                   
@@ -60,6 +58,10 @@ namespace AFUtils
         /// </summary>
         public Task InvokeAsync<T>(T message, ITraceWriter log)
         {
+
+            if (!messageHandlersDictionary.ContainsKey(message.GetType()))
+                throw new Exception("Handler not found for this message.");
+            
             var handlerTypeList = messageHandlersDictionary[message.GetType()];
 
             foreach (var t in handlerTypeList)
@@ -68,14 +70,10 @@ namespace AFUtils
 
                 object[] parametersArray = new object[] { message, log };
 
-                //var asdf = t.GetMethods()[0];
-                //t.GetMethods()[0].GetParameters()[0].ParameterType
+               
                 var methodsToInvoke = t.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType()));
 
-               /* foreach(var m in t.GetMethods())
-                {
-                    vvar asdf = m.GetParameters().Any(p => p.ParameterType == message.GetType());
-                }*/
+              
                 methodsToInvoke.ToList().ForEach(m=> m.Invoke(handler, parametersArray));
             }
 

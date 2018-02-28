@@ -4,9 +4,10 @@
 
 /src/packages
 /src/.vs
-/src/AFUtils/obj
-/src/AFUtils/bin/
-/src/AFUtils.Tests/obj/
-/src/AFUtils.Tests/bin/
+/src/AFBus/obj
+/src/AFBus/bin/
+/src/AFBus.Tests/obj/
+/src/AFBus.Tests/bin/
+/src/TestResults/
 /src/SolutionExample/Services/ServiceA/ServiceA.Messages/bin/
 /src/SolutionExample/Services/ServiceA/ServiceA.Messages/obj

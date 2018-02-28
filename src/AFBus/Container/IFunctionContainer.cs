@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs.Host;
 
-namespace AFUtils.IoC
+namespace AFBus
 {
     public interface IFunctionContainer 
     {

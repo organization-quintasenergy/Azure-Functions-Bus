@@ -1,6 +1,5 @@
 using System;
-using AFUtils;
-using AFUtils.IoC;
+using AFBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;

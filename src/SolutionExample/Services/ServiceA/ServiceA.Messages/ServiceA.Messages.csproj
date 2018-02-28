@@ -4,8 +4,4 @@
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\AFUtils\AFUtils.csproj" />
-  </ItemGroup>
-
 </Project>

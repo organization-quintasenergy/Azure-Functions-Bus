@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Azure.WebJobs.Host;
 using System.Linq;
-using AFUtils.IoC;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("AFUtils.Tests")]
-namespace AFUtils
+[assembly: InternalsVisibleTo("AFBus.Tests")]
+namespace AFBus
 {  
     public class FunctionContainer : IFunctionContainer
     {

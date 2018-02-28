@@ -1,4 +1,5 @@
 ﻿using System;
+using AFBus;
 using AFUtils.Tests.TestClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

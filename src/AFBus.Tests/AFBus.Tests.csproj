@@ -7,8 +7,8 @@
     <ProjectGuid>{48E4DB04-35AE-42B7-B30C-2A57A5C2F1E9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AFUtils.Tests</RootNamespace>
-    <AssemblyName>AFUtils.Tests</AssemblyName>
+    <RootNamespace>AFBus.Tests</RootNamespace>
+    <AssemblyName>AFBus.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -75,12 +75,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AFUtils\AFUtils.csproj">
-      <Project>{4ad54927-5c4f-41ff-81a1-9ea407ac7e1f}</Project>
-      <Name>AFUtils</Name>
+    <ProjectReference Include="..\AFBus\AFBus.csproj">
+      <Project>{823c9f39-e2f4-4f6a-acc4-36c4dab521b3}</Project>
+      <Name>AFBus</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

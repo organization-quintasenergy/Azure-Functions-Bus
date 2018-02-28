@@ -1,9 +1,9 @@
 ﻿using System;
-using AFUtils.IoC;
+
 
 namespace ServiceA.Messages
 {
-    public class MessageExample : ICommand
+    public class MessageExample
     {
         public string SomeInfo { get; set; }
 

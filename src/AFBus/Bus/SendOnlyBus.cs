@@ -14,7 +14,7 @@ namespace AFBus
         /// <summary>
         /// Sends a message to a queue named like the service.
         /// </summary>
-        public static async Task SendAsync<T>(T input, string serviceName)
+        public static async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
@@ -27,7 +27,7 @@ namespace AFBus
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-            }))).ConfigureAwait(false);
+            })), null, initialVisibilityDelay,null,null).ConfigureAwait(false);
 
         }
     }

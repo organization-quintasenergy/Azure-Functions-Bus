@@ -22,7 +22,24 @@ namespace AFBus.Tests
 
             var message = await queue.GetMessageAsync().ConfigureAwait(false);
 
-            return message.AsString;
+            if (message != null)
+                return message.AsString;
+            else
+                return null;
+            
+        }
+
+        internal static async Task CleanQueue(string serviceName)
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+
+            CloudQueue queue = queueClient.GetQueueReference(serviceName.ToLower());
+            queue.CreateIfNotExists();
+
+            await queue.ClearAsync().ConfigureAwait(false);            
+
         }
     }
 }

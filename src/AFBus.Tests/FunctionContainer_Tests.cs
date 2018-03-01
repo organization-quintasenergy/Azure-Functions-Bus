@@ -8,6 +8,7 @@ namespace AFUtils.Tests
     [TestClass]
     public class FunctionContainer_Tests
     {
+
         [TestMethod]
         public void FunctionContainer_IFunctionTypesAreCorrectlyScanned()
         {

@@ -13,9 +13,11 @@ namespace AFBus.Tests
         [TestMethod]
         public void SendOnlyBus_SendAsync_Nominal()
         {
+            var id = Guid.NewGuid();
+
             var message = new TestMessage()
             {
-                SomeData = "asdf"
+                SomeData = id.ToString()
             };
 
             SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
@@ -27,6 +29,42 @@ namespace AFBus.Tests
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
             });
+
+            Assert.IsTrue(id.ToString() == finalMessage.SomeData);
+        }
+
+        [TestMethod]
+        public void SendOnlyBus_SendAsync_DelayedMessage()
+        {
+            var message = new TestMessage()
+            {
+                SomeData = "delayed"
+            };
+
+            IBus bus = new Bus();
+
+            var before = DateTime.Now;
+            var timeDelayed = new TimeSpan(0, 0, 3);
+
+            SendOnlyBus.SendAsync(message, SERVICENAME, timeDelayed).Wait();
+            
+            string stringMessage = null;
+
+            do
+            {
+                stringMessage = QueueReader.ReadFromQueue(SERVICENAME).Result;
+            }
+            while (string.IsNullOrEmpty(stringMessage));
+
+            var after = DateTime.Now;
+            
+            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(stringMessage, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+            });
+
+            Assert.IsTrue(after - before > timeDelayed, "Delay failed");
         }
     }
 }

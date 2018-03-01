@@ -9,16 +9,12 @@ using Newtonsoft.Json;
 
 namespace AFBus
 {
-    public class Bus : IBus
+    public class SendOnlyBus 
     {
-        internal Bus()
-        {
-
-        }
         /// <summary>
         /// Sends a message to a queue named like the service.
         /// </summary>
-        public async Task SendAsync<T>(T input, string serviceName)
+        public static async Task SendAsync<T>(T input, string serviceName)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
@@ -26,13 +22,13 @@ namespace AFBus
 
             CloudQueue queue = queueClient.GetQueueReference(serviceName.ToLower());
             queue.CreateIfNotExists();
-                       
+
             await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(input, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
             }))).ConfigureAwait(false);
-           
+
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Reflection;
+using System.Globalization;
 
 [assembly: InternalsVisibleTo("AFBus.Tests")]
 namespace AFBus
@@ -12,6 +14,7 @@ namespace AFBus
     {
        
         internal Dictionary<Type, List<Type>> messageHandlersDictionary = new Dictionary<Type, List<Type>>();
+        private static object o = new object();
 
 
         /// <summary>
@@ -19,34 +22,49 @@ namespace AFBus
         /// </summary>
         public FunctionContainer()
         {
-            
-            var ifunctionTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes())
-                                .Where(x => x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition()==typeof(IFunction<>)));
-
-
-
-            foreach (var t in ifunctionTypes)
+            lock (o)
             {
-                var interfaceType = t.GetInterfaces()[0];
-                var messageType = interfaceType.GetGenericArguments()[0];
+               
+                /*try
+                {*/
+                    var assemblies = new List<Assembly>();
 
-                List<Type> handlerTypeList;
+                    assemblies.Add(Assembly.GetCallingAssembly());
+                    assemblies.AddRange(Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(a=>Assembly.Load(a.FullName)));
+                    
+                    var ifunctionTypes = assemblies.SelectMany(a=> a.GetTypes())
+                                        .Where(x => x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IFunction<>)));
 
-                if (!messageHandlersDictionary.ContainsKey(messageType))
-                {
-                    handlerTypeList = new List<Type>();
-                    handlerTypeList.Add(t);
-                    messageHandlersDictionary.Add(messageType, handlerTypeList);
 
-                }
-                else
-                {
-                    handlerTypeList = messageHandlersDictionary[messageType];
-                    handlerTypeList.Add(t);
-                    messageHandlersDictionary[messageType]= handlerTypeList;
-                }
-                               
 
+                    foreach (var t in ifunctionTypes)
+                    {
+                        var interfaceType = t.GetInterfaces()[0];
+                        var messageType = interfaceType.GetGenericArguments()[0];
+
+                        List<Type> handlerTypeList;
+
+                        if (!messageHandlersDictionary.ContainsKey(messageType))
+                        {
+                            handlerTypeList = new List<Type>();
+                            handlerTypeList.Add(t);
+                            messageHandlersDictionary.Add(messageType, handlerTypeList);
+
+                        }
+                        else
+                        {
+                            handlerTypeList = messageHandlersDictionary[messageType];
+                            handlerTypeList.Add(t);
+                            messageHandlersDictionary[messageType] = handlerTypeList;
+                        }
+
+
+                    }
+        /*        }
+                catch (Exception ex)
+                { 
+                
+                }*/
             }
                                                   
         }
@@ -77,8 +95,7 @@ namespace AFBus
 
             return Task.CompletedTask;
 
-        }     
-       
+        }
 
 
     }

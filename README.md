@@ -1,2 +1,2 @@
-# Azure-Functions-Utils
-IoC, Sagas and other utils for Azure Functions.
+# Azure-Functions-Bus
+messaging bus, sagas and other utils with Azure Functions.

@@ -3,7 +3,7 @@
 ################################################################################
 
 /src/packages
-/src/.vs
+/.vs
 /src/AFBus/obj
 /src/AFBus/bin/
 /src/AFBus.Tests/obj/

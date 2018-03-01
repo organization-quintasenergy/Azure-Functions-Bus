@@ -3,7 +3,7 @@
 ################################################################################
 
 /src/packages
-/.vs
+/.vs/
 /src/AFBus/obj
 /src/AFBus/bin/
 /src/AFBus.Tests/obj/
@@ -11,3 +11,4 @@
 /src/TestResults/
 /src/SolutionExample/Services/ServiceA/ServiceA.Messages/bin/
 /src/SolutionExample/Services/ServiceA/ServiceA.Messages/obj
+/src/.vs

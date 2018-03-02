@@ -17,29 +17,9 @@ namespace ServiceA.Host
 
         [FunctionName("ServiceAEndpoint2")]
         public async static Task Run([QueueTrigger("servicea", Connection = "")]string message, TraceWriter log)
-        {
-           /* MessageExample m = new MessageExample();
-            m.SomeInfo = "Apple";
+        {                      
 
-            var json = JsonConvert.SerializeObject(
-                m,
-                new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.Objects,
-                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-                });*/
-
-
-            var command = JsonConvert.DeserializeObject(message, new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormat=System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
-            });
-
-            var messagetype = command.GetType();
-            
-
-            await container.InvokeAsync(command, new AFTraceWritter(log));
+            await container.InvokeAsync(message, new AFTraceWritter(log));
                        
 
             log.Info($"C# Queue trigger function processed: {message}");

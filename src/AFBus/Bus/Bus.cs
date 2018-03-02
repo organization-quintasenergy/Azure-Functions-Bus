@@ -11,27 +11,20 @@ namespace AFBus
 {
     public class Bus : IBus
     {
-        internal Bus()
-        {
+        ISerializeMessages serializer; 
+        ISendMessages sender;
 
+        internal Bus(ISerializeMessages serializer, ISendMessages sender)
+        {
+            this.serializer = serializer;
+            this.sender = sender;
         }
         /// <summary>
         /// Sends a message to a queue named like the service.
         /// </summary>
-        public async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null)
+        public async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
-
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-
-            CloudQueue queue = queueClient.GetQueueReference(serviceName.ToLower());
-            queue.CreateIfNotExists();
-                       
-            await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(input, new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
-            })),null, initialVisibilityDelay,null,null).ConfigureAwait(false);
+            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay);
            
         }
     }

@@ -14,20 +14,13 @@ namespace AFBus
         /// <summary>
         /// Sends a message to a queue named like the service.
         /// </summary>
-        public static async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null)
+        public static async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null, ISerializeMessages serializer = null, ISendMessages sender = null) where T : class
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            serializer = serializer ?? new JSONSerializer();
+            sender = sender ?? new AzureStorageQueueSendTransport(serializer);
 
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-            CloudQueue queue = queueClient.GetQueueReference(serviceName.ToLower());
-            queue.CreateIfNotExists();
-
-            await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(input, new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-            })), null, initialVisibilityDelay,null,null).ConfigureAwait(false);
+            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay);
 
         }
     }

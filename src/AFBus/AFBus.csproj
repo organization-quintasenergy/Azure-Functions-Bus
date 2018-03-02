@@ -75,6 +75,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Serializer\ISerializeMessages.cs" />
+    <Compile Include="Serializer\JSONSerializer.cs" />
+    <Compile Include="Transport\AzureStorageQueueSendTransport.cs" />
+    <Compile Include="Transport\ISendMessages.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -72,7 +72,7 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        public Task InvokeAsync<T>(T message, ITraceWriter log)
+        public Task InvokeAsync<T>(T message, ITraceWriter log) where T : class
         {
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()))
@@ -83,13 +83,11 @@ namespace AFBus
             foreach (var t in handlerTypeList)
             {
                 var handler = Activator.CreateInstance(t);
-
-                object[] parametersArray = new object[] { new Bus(), message, log };
-
-               
+                ISerializeMessages serializer = new JSONSerializer();
+                object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
+                               
                 var methodsToInvoke = t.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType()));
-
-              
+                              
                 methodsToInvoke.ToList().ForEach(m=> m.Invoke(handler, parametersArray));
             }
 
@@ -97,6 +95,20 @@ namespace AFBus
 
         }
 
+        /// <summary>
+        /// Deserializes and invokes the handlers.
+        /// </summary>
+        /// <param name="serializedMessage"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public async Task InvokeAsync(string serializedMessage, ITraceWriter log)
+        {
+            var serializer = new JSONSerializer();
 
+            var deserializedMessage = serializer.Deserialize(serializedMessage);
+
+            await InvokeAsync(deserializedMessage,log);
+            
+        }
     }
 }

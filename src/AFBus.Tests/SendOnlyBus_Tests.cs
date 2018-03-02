@@ -41,7 +41,8 @@ namespace AFBus.Tests
                 SomeData = "delayed"
             };
 
-            IBus bus = new Bus();
+            var serializer = new JSONSerializer();
+            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
 
             var before = DateTime.Now;
             var timeDelayed = new TimeSpan(0, 0, 3);

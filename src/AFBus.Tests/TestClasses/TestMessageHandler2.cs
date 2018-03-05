@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AFBus;
 
-namespace AFUtils.Tests.TestClasses
+namespace AFBus.Tests.TestClasses
 {
     public class TestMessageHandler2 : IFunction<TestMessage>
     {

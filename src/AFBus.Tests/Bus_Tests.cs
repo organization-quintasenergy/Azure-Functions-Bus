@@ -1,8 +1,8 @@
 ﻿using System;
-using AFUtils.Tests.TestClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using AFBus.Tests.TestClasses;
 
 namespace AFBus.Tests
 {

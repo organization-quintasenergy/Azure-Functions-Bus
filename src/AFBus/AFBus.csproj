@@ -75,6 +75,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Sagas\ICorrelate.cs" />
+    <Compile Include="Sagas\Saga.cs" />
     <Compile Include="Serializer\ISerializeMessages.cs" />
     <Compile Include="Serializer\JSONSerializer.cs" />
     <Compile Include="Transport\AzureStorageQueueSendTransport.cs" />

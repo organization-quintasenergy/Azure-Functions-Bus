@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFBus.Tests.TestClasses
+namespace ServiceA.Host.Functions
 {
-    public class AnotherTestMessage
+    class SagaExample
     {
     }
 }

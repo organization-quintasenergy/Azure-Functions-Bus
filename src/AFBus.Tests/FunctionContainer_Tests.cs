@@ -1,9 +1,9 @@
 ﻿using System;
 using AFBus;
-using AFUtils.Tests.TestClasses;
+using AFBus.Tests.TestClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AFUtils.Tests
+namespace AFBus.Tests
 {
     [TestClass]
     public class FunctionContainer_Tests
@@ -40,6 +40,14 @@ namespace AFUtils.Tests
 
             container.InvokeAsync(new TestMessageHandler2(), null);
             
+        }
+
+        [TestMethod]
+        public void FunctionContainer_SagasAreCorrectlyScanned()
+        {
+            var container = new FunctionContainer();
+
+            Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
         }
 
     }

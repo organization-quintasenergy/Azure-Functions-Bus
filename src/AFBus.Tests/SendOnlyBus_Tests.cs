@@ -1,5 +1,5 @@
 ﻿using System;
-using AFUtils.Tests.TestClasses;
+using AFBus.Tests.TestClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 

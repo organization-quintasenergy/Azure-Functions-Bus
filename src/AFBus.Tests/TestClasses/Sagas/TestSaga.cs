@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class AnotherTestMessage
+    public class TestSaga : Saga<SagaData>
     {
+       
     }
 }

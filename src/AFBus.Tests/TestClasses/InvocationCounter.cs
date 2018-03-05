@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFUtils.Tests.TestClasses
+namespace AFBus.Tests.TestClasses
 {
     /// <summary>
     /// Util for counting the number of invocations

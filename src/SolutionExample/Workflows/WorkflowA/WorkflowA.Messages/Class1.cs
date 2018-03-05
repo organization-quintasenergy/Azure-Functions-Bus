@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFBus.Tests.TestClasses
+namespace WorkflowA.Messages
 {
-    public class AnotherTestMessage
+    public class Class1
     {
     }
 }

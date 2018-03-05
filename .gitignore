@@ -12,3 +12,8 @@
 /src/SolutionExample/Services/ServiceA/ServiceA.Messages/bin/
 /src/SolutionExample/Services/ServiceA/ServiceA.Messages/obj
 /src/.vs
+/src/SolutionExample/Workflows/WorkflowA/WorkflowA.Messages/bin/Debug
+/src/SolutionExample/Workflows/WorkflowA/WorkflowA.Messages/obj/Debug
+/src/AFUtils.Tests/obj/Debug
+/src/AFUtils.Tests/bin/Debug
+/src/AFUtils

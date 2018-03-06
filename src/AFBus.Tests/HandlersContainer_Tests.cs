@@ -6,13 +6,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace AFBus.Tests
 {
     [TestClass]
-    public class FunctionContainer_Tests
+    public class HandlersContainer_Tests
     {
 
         [TestMethod]
         public void FunctionContainer_IFunctionTypesAreCorrectlyScanned()
         {
-            var container = new FunctionContainer();
+            var container = new HandlersContainer();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
@@ -21,7 +21,7 @@ namespace AFBus.Tests
         [TestMethod]
         public void FunctionContainer_IFunctionTypesAreCorrectlyInvoked()
         {
-            var container = new FunctionContainer();
+            var container = new HandlersContainer();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
@@ -34,7 +34,7 @@ namespace AFBus.Tests
         [ExpectedException(typeof(Exception), "Handler not found for this message.")]
         public void FunctionContainer_HandlerNotFoundForThisMessage()
         {
-            var container = new FunctionContainer();
+            var container = new HandlersContainer();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
@@ -42,13 +42,7 @@ namespace AFBus.Tests
             
         }
 
-        [TestMethod]
-        public void FunctionContainer_SagasAreCorrectlyScanned()
-        {
-            var container = new FunctionContainer();
-
-            Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
-        }
+        
 
     }
 }

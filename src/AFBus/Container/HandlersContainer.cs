@@ -10,7 +10,7 @@ using System.Globalization;
 [assembly: InternalsVisibleTo("AFBus.Tests")]
 namespace AFBus
 {  
-    public class FunctionContainer : IFunctionContainer
+    public class HandlersContainer : IHandlersContainer
     {
        
         internal Dictionary<Type, List<Type>> messageHandlersDictionary = new Dictionary<Type, List<Type>>();
@@ -24,7 +24,7 @@ namespace AFBus
         /// <summary>
         /// Scans the dlls and creates a dictionary in which each message in IFunctions is referenced to each function.
         /// </summary>
-        public FunctionContainer()
+        public HandlersContainer()
         {
             lock (o)
             {
@@ -46,7 +46,8 @@ namespace AFBus
 
         private void LookForSagas(IEnumerable<Type> types)
         {
-            var sagaTypes = types.Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Saga<>));
+            var sagaTypes = types.Where(t => t.BaseType != null && t.BaseType.IsGenericType &&
+                t.BaseType.GetGenericTypeDefinition() == typeof(Saga<>));
 
             foreach(var s in sagaTypes)
             {
@@ -125,9 +126,59 @@ namespace AFBus
         public Task InvokeAsync<T>(T message, ITraceWriter log) where T : class
         {
 
-            if (!messageHandlersDictionary.ContainsKey(message.GetType()))
+            if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
                 throw new Exception("Handler not found for this message.");
-            
+
+            InvokeStatelessHandlers(message, log);
+
+            InvokeSagaHandlers(message, log);
+
+            return Task.CompletedTask;
+
+        }
+
+        private void InvokeSagaHandlers<T>(T message, ITraceWriter log) where T : class
+        {
+            //The message can not be executed in a Saga
+            if (!messageToSagaDictionary.ContainsKey(message.GetType()))
+                return;
+
+            foreach (var sagaInfo in messageToSagaDictionary[message.GetType()])
+            {
+                var instantiated = false;
+                var saga = Activator.CreateInstance(sagaInfo.SagaType);
+
+                //try to load saga from repository
+                if(sagaInfo.MessagesThatAreHandledByTheSaga.Any(m=>m.GetType()==typeof(T)))
+                {
+                    var sagaHandler = sagaInfo.MessagesThatAreHandledByTheSaga.First(m => m.GetType() == typeof(T));
+                    
+                }
+
+
+                //if not => create
+                if (sagaInfo.MessagesThatActivatesTheSaga.Any(m => m.GetType() == typeof(T)))
+                {
+                    var sagaHandler = sagaInfo.MessagesThatActivatesTheSaga.First(m => m.GetType() == typeof(T));
+                    var methodsToInvoke = sagaHandler.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType())).ToList();
+
+                    ISerializeMessages serializer = new JSONSerializer();
+                    object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
+                    methodsToInvoke.ForEach(m => m.Invoke(saga, parametersArray));
+
+
+                }
+
+                
+            }
+        }
+
+        private void InvokeStatelessHandlers<T>(T message, ITraceWriter log) where T : class
+        {
+            //The message can not be executed in a stateless handler
+            if (!messageHandlersDictionary.ContainsKey(message.GetType()))
+                return;
+
             var handlerTypeList = messageHandlersDictionary[message.GetType()];
 
             foreach (var t in handlerTypeList)
@@ -135,14 +186,11 @@ namespace AFBus
                 var handler = Activator.CreateInstance(t);
                 ISerializeMessages serializer = new JSONSerializer();
                 object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
-                               
+
                 var methodsToInvoke = t.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType()));
-                              
-                methodsToInvoke.ToList().ForEach(m=> m.Invoke(handler, parametersArray));
+
+                methodsToInvoke.ToList().ForEach(m => m.Invoke(handler, parametersArray));
             }
-
-            return Task.CompletedTask;
-
         }
 
         /// <summary>

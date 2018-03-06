@@ -12,7 +12,7 @@ namespace ServiceA.Host
     public static class ServiceAFunction
     {
         
-        private static IFunctionContainer container = new FunctionContainer();
+        private static IHandlersContainer container = new HandlersContainer();
 
 
         [FunctionName("ServiceAEndpoint2")]

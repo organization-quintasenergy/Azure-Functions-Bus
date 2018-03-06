@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    public interface IFunctionContainer 
+    public interface IHandlersContainer 
     {
         
         Task InvokeAsync<T>(T message, ITraceWriter log) where T : class;

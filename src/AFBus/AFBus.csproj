@@ -65,8 +65,8 @@
     <Compile Include="Bus\Bus.cs" />
     <Compile Include="Bus\IBus.cs" />
     <Compile Include="Bus\SendOnlyBus.cs" />
-    <Compile Include="Container\FunctionContainer.cs" />
-    <Compile Include="Container\IFunctionContainer.cs" />
+    <Compile Include="Container\HandlersContainer.cs" />
+    <Compile Include="Container\IHandlersContainer.cs" />
     <Compile Include="IFunction.cs" />
     <Compile Include="ITraceWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,8 +75,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Sagas\AzureStoragePersistence\SagaAzureStoragePersistence.cs" />
     <Compile Include="Sagas\IHandleStartingSaga.cs" />
     <Compile Include="Sagas\IHandleWithCorrelation.cs" />
+    <Compile Include="Sagas\ISagaStoragePersistence.cs" />
     <Compile Include="Sagas\Saga.cs" />
     <Compile Include="Sagas\SagaInfo.cs" />
     <Compile Include="Serializer\ISerializeMessages.cs" />

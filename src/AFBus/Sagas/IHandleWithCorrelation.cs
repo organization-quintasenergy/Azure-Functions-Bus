@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFBus.Sagas
+namespace AFBus
 {
-    public interface HandlerWithCorrelation<SagaData,MessageType>
+    public interface IHandleWithCorrelation<SagaData,MessageType>
     {
-        Task InvokeAsync(IBus bus, MessageType input, ITraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType input, ITraceWriter Log);
 
         SagaData CorrelationExpression(MessageType m);
     }

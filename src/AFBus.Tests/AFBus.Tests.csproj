@@ -90,6 +90,7 @@
     <Compile Include="TestClasses\AnotherTestMessage.cs" />
     <Compile Include="TestClasses\InvocationCounter.cs" />
     <Compile Include="TestClasses\Sagas\SagaData.cs" />
+    <Compile Include="TestClasses\Sagas\SagaStartingMessage.cs" />
     <Compile Include="TestClasses\Sagas\TestSaga.cs" />
     <Compile Include="TestClasses\TestMessage.cs" />
     <Compile Include="TestClasses\TestMessageHandler.cs" />

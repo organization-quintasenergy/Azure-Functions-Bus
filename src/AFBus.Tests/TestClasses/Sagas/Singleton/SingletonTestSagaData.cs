@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class SagaIntermediateMessage
+    public class SingletonTestSagaData : SagaData
     {
-        public Guid Id { get; set; }
+        public int Counter { get; set; }
     }
 }

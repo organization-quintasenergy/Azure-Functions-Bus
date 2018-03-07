@@ -9,7 +9,7 @@ namespace AFBus
     public interface IHandle<MessageType> 
     {      
 
-        Task InvokeAsync(IBus bus, MessageType input, ITraceWriter Log);
+        Task InvokeAsync(IBus bus, MessageType message, ITraceWriter Log);
            
     }
 }

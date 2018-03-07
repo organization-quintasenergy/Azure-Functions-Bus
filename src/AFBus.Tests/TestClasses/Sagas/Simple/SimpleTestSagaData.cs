@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class TestSagaData : SagaData
+    public class SimpleTestSagaData : SagaData
     {
         public int Counter { get; set; }
 
-        public string AlphanumericData { get; set; }
+        
     }
 }

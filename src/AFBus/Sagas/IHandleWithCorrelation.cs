@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    public interface IHandleWithCorrelation<SagaData,MessageType>
+    public interface IHandleWithCorrelation<MessageType>
     {
-        Task HandleAsync(IBus bus, MessageType input, ITraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType message, ITraceWriter Log);
 
         Task<SagaData> LookForInstance(ISagaStoragePersistence sagaPersistence, MessageType message);
     }

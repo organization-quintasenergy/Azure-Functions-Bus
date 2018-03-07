@@ -13,7 +13,7 @@ namespace AFBus.Tests
         {
             var container = new HandlersContainer();
 
-            Assert.IsTrue(container.messageToSagaDictionary[typeof(SagaStartingMessage)].Count == 1);
+            Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
         }
 
 
@@ -24,18 +24,38 @@ namespace AFBus.Tests
 
             var container = new HandlersContainer();
 
-            Assert.IsTrue(container.messageToSagaDictionary[typeof(SagaStartingMessage)].Count == 1);
+            Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
-            container.HandleAsync(new SagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
 
             for(int i=0;i<10;i++)
-                container.HandleAsync(new SagaIntermediateMessage() { Id = sagaId }, null).Wait();
+                container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
 
             var sagaPersistence = new SagaAzureStoragePersistence();
 
-            var sagaData = sagaPersistence.GetSagaData<TestSagaData>("TestSaga", sagaId.ToString()).Result as TestSagaData;
+            var sagaData = sagaPersistence.GetSagaData<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
 
             Assert.IsTrue(sagaData.Counter == 11);
+        }
+
+        [TestMethod]
+        public void SagasCanBeSingletons()
+        {
+            var sagaId = Guid.NewGuid();
+
+            var container = new HandlersContainer();
+
+            Assert.IsTrue(container.messageToSagaDictionary[typeof(SingletonSagaStartingMessage)].Count == 1);
+
+            container.HandleAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
+           
+            container.HandleAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
+
+            var sagaPersistence = new SagaAzureStoragePersistence();
+
+            var sagaData = sagaPersistence.GetSagaData<SingletonTestSagaData>("SingletonTestSaga", sagaId.ToString()).Result as SingletonTestSagaData;
+
+            Assert.IsTrue(sagaData.Counter == 1);
         }
     }
 }

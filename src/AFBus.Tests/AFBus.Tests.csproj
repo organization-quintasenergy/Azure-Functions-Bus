@@ -89,10 +89,14 @@
     <Compile Include="QueueUtils\QueueReader.cs" />
     <Compile Include="TestClasses\AnotherTestMessage.cs" />
     <Compile Include="TestClasses\InvocationCounter.cs" />
-    <Compile Include="TestClasses\Sagas\SagaIntermediateMessage.cs" />
-    <Compile Include="TestClasses\Sagas\TestSagaData.cs" />
-    <Compile Include="TestClasses\Sagas\SagaStartingMessage.cs" />
-    <Compile Include="TestClasses\Sagas\TestSaga.cs" />
+    <Compile Include="TestClasses\Sagas\Simple\SimpleSagaIntermediateMessage.cs" />
+    <Compile Include="TestClasses\Sagas\Simple\SimpleTestSagaData.cs" />
+    <Compile Include="TestClasses\Sagas\Simple\SimpleSagaStartingMessage.cs" />
+    <Compile Include="TestClasses\Sagas\Simple\SimpleTestSaga.cs" />
+    <Compile Include="TestClasses\Sagas\Singleton\SingletonSagaIntermediateMessage.cs" />
+    <Compile Include="TestClasses\Sagas\Singleton\SingletonSagaStartingMessage.cs" />
+    <Compile Include="TestClasses\Sagas\Singleton\SingletonTestSaga.cs" />
+    <Compile Include="TestClasses\Sagas\Singleton\SingletonTestSagaData.cs" />
     <Compile Include="TestClasses\TestMessage.cs" />
     <Compile Include="TestClasses\TestMessageHandler.cs" />
     <Compile Include="TestClasses\TestMessageHandler2.cs" />
@@ -110,6 +114,7 @@
       <Name>AFBus</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

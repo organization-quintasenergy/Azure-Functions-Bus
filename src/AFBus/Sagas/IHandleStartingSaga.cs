@@ -8,6 +8,6 @@ namespace AFBus
 {
     public interface IHandleStartingSaga<MessageType>
     {
-        Task HandleAsync(IBus bus, MessageType input, ITraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType message, ITraceWriter Log);
     }
 }

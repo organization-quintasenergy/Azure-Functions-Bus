@@ -1,3 +1,5 @@
+![buildstatus](https://quintasenergyvsts.visualstudio.com/_apis/public/build/definitions/4df6b67f-0048-4b1c-b762-43d477416731/1/badge)
+
 # Azure Functions Bus
 Azure Functions Bus is a simple framework that creates a message bus on top of the Azure Functions infrastructure. That way you can create a distributed system with a serverless technology.
 

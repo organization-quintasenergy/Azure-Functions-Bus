@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AFBus.Tests.TestClasses;
+using System.Diagnostics;
 
 namespace AFBus.Tests
 {
@@ -15,6 +16,17 @@ namespace AFBus.Tests
         public static void AssemblyInit(TestContext context)
         {
             QueueReader.CleanQueue(SERVICENAME).Wait();
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = @"/c C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe clear all";
+            process.StartInfo = startInfo;
+            process.Start();
+
+            process.WaitForExit();
+
         }
 
         [TestMethod]

@@ -19,7 +19,7 @@ namespace ServiceA.Host
         public async static Task Run([QueueTrigger("servicea", Connection = "")]string message, TraceWriter log)
         {                      
 
-            await container.InvokeAsync(message, new AFTraceWritter(log));
+            await container.HandleAsync(message, new AFTraceWritter(log));
                        
 
             log.Info($"C# Queue trigger function processed: {message}");

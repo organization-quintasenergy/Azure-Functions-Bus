@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFBus.Tests.TestClasses
+namespace AFBus
 {
     public class SagaData : TableEntity
     {
-        public int Counter { get; set; }
-
-        public string AlphanumericData { get; set; }
+        
+        
     }
 }

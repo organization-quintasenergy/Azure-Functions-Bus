@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    public interface IFunction<MessageType> 
+    public interface IHandle<MessageType> 
     {      
 
         Task InvokeAsync(IBus bus, MessageType input, ITraceWriter Log);

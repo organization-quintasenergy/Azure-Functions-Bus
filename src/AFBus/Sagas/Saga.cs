@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    public abstract class Saga<T> where T: TableEntity
+    public abstract class Saga<T> where T: SagaData,new()
     {
-        T Data;
-                       
-                       
+        public Saga()
+        {
+            Data = new T();
+            
+        }
+
+        public T Data { get; set; }
+
+        
     }
 
     

@@ -9,7 +9,7 @@ using ServiceA.Messages;
 
 namespace ServiceA.Host.Handlers
 {
-    public class MessageExampleHandler : IFunction<MessageExample>
+    public class MessageExampleHandler : IHandle<MessageExample>
     {       
         public Task InvokeAsync(IBus bus, MessageExample input, ITraceWriter Log)
         {

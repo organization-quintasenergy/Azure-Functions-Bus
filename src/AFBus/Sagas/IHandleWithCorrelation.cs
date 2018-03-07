@@ -10,6 +10,6 @@ namespace AFBus
     {
         Task HandleAsync(IBus bus, MessageType input, ITraceWriter Log);
 
-        SagaData CorrelationExpression(MessageType m);
+        Task<SagaData> LookForInstance(ISagaStoragePersistence sagaPersistence, MessageType message);
     }
 }

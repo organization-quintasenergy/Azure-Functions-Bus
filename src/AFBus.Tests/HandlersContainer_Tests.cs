@@ -10,7 +10,7 @@ namespace AFBus.Tests
     {
 
         [TestMethod]
-        public void FunctionContainer_IFunctionTypesAreCorrectlyScanned()
+        public void HandlersContainer_IHandleTypesAreCorrectlyScanned()
         {
             var container = new HandlersContainer();
 
@@ -19,26 +19,26 @@ namespace AFBus.Tests
         }
 
         [TestMethod]
-        public void FunctionContainer_IFunctionTypesAreCorrectlyInvoked()
+        public void HandlersContainer_IHandleTypesAreCorrectlyInvoked()
         {
             var container = new HandlersContainer();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
-            container.InvokeAsync(new TestMessage(), null);
+            container.HandleAsync(new TestMessage(), null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception), "Handler not found for this message.")]
-        public void FunctionContainer_HandlerNotFoundForThisMessage()
+        [ExpectedException(typeof(AggregateException))]
+        public void HandlersContainer_HandlerNotFoundForThisMessage()
         {
             var container = new HandlersContainer();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
-            container.InvokeAsync(new TestMessageHandler2(), null);
+            container.HandleAsync(new TestMessageHandler2(), null).Wait();
             
         }
 

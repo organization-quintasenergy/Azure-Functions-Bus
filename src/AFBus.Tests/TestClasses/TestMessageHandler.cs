@@ -7,7 +7,7 @@ using AFBus;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class TestMessageHandler : IFunction<TestMessage>
+    public class TestMessageHandler : IHandle<TestMessage>
     {       
 
         public Task InvokeAsync(IBus bus,TestMessage input, ITraceWriter Log)

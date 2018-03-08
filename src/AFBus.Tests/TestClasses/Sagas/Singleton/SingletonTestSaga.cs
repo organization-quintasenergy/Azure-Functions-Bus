@@ -26,7 +26,7 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        async Task<SagaData> IHandleWithCorrelation<SingletonSagaStartingMessage>.LookForInstance(ISagaStoragePersistence sagaPersistence, SingletonSagaStartingMessage message)
+        async Task<SagaData> IHandleWithCorrelation<SingletonSagaStartingMessage>.LookForInstance(SingletonSagaStartingMessage message)
         {
             var sagaData = await sagaPersistence.GetSagaData<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
 

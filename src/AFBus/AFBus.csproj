@@ -81,7 +81,7 @@
     <Compile Include="Sagas\ISagaStoragePersistence.cs" />
     <Compile Include="Sagas\Saga.cs" />
     <Compile Include="Sagas\SagaData.cs" />
-    <Compile Include="Sagas\SagaInfo.cs" />
+    <Compile Include="Container\SagaInfo.cs" />
     <Compile Include="Serializer\ISerializeMessages.cs" />
     <Compile Include="Serializer\JSONSerializer.cs" />
     <Compile Include="Transport\AzureStorageQueueSendTransport.cs" />

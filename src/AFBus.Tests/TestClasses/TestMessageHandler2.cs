@@ -9,7 +9,7 @@ namespace AFBus.Tests.TestClasses
 {
     public class TestMessageHandler2 : IHandle<TestMessage>
     {
-        public Task InvokeAsync(IBus bus, TestMessage input, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, TestMessage input, ITraceWriter Log)
         {
             InvocationCounter.Instance.AddOne();
 

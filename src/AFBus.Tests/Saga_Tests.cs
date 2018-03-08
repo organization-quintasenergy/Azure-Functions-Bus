@@ -18,7 +18,7 @@ namespace AFBus.Tests
 
 
         [TestMethod]
-        public void SagasAreCorrectlyStartedAndCorrelated()
+        public void SagasAreCorrectlyStartedAnd10MessagesAreCorrelated()
         {
             var sagaId = Guid.NewGuid();
 
@@ -36,6 +36,8 @@ namespace AFBus.Tests
             var sagaData = sagaPersistence.GetSagaData<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
 
             Assert.IsTrue(sagaData.Counter == 11);
+
+            container.HandleAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
 
         [TestMethod]

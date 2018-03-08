@@ -7,17 +7,32 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
+    /// <summary>
+    /// Base class for defining sagas
+    /// </summary>
+    /// <typeparam name="T">Type of the saga data stored in the persistence</typeparam>
     public abstract class Saga<T> where T: SagaData,new()
     {
-        public Saga()
+        protected ISagaStoragePersistence sagaPersistence;
+
+
+        public Saga(ISagaStoragePersistence sagaPersistence = null)
         {
             Data = new T();
-            
+
+            this.sagaPersistence = sagaPersistence ?? new SagaAzureStoragePersistence();
         }
 
         public T Data { get; set; }
 
-        
+        /// <summary>
+        /// Deletes the saga in the persistence
+        /// </summary>       
+        public async Task DeleteSaga()
+        {
+            await sagaPersistence.Delete(Data);
+
+        }
     }
 
     

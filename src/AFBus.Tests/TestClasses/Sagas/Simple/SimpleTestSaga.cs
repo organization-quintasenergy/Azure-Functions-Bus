@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class SimpleTestSaga : Saga<SimpleTestSagaData>, IHandleStartingSaga<SimpleSagaStartingMessage>,  IHandleWithCorrelation<SimpleSagaIntermediateMessage>
+    public class SimpleTestSaga : Saga<SimpleTestSagaData>, IHandleStartingSaga<SimpleSagaStartingMessage>,  IHandleWithCorrelation<SimpleSagaIntermediateMessage>, IHandleWithCorrelation<SimpleSagaTerminatingMessage>
     {
         private const string PARTITION_KEY = "SimpleTestSaga";
 
-        Task IHandleStartingSaga<SimpleSagaStartingMessage>.HandleAsync(IBus bus, SimpleSagaStartingMessage input, ITraceWriter Log)
+        
+        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, ITraceWriter Log)
         {           
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -20,18 +21,29 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        Task IHandleWithCorrelation<SimpleSagaIntermediateMessage>.HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, ITraceWriter Log)
         {
             this.Data.Counter++;
             return Task.CompletedTask;
         }
 
-        async Task<SagaData> IHandleWithCorrelation<SimpleSagaIntermediateMessage>.LookForInstance(ISagaStoragePersistence sagaPersistence, SimpleSagaIntermediateMessage message)
+        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, ITraceWriter Log)
+        {
+            await this.DeleteSaga();
+        }
+
+        public async Task<SagaData> LookForInstance(SimpleSagaIntermediateMessage message)
         {
             var sagaData =  await sagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }
-                
+
+        public async Task<SagaData> LookForInstance(SimpleSagaTerminatingMessage message)
+        {
+            var sagaData = await sagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+
+            return sagaData;
+        }
     }
 }

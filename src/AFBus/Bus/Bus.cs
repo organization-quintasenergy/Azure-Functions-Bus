@@ -19,6 +19,9 @@ namespace AFBus
             this.serializer = serializer;
             this.sender = sender;
         }
+
+        ISerializeMessages IBus.serializer => this.serializer;
+
         /// <summary>
         /// Sends a message to a queue named like the service.
         /// </summary>

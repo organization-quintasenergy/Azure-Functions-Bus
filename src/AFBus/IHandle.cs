@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    public interface IHandle<MessageType> 
-    {      
 
-        Task InvokeAsync(IBus bus, MessageType message, ITraceWriter Log);
+    public interface IHandle<MessageType> 
+    {
+        /// <summary>
+        /// Handles a message in a stateless way.
+        /// </summary>
+        Task HandleAsync(IBus bus, MessageType message, ITraceWriter Log);
            
     }
 }

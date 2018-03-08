@@ -17,3 +17,9 @@
 /src/AFUtils.Tests/obj/Debug
 /src/AFUtils.Tests/bin/Debug
 /src/AFUtils
+/src/SolutionExample/Sagas/OrderSagaMessages/obj
+/src/SolutionExample/Sagas/OrderSagaMessages/bin/Debug
+/src/SolutionExample/Services/PaymentService.Messages/obj
+/src/SolutionExample/Services/PaymentService.Messages/bin/Debug
+/src/SolutionExample/Services/ShippingService.Messages/obj
+/src/SolutionExample/Services/ShippingService.Messages/bin/Debug

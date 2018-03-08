@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
+    /// <summary>
+    /// Base class defining the saga persistence.
+    /// </summary>
     public class SagaData : TableEntity
     {
         

@@ -78,6 +78,21 @@ namespace AFBus
             return execution.Result as T;
         }
 
-        
+        public async Task Delete(SagaData entity)
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+            CloudTable table = tableClient.GetTableReference(TABLE_NAME);
+
+
+            // Create the TableOperation object that inserts the customer entity.
+            TableOperation replaceOperation = TableOperation.Delete(entity);
+
+            // Execute the insert operation.
+            await table.ExecuteAsync(replaceOperation);
+        }
     }
 }

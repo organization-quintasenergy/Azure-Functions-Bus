@@ -9,7 +9,7 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
 * You can have sagas.
 
 ## First steps
-* Grab the nuget package.
+* Grab the [nuget package](https://www.nuget.org/packages/AFBus/) for AFBus.
 * Define the connection string in the appconfig
 ```xml
     <configSections>
@@ -45,6 +45,7 @@ Just POCO classes that are shared between different services to communicate to e
 Project with the functions that are the entrance of the service. It must create the handler container.
 
 ```cs
+//here the dlls are scanned looking for handlers
 private static HandlersContainer container = new HandlersContainer();
 ```
 
@@ -58,27 +59,23 @@ Each message gets passed to its handlers when the handle method of the container
 
         [FunctionName("ShippingServiceEndpointFunction")]
         public static async Task Run([QueueTrigger("shippingservice", Connection = "")]string myQueueItem, TraceWriter log)
-        {
-            log.Info($"C# Queue trigger function processed: {myQueueItem}");
-
+        {            
+            //Calls to every handler that receives that message
             await container.HandleAsync(myQueueItem, new AFTraceWriter(log));
+            
         }
     }
 ```
 
 #### Stateless handlers
-
 Defining a stateless handler is just implementing the IHandle<MessageType> interface in a class. For instance:
 ```cs
     public class ShipOrderHandler : IHandle<ShipOrder>
     {
         public async Task HandleAsync(IBus bus, ShipOrder message, ITraceWriter Log)
-        {
-            Log.Info("order shipped");
-                        
-            await bus.SendAsync(new ShipOrderResponse() { UserName = "pablo" }, "ordersaga");
-
-            
+        {           
+            //this sends a message to another endpoint            
+            await bus.SendAsync(new ShipOrderResponse() { UserName = "pablo" }, "ordersaga");            
         }
     }
 ```

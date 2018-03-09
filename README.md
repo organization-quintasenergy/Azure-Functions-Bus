@@ -73,12 +73,9 @@ Defining a stateless handler is just implementing the IHandle<MessageType> inter
     public class ShipOrderHandler : IHandle<ShipOrder>
     {
         public async Task HandleAsync(IBus bus, ShipOrder message, ITraceWriter Log)
-        {
-            Log.Info("order shipped");
-                        
-            await bus.SendAsync(new ShipOrderResponse() { UserName = "pablo" }, "ordersaga");
-
-            
+        {           
+            //this sends a message to another endpoint            
+            await bus.SendAsync(new ShipOrderResponse() { UserName = "pablo" }, "ordersaga");            
         }
     }
 ```

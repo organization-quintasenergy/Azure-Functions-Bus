@@ -28,14 +28,14 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
 
 ## Recommended solution structure (Please see the SolutionExample folder)
 The system gets divided in different parts:
-* Sagas
-** SagaA.Host
-*** Sagas
-** SagaA.Message
+·· Sagas
+* * SagaA.Host
+* * * Sagas
+* * SagaA.Message
 * Services
-** ServiceA.Host
-*** Handlers
-** ServicesA.Messages
+* * ServiceA.Host
+* * * Handlers
+* * ServicesA.Messages
 
 
 ### Messages

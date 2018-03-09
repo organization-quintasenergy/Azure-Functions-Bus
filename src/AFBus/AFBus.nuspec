@@ -16,7 +16,7 @@
 	<dependencies>
         <dependency id="Newtonsoft.Json" version="[9.0.1]" />
 		    <dependency id="WindowsAzure.Storage" version="[8.7.0]" />
-        <dependency id="Microsoft.Azure.WebJobs" version="[2.1.0]" />    
+        <dependency id="Microsoft.Azure.WebJobs" version="2.1.0" />    
   </dependencies>
 	
   </metadata>

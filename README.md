@@ -28,14 +28,14 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
 
 ## Recommended solution structure (Please see the SolutionExample folder)
 The system gets divided in different parts:
-·· Sagas
-* * SagaA.Host
-* * * Sagas
-* * SagaA.Message
-* Services
-* * ServiceA.Host
-* * * Handlers
-* * ServicesA.Messages
+* Sagas (Folder)
+  * SagaA.Host (Project)
+    * Sagas
+  * SagaA.Message (Project)
+* Services(Folder)
+  * ServiceA.Host (Project)
+    * Handlers
+  * ServicesA.Messages (Project)
 
 
 ### Messages
@@ -89,3 +89,46 @@ Sagas are stateful components that orchestrates differents messages. In a saga y
 * SagaData: the data that will be stored between messages.
 * IHandleStartingSaga: handlers that creates sagas (the first message received by the saga).
 * IHandleWithCorrelation: handlers that correlates in the saga. You need to implement two methods, the one with the logic and the one with the correlation logic.
+
+```cs
+    public class SimpleTestSaga : Saga<SimpleTestSagaData>, IHandleStartingSaga<SimpleSagaStartingMessage>,  IHandleWithCorrelation<SimpleSagaIntermediateMessage>, IHandleWithCorrelation<SimpleSagaTerminatingMessage>
+    {
+        private const string PARTITION_KEY = "SimpleTestSaga";
+
+        
+        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, ITraceWriter Log)
+        {           
+
+            this.Data.PartitionKey = PARTITION_KEY;
+            this.Data.RowKey = input.Id.ToString();
+            this.Data.Counter++;
+
+            return Task.CompletedTask;
+        }
+
+        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, ITraceWriter Log)
+        {
+            this.Data.Counter++;
+            return Task.CompletedTask;
+        }
+
+        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, ITraceWriter Log)
+        {
+            await this.DeleteSaga();
+        }
+
+        public async Task<SagaData> LookForInstance(SimpleSagaIntermediateMessage message)
+        {
+            var sagaData =  await sagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+
+            return sagaData;
+        }
+
+        public async Task<SagaData> LookForInstance(SimpleSagaTerminatingMessage message)
+        {
+            var sagaData = await sagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+
+            return sagaData;
+        }
+    }
+```

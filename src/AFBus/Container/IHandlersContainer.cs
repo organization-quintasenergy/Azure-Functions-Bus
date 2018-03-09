@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Threading.Tasks;
 
 namespace AFBus
@@ -6,9 +7,9 @@ namespace AFBus
     public interface IHandlersContainer 
     {
         
-        Task HandleAsync<T>(T message, ITraceWriter log) where T : class;
+        Task HandleAsync<T>(T message, TraceWriter log) where T : class;
 
-        Task HandleAsync(string serializedMessage, ITraceWriter log);
+        Task HandleAsync(string serializedMessage, TraceWriter log);
 
     }
 }

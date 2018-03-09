@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace AFBus.Tests.TestClasses
     {
         private const string PARTITION_KEY = "SingletonTestSaga";
 
-        Task IHandleStartingSaga<SingletonSagaStartingMessage>.HandleAsync(IBus bus, SingletonSagaStartingMessage message, ITraceWriter Log)
+        Task IHandleStartingSaga<SingletonSagaStartingMessage>.HandleAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
         {
             Data.PartitionKey = PARTITION_KEY;
             Data.RowKey = message.Id.ToString();
@@ -20,7 +21,7 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        Task IHandleWithCorrelation<SingletonSagaStartingMessage>.HandleAsync(IBus bus, SingletonSagaStartingMessage message, ITraceWriter Log)
+        Task IHandleWithCorrelation<SingletonSagaStartingMessage>.HandleAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
         {
 
             return Task.CompletedTask;

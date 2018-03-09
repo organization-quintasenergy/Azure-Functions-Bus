@@ -1,4 +1,5 @@
 ﻿using AFBus;
+using Microsoft.Azure.WebJobs.Host;
 using PaymentService.Messages;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace PaymentService.Handlers
 {
     public class PayOrderHandler : IHandle<PayOrder>
     {
-        public async Task HandleAsync(IBus bus, PayOrder message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, PayOrder message, TraceWriter Log)
         {
             Log.Info("Order payed");
 

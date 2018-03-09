@@ -1,4 +1,5 @@
 ﻿using AFBus;
+using Microsoft.Azure.WebJobs.Host;
 using ShippingService.Messages;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace ShippingService.Handlers
 {
     public class ShipOrderHandler : IHandle<ShipOrder>
     {
-        public async Task HandleAsync(IBus bus, ShipOrder message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
         {
             Log.Info("order shipped");
                         

@@ -1,4 +1,5 @@
 ﻿using AFBus;
+using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 using OrderSaga.Messages;
 using PaymentService.Messages;
@@ -15,7 +16,7 @@ namespace OrderSaga.Sagas
     {
         const string PARTITION_KEY = "OrderSaga";
 
-        public Task HandleAsync(IBus bus, CartItemAdded message, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, CartItemAdded message, TraceWriter Log)
         {
             
             var productsList = new List<string>();
@@ -39,14 +40,14 @@ namespace OrderSaga.Sagas
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(IBus bus, ProcessOrder message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, ProcessOrder message, TraceWriter Log)
         {
             await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey }, "shippingservice");
 
             await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey }, "paymentservice");
         }
 
-        public async Task HandleAsync(IBus bus, ShipOrderResponse message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, ShipOrderResponse message, TraceWriter Log)
         {
             this.Data.Shipped = true;
             await EndOfOrder(Log);
@@ -55,7 +56,7 @@ namespace OrderSaga.Sagas
 
         
 
-        public async Task HandleAsync(IBus bus, PayOrderResponse message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, PayOrderResponse message, TraceWriter Log)
         {
             this.Data.Payed = true;
 
@@ -63,7 +64,7 @@ namespace OrderSaga.Sagas
 
         }
 
-        private async Task EndOfOrder(ITraceWriter Log)
+        private async Task EndOfOrder(TraceWriter Log)
         {
             if (Data.Shipped && Data.Payed)
             {

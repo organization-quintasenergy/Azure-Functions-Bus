@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace AFBus.Tests.TestClasses
         private const string PARTITION_KEY = "SimpleTestSaga";
 
         
-        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, TraceWriter Log)
         {           
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -21,13 +22,13 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, TraceWriter Log)
         {
             this.Data.Counter++;
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, TraceWriter Log)
         {
             await this.DeleteSaga();
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Globalization;
-
+using Microsoft.Azure.WebJobs.Host;
 
 [assembly: InternalsVisibleTo("AFBus.Tests")]
 namespace AFBus
@@ -144,7 +144,7 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        public async Task HandleAsync<T>(T message, ITraceWriter log) where T : class
+        public async Task HandleAsync<T>(T message, TraceWriter log) where T : class
         {
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
@@ -157,7 +157,7 @@ namespace AFBus
 
         }
 
-        private async Task InvokeSagaHandlers<T>(T message, ITraceWriter log) where T : class
+        private async Task InvokeSagaHandlers<T>(T message, TraceWriter log) where T : class
         {
             //The message can not be executed in a Saga
             if (!messageToSagaDictionary.ContainsKey(message.GetType()))
@@ -213,7 +213,7 @@ namespace AFBus
             }
         }
 
-        private async Task InvokeStatelessHandlers<T>(T message, ITraceWriter log) where T : class
+        private async Task InvokeStatelessHandlers<T>(T message, TraceWriter log) where T : class
         {
             //The message can not be executed in a stateless handler
             if (!messageHandlersDictionary.ContainsKey(message.GetType()))
@@ -243,7 +243,7 @@ namespace AFBus
         /// <param name="serializedMessage"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public async Task HandleAsync(string serializedMessage, ITraceWriter log)
+        public async Task HandleAsync(string serializedMessage, TraceWriter log)
         {            
 
             var deserializedMessage = serializer.Deserialize(serializedMessage);

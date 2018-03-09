@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace AFBus
         /// <summary>
         /// Handles a message in a stateless way.
         /// </summary>
-        Task HandleAsync(IBus bus, MessageType message, ITraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType message, TraceWriter Log);
            
     }
 }

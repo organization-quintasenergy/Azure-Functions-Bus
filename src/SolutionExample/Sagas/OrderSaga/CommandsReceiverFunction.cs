@@ -15,7 +15,7 @@ namespace OrderSaga
         {
             log.Info($"C# Queue trigger function processed: {orderSagaMessage}");
 
-            await container.HandleAsync(orderSagaMessage, new AFTraceWriter(log));
+            await container.HandleAsync(orderSagaMessage, log);
         }
     }
 }

@@ -45,6 +45,7 @@ Just POCO classes that are shared between different services to communicate to e
 Project with the functions that are the entrance of the service. It must create the handler container.
 
 ```cs
+//here the dlls are scanned looking for handlers
 private static HandlersContainer container = new HandlersContainer();
 ```
 
@@ -58,16 +59,15 @@ Each message gets passed to its handlers when the handle method of the container
 
         [FunctionName("ShippingServiceEndpointFunction")]
         public static async Task Run([QueueTrigger("shippingservice", Connection = "")]string myQueueItem, TraceWriter log)
-        {
-            log.Info($"C# Queue trigger function processed: {myQueueItem}");
-
+        {            
+            //Calls to every handler that receives that message
             await container.HandleAsync(myQueueItem, new AFTraceWriter(log));
+            
         }
     }
 ```
 
 #### Stateless handlers
-
 Defining a stateless handler is just implementing the IHandle<MessageType> interface in a class. For instance:
 ```cs
     public class ShipOrderHandler : IHandle<ShipOrder>

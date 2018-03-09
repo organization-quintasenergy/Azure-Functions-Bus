@@ -30,6 +30,8 @@ namespace AFBus
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
+            entity.CreationTimeStamp = DateTime.UtcNow;
+
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
                         
@@ -78,9 +80,13 @@ namespace AFBus
             return execution.Result as T;
         }
 
-        public async Task Delete(SagaData entity)
+        public Task Delete(SagaData entity)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            entity.IsDeleted = true;
+            entity.FinishingTimeStamp = DateTime.UtcNow;
+
+            return Task.CompletedTask;
+            /*CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -92,7 +98,7 @@ namespace AFBus
             TableOperation replaceOperation = TableOperation.Delete(entity);
 
             // Execute the insert operation.
-            await table.ExecuteAsync(replaceOperation);
+            await table.ExecuteAsync(replaceOperation);*/
         }
     }
 }

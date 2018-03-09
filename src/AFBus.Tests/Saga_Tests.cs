@@ -16,6 +16,21 @@ namespace AFBus.Tests
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
         }
 
+        [TestMethod]
+        public void SagasAreCorrectlyStartedAndAMessageIsNotCorrelated()
+        {
+            var sagaId = Guid.NewGuid();
+
+            var container = new HandlersContainer();
+
+            Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
+
+            container.HandleAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
+                        
+            //non correlating message
+            container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = Guid.NewGuid() }, null).Wait();          
+            
+        }
 
         [TestMethod]
         public void SagasAreCorrectlyStartedAnd10MessagesAreCorrelated()

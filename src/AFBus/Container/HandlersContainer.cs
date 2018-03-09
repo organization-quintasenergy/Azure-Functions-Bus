@@ -203,9 +203,12 @@ namespace AFBus
                     await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);                    
                                        
                     await sagaPersistence.Insert(sagaDynamic.Data);
-                    
+
+                    instantiated = true;
                 }
 
+                if (!instantiated)
+                    log?.Info("Saga not found for message "+serializer.Serialize(message));
                 
             }
         }

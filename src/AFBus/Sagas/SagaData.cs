@@ -12,7 +12,11 @@ namespace AFBus
     /// </summary>
     public class SagaData : TableEntity
     {
-        
-        
+        public bool IsDeleted { get; set; }
+
+        public DateTime? CreationTimeStamp { get; set; }
+
+        public DateTime? FinishingTimeStamp { get; set; }
+
     }
 }

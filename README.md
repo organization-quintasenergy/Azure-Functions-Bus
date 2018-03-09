@@ -9,7 +9,7 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
 * You can have sagas.
 
 ## First steps
-* Grab the nuget package.
+* Grab the [nuget package](https://www.nuget.org/packages/AFBus/) for AFBus.
 * Define the connection string in the appconfig
 ```xml
     <configSections>

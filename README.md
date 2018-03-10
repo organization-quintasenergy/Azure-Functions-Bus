@@ -129,3 +129,15 @@ Sagas are stateful components that orchestrates differents messages. In a saga y
         }
     }
 ```
+#### How to send a message out of a function
+Messages outside the framework can be launched using the SendOnlyBus class.
+
+```cs
+SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
+```
+
+Messages inside the framework can be launched using the bus object parameter in the handler method.
+
+```cs
+bus.SendAsync(new PayOrderResponse() { UserName = "pablo"}, message.ReplyTo);
+```

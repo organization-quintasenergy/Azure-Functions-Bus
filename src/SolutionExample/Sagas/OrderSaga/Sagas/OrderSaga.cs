@@ -15,6 +15,7 @@ namespace OrderSaga.Sagas
     public class OrderSaga : Saga<OrderSagaData>, IHandleStartingSaga<CartItemAdded>, IHandleWithCorrelation<CartItemAdded>, IHandleWithCorrelation<ProcessOrder>, IHandleWithCorrelation<ShipOrderResponse>, IHandleWithCorrelation<PayOrderResponse>
     {
         const string PARTITION_KEY = "OrderSaga";
+        const string SERVICE_NAME = "ordersaga";
 
         public Task HandleAsync(IBus bus, CartItemAdded message, TraceWriter Log)
         {
@@ -42,9 +43,9 @@ namespace OrderSaga.Sagas
 
         public async Task HandleAsync(IBus bus, ProcessOrder message, TraceWriter Log)
         {
-            await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey }, "shippingservice");
+            await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "shippingservice");
 
-            await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey }, "paymentservice");
+            await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "paymentservice");
         }
 
         public async Task HandleAsync(IBus bus, ShipOrderResponse message, TraceWriter Log)

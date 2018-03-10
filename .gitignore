@@ -23,3 +23,8 @@
 /src/SolutionExample/Services/PaymentService.Messages/bin/Debug
 /src/SolutionExample/Services/ShippingService.Messages/obj
 /src/SolutionExample/Services/ShippingService.Messages/bin/Debug
+/src/SolutionExample/Services/ServiceA/ServiceA.Host/bin/Debug
+/src/SolutionExample/Services/ServiceA/ServiceA.Host/obj/Debug
+/src/SolutionExample/Services/ServiceA/ServiceA.Host/obj/Release/net461
+/src/SolutionExample/Services/ServiceA/ServiceA.Host/obj
+/src/SolutionExample/Workflows/WorkflowA/WorkflowA.Host/bin/Debug

@@ -9,5 +9,7 @@ namespace PaymentService.Messages
     public class PayOrder
     {
         public string UserName { get; set; }
+
+        public string ReplyTo { get; set; }
     }
 }

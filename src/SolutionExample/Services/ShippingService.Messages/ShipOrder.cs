@@ -9,5 +9,7 @@ namespace ShippingService.Messages
     public class ShipOrder
     {
         public string UserName { get; set; }
+
+        public string ReplyTo { get; set; }
     }
 }

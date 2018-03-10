@@ -31,7 +31,7 @@ The system gets divided in different parts:
 * Sagas (Folder)
   * SagaA.Host (Project)
     * Sagas
-  * SagaA.Message (Project)
+  * SagaA.Messages (Project)
 * Services(Folder)
   * ServiceA.Host (Project)
     * Handlers

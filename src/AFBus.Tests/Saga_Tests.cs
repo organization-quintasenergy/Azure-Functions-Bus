@@ -46,7 +46,7 @@ namespace AFBus.Tests
             for(int i=0;i<10;i++)
                 container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
 
-            var sagaPersistence = new SagaAzureStoragePersistence();
+            var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker());
 
             var sagaData = sagaPersistence.GetSagaData<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
 
@@ -68,7 +68,7 @@ namespace AFBus.Tests
            
             container.HandleAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
 
-            var sagaPersistence = new SagaAzureStoragePersistence();
+            var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker());
 
             var sagaData = sagaPersistence.GetSagaData<SingletonTestSagaData>("SingletonTestSaga", sagaId.ToString()).Result as SingletonTestSagaData;
 

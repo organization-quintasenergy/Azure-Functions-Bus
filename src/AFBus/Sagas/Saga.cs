@@ -20,7 +20,7 @@ namespace AFBus
         {
             Data = new T();
 
-            this.sagaPersistence = sagaPersistence ?? new SagaAzureStoragePersistence();
+            this.sagaPersistence = sagaPersistence ?? new SagaAzureStoragePersistence(new SagaAzureStorageLocker());
         }
 
         public T Data { get; set; }

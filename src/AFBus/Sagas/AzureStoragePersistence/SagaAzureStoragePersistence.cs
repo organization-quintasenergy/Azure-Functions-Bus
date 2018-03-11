@@ -11,7 +11,14 @@ namespace AFBus
     class SagaAzureStoragePersistence : ISagaStoragePersistence
     {
         private const string TABLE_NAME = "sagapersistence";
-            
+
+        ISagaLocker sagaLock;
+
+        public SagaAzureStoragePersistence(ISagaLocker sagaLock)
+        {
+            this.sagaLock = sagaLock;
+        }
+
         public async Task CreateSagaPersistenceTable()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
@@ -60,10 +67,17 @@ namespace AFBus
 
             // Execute the insert operation.
             await table.ExecuteAsync(replaceOperation);
+
+            var sagaID = entity.PartitionKey + entity.RowKey;
+            await sagaLock.ReleaseLock(sagaID, sagaID);
         }
 
         public async Task<T> GetSagaData<T>(string partitionKey, string rowKey) where T :SagaData
         {
+            var sagaID = partitionKey + rowKey;
+            var lockID = await sagaLock.CreateLock(sagaID);
+
+
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
             // Create the table client.

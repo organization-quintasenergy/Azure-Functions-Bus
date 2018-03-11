@@ -157,9 +157,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Sagas\AzureStoragePersistence\SagaAzureStorageLocker.cs" />
     <Compile Include="Sagas\AzureStoragePersistence\SagaAzureStoragePersistence.cs" />
     <Compile Include="Sagas\IHandleStartingSaga.cs" />
     <Compile Include="Sagas\IHandleWithCorrelation.cs" />
+    <Compile Include="Sagas\ISagaLocker.cs" />
     <Compile Include="Sagas\ISagaStoragePersistence.cs" />
     <Compile Include="Sagas\Saga.cs" />
     <Compile Include="Sagas\SagaData.cs" />

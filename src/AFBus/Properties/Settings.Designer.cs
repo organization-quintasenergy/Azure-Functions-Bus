@@ -26,9 +26,9 @@ namespace AFBus.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("UseDevelopmentStorage=true")]
-        public string StorageConnectionString {
+        public string AzureWebJobsStorage {
             get {
-                return ((string)(this["StorageConnectionString"]));
+                return ((string)(this["AzureWebJobsStorage"]));
             }
         }
         

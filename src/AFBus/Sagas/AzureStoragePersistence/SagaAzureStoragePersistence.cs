@@ -11,7 +11,16 @@ namespace AFBus
     class SagaAzureStoragePersistence : ISagaStoragePersistence
     {
         private const string TABLE_NAME = "sagapersistence";
-            
+
+        ISagaLocker sagaLock;
+        bool lockSagas;
+
+        public SagaAzureStoragePersistence(ISagaLocker sagaLock, bool lockSagas)
+        {
+            this.sagaLock = sagaLock;
+            this.lockSagas = lockSagas;
+        }
+
         public async Task CreateSagaPersistenceTable()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
@@ -28,6 +37,14 @@ namespace AFBus
 
         public async Task Insert(SagaData entity)
         {
+            var sagaID = entity.PartitionKey + entity.RowKey;
+            var lockID = string.Empty;
+
+            if (this.lockSagas)
+            {              
+                lockID = await sagaLock.CreateLock(sagaID);               
+            }
+
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
             entity.CreationTimeStamp = DateTime.UtcNow;
@@ -43,6 +60,11 @@ namespace AFBus
 
             // Execute the insert operation.
             await table.ExecuteAsync(insertOperation);
+
+            if (this.lockSagas)
+            {               
+                await sagaLock.ReleaseLock(sagaID, lockID);
+            }
         }
 
         public async Task Update(SagaData entity)
@@ -60,32 +82,61 @@ namespace AFBus
 
             // Execute the insert operation.
             await table.ExecuteAsync(replaceOperation);
+
+            var sagaID = entity.PartitionKey + entity.RowKey;
+
+            if(this.lockSagas && !entity.IsDeleted)
+                await sagaLock.ReleaseLock(sagaID, entity.LockID);
         }
 
         public async Task<T> GetSagaData<T>(string partitionKey, string rowKey) where T :SagaData
         {
+            var sagaID = partitionKey + rowKey;
+            var lockID = string.Empty;
+
+            if (this.lockSagas)
+            {
+                lockID = await sagaLock.CreateLock(sagaID);
+            }
+
+
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
-            CloudTable table = tableClient.GetTableReference(TABLE_NAME);
-            
+            CloudTable table = tableClient.GetTableReference(TABLE_NAME);            
             
             TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey,rowKey);
 
             // Execute the operation.
             var execution = await table.ExecuteAsync(retrieveOperation);
 
-            return execution.Result as T;
+            var result = execution.Result as T;
+
+            if (result != null && this.lockSagas)
+                result.LockID = lockID;
+
+            if (result == null && this.lockSagas)
+            {
+                await sagaLock.ReleaseLock(sagaID, lockID);
+            }
+
+            return result;
         }
 
-        public Task Delete(SagaData entity)
+        public async Task Delete(SagaData entity)
         {
             entity.IsDeleted = true;
             entity.FinishingTimeStamp = DateTime.UtcNow;
 
-            return Task.CompletedTask;
+            var sagaID = entity.PartitionKey + entity.RowKey;
+
+            if (this.lockSagas)
+            {
+                await sagaLock.DeleteLock(sagaID, entity.LockID);
+            }
+            
             /*CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
 
             // Create the table client.

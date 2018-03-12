@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Threading.Tasks;
 using AFBus.Tests.TestClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -7,21 +9,23 @@ namespace AFBus.Tests
     [TestClass]
     public class Saga_Tests
     {
+        
 
         [TestMethod]
-        public void SagasAreCorrectlyScanned()
+        public void Sagas_Without_Locks_Are_Correctly_Scanned()
         {
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(null, null, null, false); 
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
         }
 
         [TestMethod]
-        public void SagasAreCorrectlyStartedAndAMessageIsNotCorrelated()
+        public void Sagas_Without_Locks_Are_Correctly_Started_And_A_Message_Is_Not_Correlated()
         {
+
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(null, null, null, false);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -33,11 +37,11 @@ namespace AFBus.Tests
         }
 
         [TestMethod]
-        public void SagasAreCorrectlyStartedAnd10MessagesAreCorrelated()
+        public void Sagas_Without_Locks_Are_Correctly_Started_And_10_Non_Parallel_Messages_Are_Correlated()
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(null, null, null, false);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -46,7 +50,8 @@ namespace AFBus.Tests
             for(int i=0;i<10;i++)
                 container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
 
-            var sagaPersistence = new SagaAzureStoragePersistence();
+            var lockSaga = false;
+            var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);
 
             var sagaData = sagaPersistence.GetSagaData<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
 
@@ -55,12 +60,13 @@ namespace AFBus.Tests
             container.HandleAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
 
+        
         [TestMethod]
-        public void SagasCanBeSingletons()
+        public void Sagas_Without_Locks_Can_Be_Singletons()
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(null, null, null, false);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SingletonSagaStartingMessage)].Count == 1);
 
@@ -68,7 +74,8 @@ namespace AFBus.Tests
            
             container.HandleAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
 
-            var sagaPersistence = new SagaAzureStoragePersistence();
+            var lockSaga = false;
+            var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);
 
             var sagaData = sagaPersistence.GetSagaData<SingletonTestSagaData>("SingletonTestSaga", sagaId.ToString()).Result as SingletonTestSagaData;
 

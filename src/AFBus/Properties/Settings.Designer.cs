@@ -31,5 +31,14 @@ namespace AFBus.Properties {
                 return ((string)(this["StorageConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool LockSagas {
+            get {
+                return ((bool)(this["LockSagas"]));
+            }
+        }
     }
 }

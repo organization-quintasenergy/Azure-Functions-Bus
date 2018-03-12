@@ -20,19 +20,23 @@ namespace AFBus
 
         private static object o = new object();
         private ISagaStoragePersistence sagaPersistence;
+        private ISagaLocker sagaLocker;
         private ISerializeMessages serializer = null;
-
+        private bool lockSaga = false;
+        
 
         /// <summary>
         /// Scans the dlls and creates a dictionary in which each message in IFunctions is referenced to each function.
         /// </summary>
-        public HandlersContainer(ISagaStoragePersistence sagaStorage = null, ISerializeMessages serializer = null)
+        public HandlersContainer(ISagaStoragePersistence sagaStorage = null, ISerializeMessages serializer = null, ISagaLocker sagaLocker = null, bool? lockSaga = null)
         {
             lock (o)
             {
                 this.serializer = serializer ?? new JSONSerializer();
 
-                sagaPersistence = sagaStorage ?? new SagaAzureStoragePersistence();
+                this.sagaLocker = sagaLocker ?? new SagaAzureStorageLocker();
+                this.lockSaga = lockSaga ?? Properties.Settings.Default.LockSagas;
+                sagaPersistence = sagaStorage ?? new SagaAzureStoragePersistence(this.sagaLocker, this.lockSaga);
                 
                 var assemblies = new List<Assembly>();
 
@@ -45,6 +49,7 @@ namespace AFBus
 
                 LookForHandlers(types);
 
+                this.sagaLocker.CreateLocksContainer();
                 sagaPersistence.CreateSagaPersistenceTable().Wait();
 
             }
@@ -176,6 +181,7 @@ namespace AFBus
                 {                        
 
                     object[] lookForInstanceParametersArray = new object[] { message };
+                    sagaDynamic.SagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), this.lockSaga);  
                     dynamic sagaData = await (Task<SagaData>)sagaMessageToMethod.CorrelatingMethod.Invoke(saga, lookForInstanceParametersArray);
 
                     if (sagaData != null)

@@ -28,3 +28,6 @@
 /src/SolutionExample/Services/ServiceA/ServiceA.Host/obj/Release/net461
 /src/SolutionExample/Services/ServiceA/ServiceA.Host/obj
 /src/SolutionExample/Workflows/WorkflowA/WorkflowA.Host/bin/Debug
+/src/SolutionExample/Sagas/OrderSagaMessages/bin/Release
+/src/SolutionExample/Services/PaymentService.Messages/bin/Release
+/src/SolutionExample/Services/ShippingService.Messages/bin/Release

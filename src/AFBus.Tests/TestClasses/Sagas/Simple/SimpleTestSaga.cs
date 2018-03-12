@@ -18,6 +18,7 @@ namespace AFBus.Tests.TestClasses
             this.Data.PartitionKey = PARTITION_KEY;
             this.Data.RowKey = input.Id.ToString();
             this.Data.Counter++;
+            InvocationCounter.Instance.AddOne();
 
             return Task.CompletedTask;
         }
@@ -25,6 +26,9 @@ namespace AFBus.Tests.TestClasses
         public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, TraceWriter Log)
         {
             this.Data.Counter++;
+
+            InvocationCounter.Instance.AddOne();
+            
             return Task.CompletedTask;
         }
 
@@ -35,14 +39,14 @@ namespace AFBus.Tests.TestClasses
 
         public async Task<SagaData> LookForInstance(SimpleSagaIntermediateMessage message)
         {
-            var sagaData =  await sagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData =  await SagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }
 
         public async Task<SagaData> LookForInstance(SimpleSagaTerminatingMessage message)
         {
-            var sagaData = await sagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData = await SagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }

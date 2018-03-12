@@ -19,7 +19,7 @@ namespace AFBus
 
         public async Task AddMessageAsync<T>(T message, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 

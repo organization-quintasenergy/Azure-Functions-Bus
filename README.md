@@ -10,7 +10,15 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
 
 ## First steps
 * Grab the [nuget package](https://www.nuget.org/packages/AFBus/) for AFBus.
-* Define the connection string in the appconfig
+* Define the connection string in the host.json 
+```json
+"Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true"   
+  }
+```
+
+or in the appconfig if you want to modify the tests 
+
 ```xml
     <configSections>
         <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">

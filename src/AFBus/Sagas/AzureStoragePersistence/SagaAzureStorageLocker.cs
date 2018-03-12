@@ -18,7 +18,7 @@ namespace AFBus
 
         public async Task CreateLocksContainer()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
@@ -33,7 +33,7 @@ namespace AFBus
         {
             var sagaIdToGuid = StringToGuid(sagaId);
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
@@ -55,7 +55,7 @@ namespace AFBus
         public async Task ReleaseLock(string sagaId, string leaseId)
         {                      
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
@@ -73,7 +73,7 @@ namespace AFBus
 
         public async Task DeleteLock(string sagaId, string leaseId)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();

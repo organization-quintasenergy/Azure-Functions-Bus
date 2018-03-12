@@ -13,5 +13,7 @@ namespace AFBus
         Task<string> CreateLock(string sagaId);
 
         Task ReleaseLock(string sagaId, string leaseId);
+
+        Task DeleteLock(string sagaId, string leaseId);
     }
 }

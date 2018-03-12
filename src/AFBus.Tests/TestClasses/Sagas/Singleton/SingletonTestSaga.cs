@@ -29,7 +29,7 @@ namespace AFBus.Tests.TestClasses
 
         async Task<SagaData> IHandleWithCorrelation<SingletonSagaStartingMessage>.LookForInstance(SingletonSagaStartingMessage message)
         {
-            var sagaData = await sagaPersistence.GetSagaData<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData = await SagaPersistence.GetSagaData<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }

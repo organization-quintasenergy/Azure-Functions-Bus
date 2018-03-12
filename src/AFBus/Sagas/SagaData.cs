@@ -18,5 +18,7 @@ namespace AFBus
 
         public DateTime? FinishingTimeStamp { get; set; }
 
+        [IgnoreProperty]
+        public string LockID { get; set; }
     }
 }

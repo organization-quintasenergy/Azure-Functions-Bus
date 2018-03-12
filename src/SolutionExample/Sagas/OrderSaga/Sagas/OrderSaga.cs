@@ -76,22 +76,22 @@ namespace OrderSaga.Sagas
 
         public async Task<SagaData> LookForInstance(CartItemAdded message)
         {
-            return await sagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
 
         public async Task<SagaData> LookForInstance(ProcessOrder message)
         {
-            return await sagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
 
         public async Task<SagaData> LookForInstance(ShipOrderResponse message)
         {
-            return await sagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
 
         public async Task<SagaData> LookForInstance(PayOrderResponse message)
         {
-            return await sagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AFBus.Tests.TestClasses
 {
     /// <summary>
-    /// Util for counting the number of invocations
+    /// Util for counting the number of non transactional invocations
     /// </summary>
     public class InvocationCounter
     {
@@ -29,8 +29,10 @@ namespace AFBus.Tests.TestClasses
             counter++;
         }
 
-
-
+        public void Reset()
+        {
+            counter = 0;
+        }
 
     }
 }

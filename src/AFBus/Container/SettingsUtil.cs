@@ -18,8 +18,8 @@ namespace AFBus
     {
         internal static T GetSettings<T>(string settingName) where T : IConvertible
         { 
-            if (ConfigurationManager.AppSettings[settingName] != null)
-                return (T)Convert.ChangeType(ConfigurationManager.AppSettings[settingName], typeof(T)); 
+            if (System.Environment.GetEnvironmentVariable(settingName)!= null)
+                return (T)Convert.ChangeType(System.Environment.GetEnvironmentVariable(settingName), typeof(T)); 
             else
                 return (T)Convert.ChangeType(Settings.Default[settingName], typeof(T));
         }

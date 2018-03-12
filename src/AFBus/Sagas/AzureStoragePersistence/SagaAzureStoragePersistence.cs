@@ -23,7 +23,7 @@ namespace AFBus
 
         public async Task CreateSagaPersistenceTable()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -45,7 +45,7 @@ namespace AFBus
                 lockID = await sagaLock.CreateLock(sagaID);               
             }
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             entity.CreationTimeStamp = DateTime.UtcNow;
 
@@ -69,7 +69,7 @@ namespace AFBus
 
         public async Task Update(SagaData entity)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -100,7 +100,7 @@ namespace AFBus
             }
 
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();

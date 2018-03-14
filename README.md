@@ -1,4 +1,3 @@
-![buildstatus](https://quintasenergyvsts.visualstudio.com/_apis/public/build/definitions/4df6b67f-0048-4b1c-b762-43d477416731/1/badge)
 
 # Azure Functions Bus
 Azure Functions Bus is a simple framework that creates a message bus on top of the Azure Functions infrastructure. That way you can create a distributed system using a serverless technology on top of the Azure Storage.
@@ -40,10 +39,12 @@ The system gets divided in different parts:
   * SagaA.Host (Project)
     * Sagas
   * SagaA.Messages (Project)
+  * SagaA.Tests
 * Services(Folder)
   * ServiceA.Host (Project)
     * Handlers
-  * ServicesA.Messages (Project)
+  * ServiceA.Messages (Project)
+  * ServiceA.Tests
 
 
 ### Messages

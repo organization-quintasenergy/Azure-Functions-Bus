@@ -13,17 +13,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFBus.Tests", "AFBus.Tests\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sagas", "Sagas", "{1651633C-6107-42C4-A48F-4B565754EA60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSaga", "SolutionExample\Sagas\OrderSaga\OrderSaga.csproj", "{19B93CAA-047C-4ABA-A03E-1C2B5C5C63EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga", "SolutionExample\Sagas\OrderSaga\OrderSaga.csproj", "{19B93CAA-047C-4ABA-A03E-1C2B5C5C63EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSaga.Messages", "SolutionExample\Sagas\OrderSagaMessages\OrderSaga.Messages.csproj", "{7C8892F8-C498-4C5A-B798-F4DD58575065}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShippingService", "SolutionExample\Services\ShippingService\ShippingService.csproj", "{21D7556E-6ECB-4D8F-B214-8574843BBFCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShippingService", "SolutionExample\Services\ShippingService\ShippingService.csproj", "{21D7556E-6ECB-4D8F-B214-8574843BBFCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShippingService.Messages", "SolutionExample\Services\ShippingService.Messages\ShippingService.Messages.csproj", "{FD819149-1E6C-48D2-A241-9704AA7DBC75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService", "SolutionExample\Services\PaymentService\PaymentService.csproj", "{8012E80F-66F0-4516-B83F-FF2638BEE308}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentService", "SolutionExample\Services\PaymentService\PaymentService.csproj", "{8012E80F-66F0-4516-B83F-FF2638BEE308}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Messages", "SolutionExample\Services\PaymentService.Messages\PaymentService.Messages.csproj", "{3CC93785-CCE3-4063-9E59-7A2D0707147B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSaga.Tests", "SolutionExample\Sagas\OrderSaga.Tests\OrderSaga.Tests.csproj", "{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{3CC93785-CCE3-4063-9E59-7A2D0707147B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CC93785-CCE3-4063-9E59-7A2D0707147B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CC93785-CCE3-4063-9E59-7A2D0707147B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +82,7 @@ Global
 		{FD819149-1E6C-48D2-A241-9704AA7DBC75} = {554C4C7B-231E-447D-9A4F-9A4FBBE888DA}
 		{8012E80F-66F0-4516-B83F-FF2638BEE308} = {554C4C7B-231E-447D-9A4F-9A4FBBE888DA}
 		{3CC93785-CCE3-4063-9E59-7A2D0707147B} = {554C4C7B-231E-447D-9A4F-9A4FBBE888DA}
+		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C} = {1651633C-6107-42C4-A48F-4B565754EA60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {43871F95-647E-4F15-B70D-C35282E8CE1E}

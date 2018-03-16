@@ -14,7 +14,7 @@ namespace OrderSaga
         [FunctionName("OrderGeneratorFunction")]
         public static async Task Run([TimerTrigger("*/15 * * * * *")]TimerInfo myTimer, TraceWriter log)
         {
-            log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
+            /*log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
 
             if (finished)
                 return;
@@ -29,7 +29,7 @@ namespace OrderSaga
                 finished = true;
                 await SendOnlyBus.SendAsync(new ProcessOrder() { UserName = "pablo" }, "ordersaga");
                                 
-            }
+            }*/
         
         }
     }

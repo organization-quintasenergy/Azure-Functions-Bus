@@ -31,3 +31,7 @@
 /src/SolutionExample/Sagas/OrderSagaMessages/bin/Release
 /src/SolutionExample/Services/PaymentService.Messages/bin/Release
 /src/SolutionExample/Services/ShippingService.Messages/bin/Release
+/src/SolutionExample/Sagas/OrderSaga.Tests/bin/Debug
+/src/SolutionExample/Sagas/OrderSaga.Tests/obj/Debug
+/src/SolutionExample/UI/UIExample/bin/Debug
+/src/SolutionExample/UI/UIExample/obj

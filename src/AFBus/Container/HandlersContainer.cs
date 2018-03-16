@@ -35,7 +35,7 @@ namespace AFBus
                 this.serializer = serializer ?? new JSONSerializer();
 
                 this.sagaLocker = sagaLocker ?? new SagaAzureStorageLocker();
-                this.lockSaga = lockSaga ?? Properties.Settings.Default.LockSagas;
+                this.lockSaga = lockSaga ?? SettingsUtil.GetSettings<bool>(SETTINGS.LOCKSAGAS);
                 sagaPersistence = sagaStorage ?? new SagaAzureStoragePersistence(this.sagaLocker, this.lockSaga);
                 
                 var assemblies = new List<Assembly>();

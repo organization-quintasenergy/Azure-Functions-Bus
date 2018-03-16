@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AFBus.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="StorageConnectionString" Type="System.String" Scope="Application">
+    <Setting Name="AzureWebJobsStorage" Type="System.String" Scope="Application">
       <Value Profile="(Default)">UseDevelopmentStorage=true</Value>
     </Setting>
     <Setting Name="LockSagas" Type="System.Boolean" Scope="Application">

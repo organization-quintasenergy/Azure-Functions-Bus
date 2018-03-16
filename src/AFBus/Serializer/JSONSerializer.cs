@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace AFBus
 {
-    class JSONSerializer : ISerializeMessages
+    public class JSONSerializer : ISerializeMessages
     {
         public object Deserialize(string input) 
         {

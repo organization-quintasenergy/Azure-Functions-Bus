@@ -13,7 +13,7 @@ namespace AFBus.Tests
     {
         internal static async Task<string> ReadFromQueue(string serviceName)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
@@ -31,7 +31,7 @@ namespace AFBus.Tests
 
         internal static async Task CleanQueue(string serviceName)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 

@@ -15,7 +15,7 @@ namespace PaymentService.Handlers
         {
             Log.Info("Order payed");
 
-            await bus.SendAsync(new PayOrderResponse() { UserName = "pablo"}, message.ReplyTo);
+            await bus.SendAsync(new PayOrderResponse() { UserName = message.UserName}, message.ReplyTo);
 
         }
     }

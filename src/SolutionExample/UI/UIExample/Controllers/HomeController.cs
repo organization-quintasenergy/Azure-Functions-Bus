@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,13 +11,36 @@ using UIExample.Models;
 
 namespace UIExample.Controllers
 {
+    public class CardModel
+    {
+        [Required]
+        public string User { get; set; }
+                
+        public string Product { get; set; }
+    }
+
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            SendOnlyBus.SendAsync(new CartItemAdded() { UserName = "pablo", ProductName = "raspberry pi" }, "ordersaga").Wait();
-
+            
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddToCard(CardModel model)
+        {
+            SendOnlyBus.SendAsync(new CartItemAdded() { UserName = model.User, ProductName = model.Product }, "ordersaga").Wait();
+
+            return View("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ProcessOrder(CardModel model)
+        {
+            SendOnlyBus.SendAsync(new ProcessOrder() { UserName = model.User }, "ordersaga").Wait();
+
+            return View("Index");
         }
 
         public IActionResult About()

@@ -2,7 +2,7 @@
   "profiles": {
     "ShippingService": {
       "commandName": "Project",
-      "commandLineArgs": "host start --pause-on-error"
+      "commandLineArgs": "host start --pause-on-error --nodeDebugPort 5860"
     }
   }
 }

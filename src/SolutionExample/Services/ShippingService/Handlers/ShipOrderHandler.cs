@@ -15,7 +15,7 @@ namespace ShippingService.Handlers
         {
             Log.Info("order shipped");
                         
-            await bus.SendAsync(new ShipOrderResponse() { UserName = "pablo" }, message.ReplyTo);
+            await bus.SendAsync(new ShipOrderResponse() { UserName = message.UserName }, message.ReplyTo);
 
             
         }

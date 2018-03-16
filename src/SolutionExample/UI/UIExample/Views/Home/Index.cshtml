@@ -1,0 +1,34 @@
+﻿@model UIExample.Controllers.CardModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<p>Use this area to provide additional information. asdf adsf adf</p>
+
+<p>
+    <div>
+        @using (Html.BeginForm("AddToCard", "Home",  FormMethod.Post))
+        {
+            @Html.TextBoxFor(model => model.User)
+            @Html.ValidationMessageFor(model => model.User)
+            @Html.TextBoxFor(model => model.Product)
+            @Html.ValidationMessageFor(model => model.Product)
+            <button type="submit">Add to card</button>
+        }
+    </div>
+</p>
+
+<p>
+    <div>
+
+        @using (Html.BeginForm("ProcessOrder", "Home",  FormMethod.Post))
+        {
+            @Html.TextBoxFor(model => model.User)
+            @Html.ValidationMessageFor(model => model.User)
+            <button type="submit">Process order</button>
+        }
+
+    </div>
+</p>
+

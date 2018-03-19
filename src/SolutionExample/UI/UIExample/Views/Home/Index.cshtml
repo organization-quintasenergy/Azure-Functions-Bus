@@ -4,31 +4,50 @@
     ViewData["Title"] = "Home Page";
 }
 
-<p>Use this area to provide additional information. asdf adsf adf</p>
+<div style="height: 500px;padding-top:30px">
+    <p>Insert a product for an user. Each user will have their own saga (the userid is the correlation key). </p>
 
-<p>
-    <div>
-        @using (Html.BeginForm("AddToCard", "Home",  FormMethod.Post))
-        {
-            @Html.TextBoxFor(model => model.User)
-            @Html.ValidationMessageFor(model => model.User)
-            @Html.TextBoxFor(model => model.Product)
-            @Html.ValidationMessageFor(model => model.Product)
-            <button type="submit">Add to card</button>
-        }
+
+    <div style="width: 100%;float:left;">
+        <div style="float: left; width: 400px">
+            @using (Html.BeginForm("AddToCard", "Home", FormMethod.Post))
+            {
+                <div style="float: left">
+                    <div style="float: left; width: 100%">
+                        <div style="float: left">User:</div>
+                        <div style="float: right">
+                            @Html.TextBoxFor(model => model.User)
+                        </div>
+                    </div>
+                    <div style="float: left; width: 100%">
+                        @Html.ValidationMessageFor(model => model.User)
+                        <div style="float: left">Product (Ej: Raspberry PI):</div>
+                        <div style="float: right">
+                            @Html.TextBoxFor(model => model.Product)
+                            @Html.ValidationMessageFor(model => model.Product)
+                        </div>
+                    </div>
+                    <div style="float: left; width: 100%">
+                        <button type="submit">Add to card</button>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-</p>
 
-<p>
-    <div>
+    <p style="float: left;width: 100%;padding-top:30px">Process the order inserting the userid (the correlation key) </p>
 
-        @using (Html.BeginForm("ProcessOrder", "Home",  FormMethod.Post))
+    <div style="float: left;width: 100%;">
+
+        @using (Html.BeginForm("ProcessOrder", "Home", FormMethod.Post))
         {
+            <div>User:</div>
             @Html.TextBoxFor(model => model.User)
             @Html.ValidationMessageFor(model => model.User)
             <button type="submit">Process order</button>
         }
 
     </div>
-</p>
 
+
+</div>

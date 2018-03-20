@@ -15,25 +15,28 @@ namespace AFBus
 
         const string CONTAINER_NAME = "afblocks";
         TimeSpan LOCK_DURATION = new TimeSpan(0, 0, 15);
+        CloudStorageAccount storageAccount;
+
+        public SagaAzureStorageLocker()
+        {
+            storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        }
 
         public async Task CreateLocksContainer()
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        {            
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
-            await cloudBlobContainer.CreateIfNotExistsAsync();
+            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
 
         }
 
         public async Task<string> CreateLock(string sagaId)
         {
-            var sagaIdToGuid = StringToGuid(sagaId);
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+            var sagaIdToGuid = StringToGuid(sagaId);          
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
@@ -45,7 +48,7 @@ namespace AFBus
 
             blob.UploadText(sagaId);
 
-            var leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION);            
+            var leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION).ConfigureAwait(false);            
 
             return leaseId;
         }
@@ -53,9 +56,7 @@ namespace AFBus
 
 
         public async Task ReleaseLock(string sagaId, string leaseId)
-        {                      
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        {                                 
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
@@ -68,12 +69,11 @@ namespace AFBus
             AccessCondition acc = new AccessCondition();
             acc.LeaseId = leaseId;
             
-            await blob.ReleaseLeaseAsync(acc);
+            await blob.ReleaseLeaseAsync(acc).ConfigureAwait(false);
         }
 
         public async Task DeleteLock(string sagaId, string leaseId)
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        {           
 
             // Create the CloudBlobClient that is used to call the Blob Service for that storage account.
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
@@ -85,7 +85,7 @@ namespace AFBus
 
             AccessCondition acc = new AccessCondition();
             acc.LeaseId = leaseId;
-            await blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,acc,null,null);
+            await blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,acc,null,null).ConfigureAwait(false);
         }
 
         private string StringToGuid(string input)

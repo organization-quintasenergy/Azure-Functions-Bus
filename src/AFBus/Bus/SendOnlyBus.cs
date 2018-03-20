@@ -20,7 +20,7 @@ namespace AFBus
             sender = sender ?? new AzureStorageQueueSendTransport(serializer);
 
 
-            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay);
+            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay).ConfigureAwait(false);
 
         }
     }

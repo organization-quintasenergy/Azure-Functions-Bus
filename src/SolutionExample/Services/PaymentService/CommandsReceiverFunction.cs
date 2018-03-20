@@ -11,7 +11,7 @@ namespace PaymentService
         static HandlersContainer container = new HandlersContainer();
 
         [FunctionName("PaymentServiceEndpointFunction")]
-        public static async Task Run([QueueTrigger("paymentservice", Connection = "")]string myQueueItem, TraceWriter log)
+        public static async Task Run([QueueTrigger("paymentservice")]string myQueueItem, TraceWriter log)
         {
             log.Info($"C# Queue trigger function processed: {myQueueItem}");
 

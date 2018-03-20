@@ -14,17 +14,17 @@ namespace AFBus
 
         ISagaLocker sagaLock;
         bool lockSagas;
+        CloudStorageAccount storageAccount;
 
         public SagaAzureStoragePersistence(ISagaLocker sagaLock, bool lockSagas)
         {
             this.sagaLock = sagaLock;
             this.lockSagas = lockSagas;
+            storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         }
 
         public async Task CreateSagaPersistenceTable()
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-
+        {          
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
@@ -32,7 +32,7 @@ namespace AFBus
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
             // Create the table if it doesn't exist.
-            await table.CreateIfNotExistsAsync();
+            await table.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
 
         public async Task Insert(SagaData entity)
@@ -42,10 +42,8 @@ namespace AFBus
 
             if (this.lockSagas)
             {              
-                lockID = await sagaLock.CreateLock(sagaID);               
-            }
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+                lockID = await sagaLock.CreateLock(sagaID).ConfigureAwait(false);               
+            }            
 
             entity.CreationTimeStamp = DateTime.UtcNow;
 
@@ -59,17 +57,16 @@ namespace AFBus
             TableOperation insertOperation = TableOperation.Insert(entity as ITableEntity);
 
             // Execute the insert operation.
-            await table.ExecuteAsync(insertOperation);
+            await table.ExecuteAsync(insertOperation).ConfigureAwait(false);
 
             if (this.lockSagas)
             {               
-                await sagaLock.ReleaseLock(sagaID, lockID);
+                await sagaLock.ReleaseLock(sagaID, lockID).ConfigureAwait(false);
             }
         }
 
         public async Task Update(SagaData entity)
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        {          
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -81,12 +78,12 @@ namespace AFBus
             TableOperation replaceOperation = TableOperation.Replace(entity as ITableEntity);
 
             // Execute the insert operation.
-            await table.ExecuteAsync(replaceOperation);
+            await table.ExecuteAsync(replaceOperation).ConfigureAwait(false);
 
             var sagaID = entity.PartitionKey + entity.RowKey;
 
             if(this.lockSagas && !entity.IsDeleted)
-                await sagaLock.ReleaseLock(sagaID, entity.LockID);
+                await sagaLock.ReleaseLock(sagaID, entity.LockID).ConfigureAwait(false);
         }
 
         public async Task<T> GetSagaData<T>(string partitionKey, string rowKey) where T :SagaData
@@ -96,11 +93,8 @@ namespace AFBus
 
             if (this.lockSagas)
             {
-                lockID = await sagaLock.CreateLock(sagaID);
-            }
-
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+                lockID = await sagaLock.CreateLock(sagaID).ConfigureAwait(false);
+            }            
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -110,7 +104,7 @@ namespace AFBus
             TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey,rowKey);
 
             // Execute the operation.
-            var execution = await table.ExecuteAsync(retrieveOperation);
+            var execution = await table.ExecuteAsync(retrieveOperation).ConfigureAwait(false);
 
             var result = execution.Result as T;
 
@@ -119,7 +113,7 @@ namespace AFBus
 
             if (result == null && this.lockSagas)
             {
-                await sagaLock.ReleaseLock(sagaID, lockID);
+                await sagaLock.ReleaseLock(sagaID, lockID).ConfigureAwait(false);
             }
 
             return result;
@@ -134,7 +128,7 @@ namespace AFBus
 
             if (this.lockSagas)
             {
-                await sagaLock.DeleteLock(sagaID, entity.LockID);
+                await sagaLock.DeleteLock(sagaID, entity.LockID).ConfigureAwait(false);
             }
             
             /*CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);

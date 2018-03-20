@@ -183,6 +183,7 @@
     <Compile Include="Bus_Tests.cs" />
     <Compile Include="SendOnlyBus_Tests.cs" />
     <Compile Include="SagaWithLock_Tests.cs" />
+    <Compile Include="Performance_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

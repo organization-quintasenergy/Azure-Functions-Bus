@@ -3,32 +3,31 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using AFBus;
 using Microsoft.AspNetCore.Mvc;
 using OrderSaga.Messages;
-using UIExample.Models;
+using UIExample.Proxies;
+using UIExample.ViewModels;
 
 namespace UIExample.Controllers
 {
-    public class CardModel
-    {
-        [Required]
-        public string User { get; set; }
-                
-        public string Product { get; set; }
-    }
-
+    
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            
+            IPaymentProxies paymentProxies = new PaymentProxies();
+
+            var result = await paymentProxies.GetPayments();
+
             return View();
         }
 
         [HttpPost]
-        public IActionResult AddToCard(CardModel model)
+        public IActionResult AddToCard(CartViewModel model)
         {
             SendOnlyBus.SendAsync(new CartItemAdded() { UserName = model.User, ProductName = model.Product }, "ordersaga").Wait();
 
@@ -36,27 +35,14 @@ namespace UIExample.Controllers
         }
 
         [HttpPost]
-        public IActionResult ProcessOrder(CardModel model)
+        public IActionResult ProcessOrder(CartViewModel model)
         {
             SendOnlyBus.SendAsync(new ProcessOrder() { UserName = model.User }, "ordersaga").Wait();
 
             return View("Index");
         }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
+        
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

@@ -45,7 +45,19 @@ namespace AFBus
 
             blob.UploadText(sagaId);
 
-            var leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION);            
+            var leaseId = string.Empty;
+
+            try
+            {
+                leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION);
+            }
+            catch (StorageException)
+            {
+                Random rnd = new Random();
+                await Task.Delay(rnd.Next(0, 1000));
+
+                throw;
+            }          
 
             return leaseId;
         }
@@ -67,8 +79,20 @@ namespace AFBus
 
             AccessCondition acc = new AccessCondition();
             acc.LeaseId = leaseId;
+
+            try
+            {
+                await blob.ReleaseLeaseAsync(acc);
+            }
+            catch (StorageException)
+            {
+                Random rnd = new Random();
+                await Task.Delay(rnd.Next(0, 1000));
+
+                throw;
+            }
+
             
-            await blob.ReleaseLeaseAsync(acc);
         }
 
         public async Task DeleteLock(string sagaId, string leaseId)
@@ -85,7 +109,18 @@ namespace AFBus
 
             AccessCondition acc = new AccessCondition();
             acc.LeaseId = leaseId;
-            await blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,acc,null,null);
+            
+            try
+            {
+                await blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, acc, null, null);
+            }
+            catch (StorageException)
+            {
+                Random rnd = new Random();
+                await Task.Delay(rnd.Next(0, 1000));
+
+                throw;
+            }
         }
 
         private string StringToGuid(string input)

@@ -15,6 +15,10 @@ namespace PaymentService.Handlers
         {
             Log.Info("Order payed");
 
+            var repository = new InMemoryPaymentsDataBase();
+
+            repository.AddOrderPayed(new OrderPayed { UserName = message.UserName });
+
             await bus.SendAsync(new PayOrderResponse() { UserName = message.UserName}, message.ReplyTo);
 
         }

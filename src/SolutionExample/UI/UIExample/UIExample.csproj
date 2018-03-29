@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\AFBus\AFBus.csproj" />
     <ProjectReference Include="..\..\Sagas\OrderSagaMessages\OrderSaga.Messages.csproj" />
     <ProjectReference Include="..\..\Services\PaymentService.Messages\PaymentService.Messages.csproj" />
     <ProjectReference Include="..\..\Services\ShippingService.Messages\ShippingService.Messages.csproj" />
@@ -28,10 +29,8 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <PackageReference Include="AFBus">
-      <Version>1.2.2</Version>
-    </PackageReference>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

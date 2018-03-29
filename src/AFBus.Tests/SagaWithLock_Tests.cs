@@ -81,7 +81,7 @@ namespace AFBus.Tests
                         container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
                         retry = false;
                     }
-                    catch(Exception ex)
+                    catch(Exception)
                     {
     
                     }

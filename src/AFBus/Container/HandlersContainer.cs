@@ -18,6 +18,8 @@ namespace AFBus
 
         internal Dictionary<Type, List<SagaInfo>> messageToSagaDictionary = new Dictionary<Type, List<SagaInfo>>();
 
+        private Dictionary<Type, DependencyInfo> dependencies = new Dictionary<Type, DependencyInfo>();
+
         private static object o = new object();
         private ISagaStoragePersistence sagaPersistence;
         private ISagaLocker sagaLocker;
@@ -28,16 +30,21 @@ namespace AFBus
         /// <summary>
         /// Scans the dlls and creates a dictionary in which each message in IFunctions is referenced to each function.
         /// </summary>
-        public HandlersContainer(ISagaStoragePersistence sagaStorage = null, ISerializeMessages serializer = null, ISagaLocker sagaLocker = null, bool? lockSaga = null)
+        public HandlersContainer(bool? lockSaga = null)
         {
             lock (o)
             {
-                this.serializer = serializer ?? new JSONSerializer();
-
-                this.sagaLocker = sagaLocker ?? new SagaAzureStorageLocker();
                 this.lockSaga = lockSaga ?? SettingsUtil.GetSettings<bool>(SETTINGS.LOCKSAGAS);
-                sagaPersistence = sagaStorage ?? new SagaAzureStoragePersistence(this.sagaLocker, this.lockSaga);
+
+                AddDependency<ISerializeMessages, JSONSerializer>();
+                AddDependency<ISagaLocker, SagaAzureStorageLocker>();
                 
+                this.serializer = SolveDependency<ISerializeMessages>();
+                this.sagaLocker = SolveDependency<ISagaLocker>();
+                AddDependency<ISagaStoragePersistence, SagaAzureStoragePersistence>(this.sagaLocker as ISagaLocker, this.lockSaga);
+
+                sagaPersistence = SolveDependency<ISagaStoragePersistence>();
+
                 var assemblies = new List<Assembly>();
 
                 assemblies.Add(Assembly.GetCallingAssembly());
@@ -54,6 +61,30 @@ namespace AFBus
 
             }
 
+        }
+
+        public void AddDependency<I, C>(params object[] arguments)
+        {
+            if(!dependencies.ContainsKey(typeof(I)))
+                dependencies.Add(typeof(I), new DependencyInfo() { Interface = typeof(I), ConcreteType = typeof(C), args = arguments });
+            else
+                dependencies[typeof(I)]= new DependencyInfo() { Interface = typeof(I), ConcreteType = typeof(C), args = arguments };
+        }
+
+        public I SolveDependency<I>()
+        {
+            if (!dependencies.ContainsKey(typeof(I)))
+                throw new Exception("No depedency can be solved for "+ typeof(I).Name+". Please add to the depedency graph using AddDepedency");
+                        
+            return (I)Activator.CreateInstance(dependencies[typeof(I)].ConcreteType, dependencies[typeof(I)].args); 
+        }
+
+        private object SolveDependencyAsObject(Type parameterType)
+        {
+            if (!dependencies.ContainsKey(parameterType))
+                throw new Exception("No depedency can be solved for " + parameterType.Name + ". Please add to the depedency graph using AddDepedency");
+
+            return (object)Activator.CreateInstance(dependencies[parameterType].ConcreteType);
         }
 
         private void LookForSagas(IEnumerable<Type> types)
@@ -171,7 +202,7 @@ namespace AFBus
             foreach (var sagaInfo in messageToSagaDictionary[message.GetType()])
             {
                 var instantiated = false;
-                var saga = Activator.CreateInstance(sagaInfo.SagaType);
+                var saga = CreateInstance(sagaInfo.SagaType);//Activator.CreateInstance(sagaInfo.SagaType);
                 dynamic sagaDynamic = saga;
 
                 var sagaMessageToMethod = sagaInfo.MessagesThatAreCorrelatedByTheSaga.FirstOrDefault(m => m.Message == message.GetType());
@@ -229,7 +260,7 @@ namespace AFBus
 
             foreach (var t in handlerTypeList)
             {
-                var handler = Activator.CreateInstance(t);
+                var handler = CreateInstance(t);
                 
                 object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
 
@@ -241,6 +272,22 @@ namespace AFBus
                 }
 
             }
+        }
+
+        private object CreateInstance(Type instanceType)
+        {
+            var constructors = instanceType.GetConstructors();
+
+            var parameters = constructors.First().GetParameters();
+
+            object[] args = new object[parameters.Count()];
+            
+            for(int i=0;i<args.Count();i++)
+            {
+                args[i] = SolveDependencyAsObject(parameters[i].ParameterType);
+            }
+            
+            return Activator.CreateInstance(instanceType, args);
         }
 
         /// <summary>

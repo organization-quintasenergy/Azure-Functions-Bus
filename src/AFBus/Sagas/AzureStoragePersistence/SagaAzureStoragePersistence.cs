@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    class SagaAzureStoragePersistence : ISagaStoragePersistence
+    public class SagaAzureStoragePersistence : ISagaStoragePersistence
     {
         private const string TABLE_NAME = "sagapersistence";
 

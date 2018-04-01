@@ -10,12 +10,13 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    class SagaAzureStorageLocker : ISagaLocker
+    public class SagaAzureStorageLocker : ISagaLocker
     {
 
         const string CONTAINER_NAME = "afblocks";
         TimeSpan LOCK_DURATION = new TimeSpan(0, 0, 15);
 
+        
         public async Task CreateLocksContainer()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));

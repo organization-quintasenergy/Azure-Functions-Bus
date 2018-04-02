@@ -1,6 +1,4 @@
-﻿@using UIExample.ViewModels
-
-@model UIExample.ViewModels.CartViewModel
+﻿@model UIExample.ViewModels.CartViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -19,10 +17,11 @@
                         <div style="float: left">User:</div>
                         <div style="float: right">
                             @Html.TextBoxFor(model => model.User)
+                            @Html.ValidationMessageFor(model => model.User)
                         </div>
                     </div>
                     <div style="float: left; width: 100%">
-                        @Html.ValidationMessageFor(model => model.User)
+                        
                         <div style="float: left">Product (Ej: Raspberry PI):</div>
                         <div style="float: right">
                             @Html.TextBoxFor(model => model.Product)

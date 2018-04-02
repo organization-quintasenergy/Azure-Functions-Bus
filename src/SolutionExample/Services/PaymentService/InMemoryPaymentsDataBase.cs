@@ -6,24 +6,33 @@ using System.Threading.Tasks;
 
 namespace PaymentService
 {
-    internal class InMemoryPaymentsDataBase
+    public interface IInMemoryPaymentsDataBase
+    {
+        void AddOrderPayed(OrderPayed o);
+
+
+        List<OrderPayed> GetOrdersPayed();
+       
+    }
+
+    public  class InMemoryPaymentsDataBase : IInMemoryPaymentsDataBase
     {
         static List<OrderPayed> ordersPayed = new List<OrderPayed>();
 
-        internal void AddOrderPayed(OrderPayed o)
+        public void AddOrderPayed(OrderPayed o)
         {
             ordersPayed.Add(o);
         }
 
-        internal List<OrderPayed> GetOrdersPayed()
+        public List<OrderPayed> GetOrdersPayed()
         {
             return ordersPayed;
         }
     }
 
-    class OrderPayed
+    public class OrderPayed
     {
-        public string UserName { get; set; }
+        public string User { get; set; }
     }
     
 }

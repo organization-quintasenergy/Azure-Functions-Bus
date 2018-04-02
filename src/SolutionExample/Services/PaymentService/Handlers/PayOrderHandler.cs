@@ -11,13 +11,18 @@ namespace PaymentService.Handlers
 {
     public class PayOrderHandler : IHandle<PayOrder>
     {
+        IInMemoryPaymentsDataBase repository;
+
+        public PayOrderHandler(IInMemoryPaymentsDataBase rep)
+        {
+            this.repository = rep;
+        }
+
         public async Task HandleAsync(IBus bus, PayOrder message, TraceWriter Log)
         {
-            Log.Info("Order payed");
+            Log.Info("Order payed");            
 
-            var repository = new InMemoryPaymentsDataBase();
-
-            repository.AddOrderPayed(new OrderPayed { UserName = message.UserName });
+            repository.AddOrderPayed(new OrderPayed { User = message.UserName });
 
             await bus.SendAsync(new PayOrderResponse() { UserName = message.UserName}, message.ReplyTo);
 

@@ -11,7 +11,7 @@ namespace UIExample.Proxies
 {
     public class PaymentProxies : IPaymentProxies
     {
-        public async Task<PaymentViewModel> GetPayments()
+        public async Task<List<PaymentViewModel>> GetPayments()
         {
             var apiURL = "http://localhost:7072/api/GetPayments";
             HttpClient client = new HttpClient(); HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiURL));
@@ -20,7 +20,7 @@ namespace UIExample.Proxies
 
             var responseString = response.Content.ReadAsStringAsync().Result;
 
-            var responseVM = JsonConvert.DeserializeObject<PaymentViewModel>(responseString);
+            var responseVM = JsonConvert.DeserializeObject<List<PaymentViewModel>>(responseString);
 
             return responseVM;
         }

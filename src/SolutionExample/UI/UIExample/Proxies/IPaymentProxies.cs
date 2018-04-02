@@ -9,6 +9,6 @@ namespace UIExample.Proxies
 {
     public interface IPaymentProxies
     {
-        Task<PaymentViewModel> GetPayments();
+        Task<List<PaymentViewModel>> GetPayments();
     }
 }

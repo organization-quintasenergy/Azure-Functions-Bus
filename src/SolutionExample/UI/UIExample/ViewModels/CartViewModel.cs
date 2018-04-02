@@ -12,5 +12,6 @@ namespace UIExample.ViewModels
         public string User { get; set; }
 
         public string Product { get; set; }
+                
     }
 }

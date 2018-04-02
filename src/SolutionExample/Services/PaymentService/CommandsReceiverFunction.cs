@@ -10,6 +10,12 @@ namespace PaymentService
     {
         static HandlersContainer container = new HandlersContainer();
 
+        static CommandsReceiverFunction()
+        {
+            container.AddDependency<IInMemoryPaymentsDataBase,InMemoryPaymentsDataBase>();
+        }
+
+
         [FunctionName("PaymentServiceCommandReceiverFunction")]
         public static async Task Run([QueueTrigger("paymentservice")]string myQueueItem, TraceWriter log)
         {

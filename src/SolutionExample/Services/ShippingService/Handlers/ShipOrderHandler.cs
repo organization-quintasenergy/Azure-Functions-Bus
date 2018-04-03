@@ -11,10 +11,20 @@ namespace ShippingService.Handlers
 {
     public class ShipOrderHandler : IHandle<ShipOrder>
     {
+
+        IShippingRepository rep;
+
+        public ShipOrderHandler(IShippingRepository rep)
+        {
+            this.rep = rep;
+        }
+
         public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
         {
             Log.Info("order shipped");
-                        
+
+            rep.AddOrderShipped(new OrderShipped { User = message.UserName });
+
             await bus.SendAsync(new ShipOrderResponse() { UserName = message.UserName }, message.ReplyTo);
 
             

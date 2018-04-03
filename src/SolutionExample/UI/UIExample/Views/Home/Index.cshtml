@@ -5,8 +5,20 @@
 }
 
 <div style="height: 500px;padding-top:30px">
-    <p>Insert a product for an user. Each user will have their own saga (the userid is the correlation key). </p>
 
+    <p>Current cart:</p>
+
+    <div style="width: 100%;float:left;">
+        @foreach (var c in Model.CartItemsAdded)
+        {
+            <div style="float: left">
+                @Html.DisplayName(c.ProductName)
+
+            </div>
+        }
+    </div>
+
+    <p>Insert a product for an user. Each user will have their own saga (the userid is the correlation key). </p>
 
     <div style="width: 100%;float:left;">
         <div style="float: left; width: 400px">
@@ -21,7 +33,7 @@
                         </div>
                     </div>
                     <div style="float: left; width: 100%">
-                        
+
                         <div style="float: left">Product (Ej: Raspberry PI):</div>
                         <div style="float: right">
                             @Html.TextBoxFor(model => model.Product)

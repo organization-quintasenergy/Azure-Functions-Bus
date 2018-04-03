@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaymentService
 {
-    public interface IInMemoryPaymentsDataBase
+    public interface IPaymentsRepository
     {
         void AddOrderPayed(OrderPayed o);
 
@@ -15,7 +15,7 @@ namespace PaymentService
        
     }
 
-    public  class InMemoryPaymentsDataBase : IInMemoryPaymentsDataBase
+    public  class InMemoryPaymentsRepository : IPaymentsRepository
     {
         static List<OrderPayed> ordersPayed = new List<OrderPayed>();
 

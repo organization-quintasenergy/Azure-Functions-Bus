@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderSaga.Messages;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace UIExample.ViewModels
         public string User { get; set; }
 
         public string Product { get; set; }
-                
+
+        public List<CartItemAdded> CartItemsAdded { get; set; }
+
     }
 }

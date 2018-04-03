@@ -13,7 +13,7 @@ namespace OrderSaga
         [FunctionName("OrderSagaEndpointFunction")]
         public static async Task Run([QueueTrigger("ordersaga")]string orderSagaMessage, TraceWriter log)
         {
-            log.Info($"C# Queue trigger function processed: {orderSagaMessage}");
+            log.Info($"OrderSagaEndpointFunction message received: {orderSagaMessage}");
 
             await container.HandleAsync(orderSagaMessage, log);
         }

@@ -11,9 +11,9 @@ namespace PaymentService.Handlers
 {
     public class PayOrderHandler : IHandle<PayOrder>
     {
-        IInMemoryPaymentsDataBase repository;
+        IPaymentsRepository repository;
 
-        public PayOrderHandler(IInMemoryPaymentsDataBase rep)
+        public PayOrderHandler(IPaymentsRepository rep)
         {
             this.repository = rep;
         }

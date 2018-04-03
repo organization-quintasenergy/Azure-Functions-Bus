@@ -13,11 +13,10 @@ namespace PaymentService
         [FunctionName("GetPayments")]
         public static HttpResponseMessage RunGetPayments([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.Info("GetPayments received a request.");
 
-
-            var repository = new InMemoryPaymentsDataBase();
-
+            var repository = CommandsReceiverFunction.container.SolveDependency<IPaymentsRepository>();
+            
             var payments = repository.GetOrdersPayed();
             return payments == null
                 ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
@@ -27,12 +26,12 @@ namespace PaymentService
         [FunctionName("GetPaymentsByUser")]
         public static HttpResponseMessage RunGetPaymentsByUser([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
-
-
-            var repository = new InMemoryPaymentsDataBase();
+            log.Info("GetPaymentsByUser received a request.");
+            
+            var repository = CommandsReceiverFunction.container.SolveDependency<IPaymentsRepository>();
 
             var payments = repository.GetOrdersPayed();
+
             return payments == null
                 ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
                 : req.CreateResponse(HttpStatusCode.OK, payments);

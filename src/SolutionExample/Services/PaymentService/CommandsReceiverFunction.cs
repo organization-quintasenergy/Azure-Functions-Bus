@@ -8,18 +8,18 @@ namespace PaymentService
 {
     public static class CommandsReceiverFunction
     {
-        static HandlersContainer container = new HandlersContainer();
+        public static HandlersContainer container = new HandlersContainer();
 
         static CommandsReceiverFunction()
         {
-            container.AddDependency<IInMemoryPaymentsDataBase,InMemoryPaymentsDataBase>();
+            container.AddDependency<IPaymentsRepository, InMemoryPaymentsRepository>();
         }
 
 
         [FunctionName("PaymentServiceCommandReceiverFunction")]
         public static async Task Run([QueueTrigger("paymentservice")]string myQueueItem, TraceWriter log)
         {
-            log.Info($"C# Queue trigger function processed: {myQueueItem}");
+            log.Info($"PaymentServiceCommandReceiverFunction received a message: {myQueueItem}");
 
             await container.HandleAsync(myQueueItem, log);
         }

@@ -11,33 +11,53 @@ using Microsoft.AspNetCore.Mvc;
 using OrderSaga.Messages;
 using UIExample.Proxies;
 using UIExample.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace UIExample.Controllers
 {
     
     public class HomeController : Controller
     {
+        private const string CARDKEY = "CARDINSESSION";
+        private const string ORDERSAGASERVICENAME = "ordersaga";
+
         public async Task<IActionResult> Index()
         {
             IPaymentProxies paymentProxies = new PaymentProxies();
 
             var result = await paymentProxies.GetPayments();
 
-            return View();
+            var cartViewModel = new CartViewModel();
+
+            var cartItems = GetCartInSession();
+
+            cartViewModel.CartItemsAdded = cartItems;
+
+            return View(cartViewModel);
         }
 
         [HttpPost]
-        public IActionResult AddToCard(CartViewModel model)
-        {
-            SendOnlyBus.SendAsync(new CartItemAdded() { UserName = model.User, ProductName = model.Product }, "ordersaga").Wait();
+        public async Task<IActionResult> AddToCard(CartViewModel cartViewModel)
+        {           
+            var cartItemAdded = new CartItemAdded() { UserName = cartViewModel.User, ProductName = cartViewModel.Product };
 
-            return View("Index");
+            await SendOnlyBus.SendAsync(cartItemAdded, ORDERSAGASERVICENAME);
+
+            AddItemsToCartInSession(cartItemAdded);
+
+            var cartItems = GetCartInSession();
+
+            cartViewModel.CartItemsAdded = cartItems;
+
+            return View("Index", cartViewModel);
         }
+               
 
         [HttpPost]
-        public IActionResult ProcessOrder(CartViewModel model)
+        public async Task<IActionResult> ProcessOrder(CartViewModel model)
         {
-            SendOnlyBus.SendAsync(new ProcessOrder() { UserName = model.User }, "ordersaga").Wait();
+            await SendOnlyBus.SendAsync(new ProcessOrder() { UserName = model.User }, ORDERSAGASERVICENAME);
 
             return View("Index");
         }
@@ -46,6 +66,22 @@ namespace UIExample.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private List<CartItemAdded> GetCartInSession()
+        {
+            var value = HttpContext.Session.GetString(CARDKEY);
+
+            return value == null ? new List<CartItemAdded>() : JsonConvert.DeserializeObject<List<CartItemAdded>>(value);
+        }
+
+        private void AddItemsToCartInSession(CartItemAdded item)
+        {
+            var cart = GetCartInSession();
+
+            cart.Add(item);
+
+            HttpContext.Session.SetString(CARDKEY, JsonConvert.SerializeObject(cart));
         }
     }
 }

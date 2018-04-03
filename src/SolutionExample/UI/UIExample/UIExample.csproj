@@ -20,6 +20,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.7.0" />
   </ItemGroup>

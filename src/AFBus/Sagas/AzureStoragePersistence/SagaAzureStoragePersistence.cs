@@ -69,6 +69,9 @@ namespace AFBus
 
         public async Task Update(SagaData entity)
         {
+            if (entity.IsDeleted)
+                return;
+
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the table client.
@@ -142,8 +145,8 @@ namespace AFBus
             // Execute the insert operation.
             await table.ExecuteAsync(replaceOperation);
 
-            /*entity.IsDeleted = true;
-            entity.FinishingTimeStamp = DateTime.UtcNow;*/
+            entity.IsDeleted = true;
+            entity.FinishingTimeStamp = DateTime.UtcNow;
 
             var sagaID = entity.PartitionKey + entity.RowKey;
 

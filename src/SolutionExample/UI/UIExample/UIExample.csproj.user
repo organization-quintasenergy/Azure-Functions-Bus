@@ -3,5 +3,6 @@
   <PropertyGroup>
     <ActiveDebugFramework>net462</ActiveDebugFramework>
     <ShowAllFiles>true</ShowAllFiles>
+    <WebStackScaffolding_ViewDialogWidth>600</WebStackScaffolding_ViewDialogWidth>
   </PropertyGroup>
 </Project>

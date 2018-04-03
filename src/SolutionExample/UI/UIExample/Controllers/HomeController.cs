@@ -24,11 +24,7 @@ namespace UIExample.Controllers
         private const string USER = "USER";
 
         public async Task<IActionResult> Index()
-        {
-            IPaymentProxies paymentProxies = new PaymentProxies();
-
-            var result = await paymentProxies.GetPayments();
-
+        {          
             var cartViewModel = new CartViewModel();
 
             var cartItems = GetCartInSession();
@@ -58,6 +54,7 @@ namespace UIExample.Controllers
         [HttpPost]
         public async Task<IActionResult> ProcessOrder()
         {
+            ClearCartInSession();
             var cartItems = GetCartInSession();
             var cartViewModel = new CartViewModel();
 
@@ -68,7 +65,16 @@ namespace UIExample.Controllers
             return View("Index", cartViewModel);
         }
 
-        
+        public async Task<IActionResult> Payments()
+        {
+            IPaymentProxies paymentProxies = new PaymentProxies();
+
+            var result = await paymentProxies.GetPayments();
+
+            
+            return View(result);
+        }
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

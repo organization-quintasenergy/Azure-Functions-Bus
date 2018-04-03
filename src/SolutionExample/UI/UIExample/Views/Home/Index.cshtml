@@ -6,18 +6,6 @@
 
 <div style="height: 500px;padding-top:30px">
 
-    <p>Current cart:</p>
-
-    <div style="width: 100%;float:left;">
-        @foreach (var c in Model.CartItemsAdded)
-        {
-            <div style="float: left">
-                @Html.DisplayName(c.ProductName)
-
-            </div>
-        }
-    </div>
-
     <p>Insert a product for an user. Each user will have their own saga (the userid is the correlation key). </p>
 
     <div style="width: 100%;float:left;">
@@ -25,7 +13,7 @@
             @using (Html.BeginForm("AddToCard", "Home", FormMethod.Post))
             {
                 <div style="float: left">
-                   
+
                     <div style="float: left; width: 100%">
 
                         <div style="float: left">Product (Ej: Raspberry PI):</div>
@@ -42,12 +30,28 @@
         </div>
     </div>
 
-    <p style="float: left;width: 100%;padding-top:30px">Process the order inserting the userid (the correlation key) </p>
+    <p>Current cart:</p>
+
+    <div style="width: 100%;float:left;">
+        
+        <ul>
+            @foreach (var c in Model.CartItemsAdded)
+            {
+            <li>@Html.DisplayName(c.ProductName)</li>
+                    
+            }
+           
+        </ul>
+        
+    </div>
+
+
+    <p style="float: left;width: 100%;padding-top:30px">Process the order clicking the button </p>
 
     <div style="float: left;width: 100%;">
 
         @using (Html.BeginForm("ProcessOrder", "Home", FormMethod.Post))
-        {                      
+        {
             <button type="submit">Process order</button>
         }
 

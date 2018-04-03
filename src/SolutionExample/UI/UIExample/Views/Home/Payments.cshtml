@@ -1,0 +1,25 @@
+﻿@model List<UIExample.ViewModels.PaymentViewModel>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div style="height: 500px;padding-top:30px">       
+
+    <p>Payments:</p>
+
+    <div style="width: 100%;float:left;">
+        
+        <ul>
+            @foreach (var p in Model)
+            {
+            <li>@Html.DisplayName(p.User)</li>
+                    
+            }
+           
+        </ul>
+        
+    </div>
+      
+
+</div>

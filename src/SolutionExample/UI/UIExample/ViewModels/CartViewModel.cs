@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 namespace UIExample.ViewModels
 {
     public class CartViewModel
-    {
-        [Required]
-        public string User { get; set; }
+    {       
 
         public string Product { get; set; }
 

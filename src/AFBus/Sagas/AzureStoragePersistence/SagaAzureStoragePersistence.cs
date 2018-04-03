@@ -126,18 +126,9 @@ namespace AFBus
         }
 
         public async Task Delete(SagaData entity)
-        {
-            entity.IsDeleted = true;
-            entity.FinishingTimeStamp = DateTime.UtcNow;
-
-            var sagaID = entity.PartitionKey + entity.RowKey;
-
-            if (this.lockSagas)
-            {
-                await sagaLock.DeleteLock(sagaID, entity.LockID);
-            }
+        {           
             
-            /*CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -149,7 +140,17 @@ namespace AFBus
             TableOperation replaceOperation = TableOperation.Delete(entity);
 
             // Execute the insert operation.
-            await table.ExecuteAsync(replaceOperation);*/
+            await table.ExecuteAsync(replaceOperation);
+
+            /*entity.IsDeleted = true;
+            entity.FinishingTimeStamp = DateTime.UtcNow;*/
+
+            var sagaID = entity.PartitionKey + entity.RowKey;
+
+            if (this.lockSagas)
+            {
+                await sagaLock.DeleteLock(sagaID, entity.LockID);
+            }
         }
     }
 }

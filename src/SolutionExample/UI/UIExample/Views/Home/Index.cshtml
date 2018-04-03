@@ -25,13 +25,7 @@
             @using (Html.BeginForm("AddToCard", "Home", FormMethod.Post))
             {
                 <div style="float: left">
-                    <div style="float: left; width: 100%">
-                        <div style="float: left">User:</div>
-                        <div style="float: right">
-                            @Html.TextBoxFor(model => model.User)
-                            @Html.ValidationMessageFor(model => model.User)
-                        </div>
-                    </div>
+                   
                     <div style="float: left; width: 100%">
 
                         <div style="float: left">Product (Ej: Raspberry PI):</div>
@@ -53,10 +47,7 @@
     <div style="float: left;width: 100%;">
 
         @using (Html.BeginForm("ProcessOrder", "Home", FormMethod.Post))
-        {
-            <div>User:</div>
-            @Html.TextBoxFor(model => model.User)
-            @Html.ValidationMessageFor(model => model.User)
+        {                      
             <button type="submit">Process order</button>
         }
 

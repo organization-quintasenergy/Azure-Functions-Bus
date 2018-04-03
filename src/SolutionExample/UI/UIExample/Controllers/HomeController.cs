@@ -21,6 +21,7 @@ namespace UIExample.Controllers
     {
         private const string CARDKEY = "CARDINSESSION";
         private const string ORDERSAGASERVICENAME = "ordersaga";
+        private const string USER = "USER";
 
         public async Task<IActionResult> Index()
         {
@@ -40,7 +41,7 @@ namespace UIExample.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCard(CartViewModel cartViewModel)
         {           
-            var cartItemAdded = new CartItemAdded() { UserName = cartViewModel.User, ProductName = cartViewModel.Product };
+            var cartItemAdded = new CartItemAdded() { UserName = USER, ProductName = cartViewModel.Product };
 
             await SendOnlyBus.SendAsync(cartItemAdded, ORDERSAGASERVICENAME);
 
@@ -55,11 +56,16 @@ namespace UIExample.Controllers
                
 
         [HttpPost]
-        public async Task<IActionResult> ProcessOrder(CartViewModel model)
+        public async Task<IActionResult> ProcessOrder()
         {
-            await SendOnlyBus.SendAsync(new ProcessOrder() { UserName = model.User }, ORDERSAGASERVICENAME);
+            var cartItems = GetCartInSession();
+            var cartViewModel = new CartViewModel();
 
-            return View("Index");
+            cartViewModel.CartItemsAdded = cartItems;
+
+            await SendOnlyBus.SendAsync(new ProcessOrder() { UserName = USER }, ORDERSAGASERVICENAME);
+
+            return View("Index", cartViewModel);
         }
 
         
@@ -73,6 +79,13 @@ namespace UIExample.Controllers
             var value = HttpContext.Session.GetString(CARDKEY);
 
             return value == null ? new List<CartItemAdded>() : JsonConvert.DeserializeObject<List<CartItemAdded>>(value);
+        }
+
+        private void ClearCartInSession()
+        {
+            HttpContext.Session.Remove(CARDKEY);
+
+            
         }
 
         private void AddItemsToCartInSession(CartItemAdded item)

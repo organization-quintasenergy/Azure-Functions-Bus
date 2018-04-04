@@ -13,5 +13,7 @@ namespace AFBus
         public Type ConcreteType { get; set; }
 
         public object[] args { get; set; }
+
+        public object instance { get; set; }
     }
 }

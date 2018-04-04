@@ -11,7 +11,7 @@ namespace AFBus.Tests
         public void DI_Nominal()
         {
             var container = new HandlersContainer();
-            container.AddDependency<IUoWTest, UoWTest>();
+            HandlersContainer.AddDependency<IUoWTest, UoWTest>();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(DIMessage)].Count == 1);
 
@@ -21,8 +21,9 @@ namespace AFBus.Tests
         [TestMethod]
         [ExpectedException(typeof(AggregateException))]
         public void DI_Dependency_not_found()
-        {
+        {            
             var container = new HandlersContainer();
+            HandlersContainer.ClearDependencies();
            
             Assert.IsTrue(container.messageHandlersDictionary[typeof(DIMessage)].Count == 1);
 

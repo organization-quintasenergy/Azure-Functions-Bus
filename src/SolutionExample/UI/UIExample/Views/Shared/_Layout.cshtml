@@ -15,6 +15,18 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+    <script src="~/js/signalr.js"></script>
+    <script>
+        let connection = new signalR.HubConnection('/events');
+
+        connection.on('Send', data => {
+            console.log(data);
+        });
+
+        connection.start()
+            .then(() => connection.invoke('Send', 'Hello'));
+
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -64,6 +76,7 @@
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
+       
     </environment>
 
     @RenderSection("Scripts", required: false)

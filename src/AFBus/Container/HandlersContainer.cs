@@ -18,7 +18,7 @@ namespace AFBus
 
         internal Dictionary<Type, List<SagaInfo>> messageToSagaDictionary = new Dictionary<Type, List<SagaInfo>>();
 
-        private Dictionary<Type, DependencyInfo> dependencies = new Dictionary<Type, DependencyInfo>();
+        internal static Dictionary<Type, DependencyInfo> dependencies = new Dictionary<Type, DependencyInfo>();
 
         private static object o = new object();
         private ISagaStoragePersistence sagaPersistence;
@@ -63,7 +63,7 @@ namespace AFBus
 
         }
 
-        public void AddDependency<I, C>(params object[] arguments)
+        public static void AddDependency<I, C>(params object[] arguments)
         {
             if(!dependencies.ContainsKey(typeof(I)))
                 dependencies.Add(typeof(I), new DependencyInfo() { Interface = typeof(I), ConcreteType = typeof(C), args = arguments });
@@ -71,12 +71,25 @@ namespace AFBus
                 dependencies[typeof(I)]= new DependencyInfo() { Interface = typeof(I), ConcreteType = typeof(C), args = arguments };
         }
 
-        public I SolveDependency<I>()
+        public static void AddDependencyWithInstance<I>(I objectInstance)
+        {
+            if (!dependencies.ContainsKey(typeof(I)))
+                dependencies.Add(typeof(I), new DependencyInfo() { Interface = typeof(I), ConcreteType = typeof(I), instance = objectInstance });
+            else
+                dependencies[typeof(I)] = new DependencyInfo() { Interface = typeof(I), ConcreteType = typeof(I), instance = objectInstance };
+        }
+
+        public static I SolveDependency<I>()
         {
             if (!dependencies.ContainsKey(typeof(I)))
                 throw new Exception("No depedency can be solved for "+ typeof(I).Name+". Please add to the depedency graph using AddDepedency");
-                        
-            return (I)Activator.CreateInstance(dependencies[typeof(I)].ConcreteType, dependencies[typeof(I)].args); 
+
+            var dependencyInfo = dependencies[typeof(I)];
+
+            if (dependencyInfo.instance == null)
+                return (I)Activator.CreateInstance(dependencyInfo.ConcreteType, dependencyInfo.args);
+            else
+                return (I)dependencyInfo.instance;
         }
 
         private object SolveDependencyAsObject(Type parameterType)
@@ -84,7 +97,17 @@ namespace AFBus
             if (!dependencies.ContainsKey(parameterType))
                 throw new Exception("No depedency can be solved for " + parameterType.Name + ". Please add to the depedency graph using AddDepedency");
 
-            return (object)Activator.CreateInstance(dependencies[parameterType].ConcreteType);
+            var dependencyInfo = dependencies[parameterType];
+
+            if (dependencyInfo.instance == null)
+                return (object)Activator.CreateInstance(dependencyInfo.ConcreteType, dependencyInfo.args);
+            else
+                return (object)dependencyInfo.instance;
+        }
+
+        internal static void ClearDependencies()
+        {
+            dependencies.Clear();
         }
 
         private void LookForSagas(IEnumerable<Type> types)

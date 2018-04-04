@@ -2,6 +2,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AFBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -15,7 +16,7 @@ namespace PaymentService
         {
             log.Info("GetPayments received a request.");
 
-            var repository = CommandsReceiverFunction.container.SolveDependency<IPaymentsRepository>();
+            var repository = HandlersContainer.SolveDependency<IPaymentsRepository>();
             
             var payments = repository.GetOrdersPayed();
             return payments == null
@@ -28,7 +29,7 @@ namespace PaymentService
         {
             log.Info("GetPaymentsByUser received a request.");
             
-            var repository = CommandsReceiverFunction.container.SolveDependency<IPaymentsRepository>();
+            var repository = HandlersContainer.SolveDependency<IPaymentsRepository>();
 
             var payments = repository.GetOrdersPayed();
 

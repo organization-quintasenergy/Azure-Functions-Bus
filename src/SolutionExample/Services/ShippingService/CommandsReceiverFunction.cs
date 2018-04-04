@@ -11,8 +11,8 @@ namespace ShippingService
         static HandlersContainer container = new HandlersContainer();
 
         static ShippingService()
-        {            
-            container.AddDependency<IShippingRepository, InMemoryShippingRepository>();
+        {
+            HandlersContainer.AddDependency<IShippingRepository, InMemoryShippingRepository>();
         }
 
 

@@ -23,7 +23,7 @@ namespace UIExample.Controllers
         private const string ORDERSAGASERVICENAME = "ordersaga";
         private const string USER = "USER";
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {          
             var cartViewModel = new CartViewModel();
 

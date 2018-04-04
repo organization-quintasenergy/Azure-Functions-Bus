@@ -12,7 +12,7 @@ namespace PaymentService
 
         static CommandsReceiverFunction()
         {
-            container.AddDependency<IPaymentsRepository, InMemoryPaymentsRepository>();
+            HandlersContainer.AddDependency<IPaymentsRepository, InMemoryPaymentsRepository>();
         }
 
 

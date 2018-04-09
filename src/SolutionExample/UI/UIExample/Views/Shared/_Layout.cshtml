@@ -20,11 +20,10 @@
         let connection = new signalR.HubConnection('/events');
 
         connection.on('Send', data => {
-            console.log(data);
+            alert('Payment and shipping for user '+data+' done');
         });
 
-        connection.start()
-            .then(() => connection.invoke('Send', 'Hello'));
+        connection.start();
 
     </script>
 </head>

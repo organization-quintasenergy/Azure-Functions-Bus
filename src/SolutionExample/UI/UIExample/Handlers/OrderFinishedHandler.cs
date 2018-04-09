@@ -1,4 +1,5 @@
 ﻿using AFBus;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.WebJobs.Host;
 using OrderSaga.Messages;
 using System;
@@ -10,9 +11,18 @@ namespace UIExample.Handlers
 {
     public class OrderFinishedHandler : IHandle<OrderFinished>
     {
-        public Task HandleAsync(IBus bus, OrderFinished message, TraceWriter Log)
+        IHubContext<Events> hub;
+
+
+        public OrderFinishedHandler(IHubContext<Events> hub)
         {
-            return Task.CompletedTask;
+            this.hub = hub;
+        }
+
+        public async Task HandleAsync(IBus bus, OrderFinished message, TraceWriter Log)
+        {
+            await hub.Clients.All.SendAsync("Send", message.UserName);
+            
         }
     }
 }

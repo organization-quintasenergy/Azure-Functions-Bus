@@ -18,7 +18,7 @@ namespace AFBus
         /// <param name="bus"></param>
         /// <param name="message"></param>
         /// <param name="Log"></param>
-        Task HandleAsync(IBus bus, MessageType message, TraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType message, TraceWriter log);
 
         /// <summary>
         /// Defines how a message correlates to a saga instance

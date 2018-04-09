@@ -12,8 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace UIExample
 {
     public class Program
-    {
-        
+    {        
 
         public static void Main(string[] args)
         {

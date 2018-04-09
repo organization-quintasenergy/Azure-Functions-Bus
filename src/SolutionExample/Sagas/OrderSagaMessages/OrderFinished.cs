@@ -8,5 +8,6 @@ namespace OrderSaga.Messages
 {
     public class OrderFinished
     {
+        public string UserName { get; set; }
     }
 }

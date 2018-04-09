@@ -134,21 +134,19 @@ namespace AFBus
             {
                 await sagaLock.DeleteLock(sagaID, entity.LockID).ConfigureAwait(false);
             }
-            
-            /*CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+                       
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
-
-
+            
             // Create the TableOperation object that inserts the customer entity.
             TableOperation replaceOperation = TableOperation.Delete(entity);
 
             // Execute the insert operation.
             await table.ExecuteAsync(replaceOperation);
-
+            /*
             entity.IsDeleted = true;
             entity.FinishingTimeStamp = DateTime.UtcNow;
 
@@ -157,7 +155,7 @@ namespace AFBus
             if (this.lockSagas)
             {
                 await sagaLock.DeleteLock(sagaID, entity.LockID);
-            }
+            }*/
         }
     }
 }

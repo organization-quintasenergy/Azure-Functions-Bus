@@ -38,7 +38,7 @@ namespace AFBus.Tests
 
             var difference = after - before;
 
-            Assert.IsTrue(difference.TotalMilliseconds<3000);
+            Assert.IsTrue(difference.TotalMilliseconds<5000);
 
         }
 

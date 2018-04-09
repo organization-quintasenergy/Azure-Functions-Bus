@@ -167,6 +167,10 @@
     <Compile Include="QueueUtils\QueueReader.cs" />
     <Compile Include="SagaWithoutLock_Tests.cs" />
     <Compile Include="TestClasses\AnotherTestMessage.cs" />
+    <Compile Include="TestClasses\DI\DIMessage.cs" />
+    <Compile Include="TestClasses\DI\DIMessageHandler.cs" />
+    <Compile Include="TestClasses\DI\IUoWTest.cs" />
+    <Compile Include="TestClasses\DI\UoWTest.cs" />
     <Compile Include="TestClasses\InvocationCounter.cs" />
     <Compile Include="TestClasses\Sagas\Simple\SimpleSagaIntermediateMessage.cs" />
     <Compile Include="TestClasses\Sagas\Simple\SimpleSagaTerminatingMessage.cs" />
@@ -184,6 +188,7 @@
     <Compile Include="SendOnlyBus_Tests.cs" />
     <Compile Include="SagaWithLock_Tests.cs" />
     <Compile Include="Performance_Tests.cs" />
+    <Compile Include="DI_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

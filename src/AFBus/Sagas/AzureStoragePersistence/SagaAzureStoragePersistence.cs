@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    class SagaAzureStoragePersistence : ISagaStoragePersistence
+    public class SagaAzureStoragePersistence : ISagaStoragePersistence
     {
         private const string TABLE_NAME = "sagapersistence";
 
@@ -66,7 +66,11 @@ namespace AFBus
         }
 
         public async Task Update(SagaData entity)
-        {          
+        {
+            if (entity.IsDeleted)
+                return;
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -130,20 +134,28 @@ namespace AFBus
             {
                 await sagaLock.DeleteLock(sagaID, entity.LockID).ConfigureAwait(false);
             }
-            
-            /*CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Properties.Settings.Default.StorageConnectionString);
+                       
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
-
-
+            
             // Create the TableOperation object that inserts the customer entity.
             TableOperation replaceOperation = TableOperation.Delete(entity);
 
             // Execute the insert operation.
-            await table.ExecuteAsync(replaceOperation);*/
+            await table.ExecuteAsync(replaceOperation);
+            /*
+            entity.IsDeleted = true;
+            entity.FinishingTimeStamp = DateTime.UtcNow;
+
+            var sagaID = entity.PartitionKey + entity.RowKey;
+
+            if (this.lockSagas)
+            {
+                await sagaLock.DeleteLock(sagaID, entity.LockID);
+            }*/
         }
     }
 }

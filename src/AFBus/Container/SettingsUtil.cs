@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    internal class SETTINGS
+    public class SETTINGS
     {
-        internal const string AZURE_STORAGE = "AzureWebJobsStorage";
-        internal const string LOCKSAGAS = "LockSagas";
+        public const string AZURE_STORAGE = "AzureWebJobsStorage";
+        public const string LOCKSAGAS = "LockSagas";
     }
 
-    internal class SettingsUtil
+    public class SettingsUtil
     {
-        internal static T GetSettings<T>(string settingName) where T : IConvertible
+        public static T GetSettings<T>(string settingName) where T : IConvertible
         { 
             if (System.Environment.GetEnvironmentVariable(settingName)!= null)
                 return (T)Convert.ChangeType(System.Environment.GetEnvironmentVariable(settingName), typeof(T)); 

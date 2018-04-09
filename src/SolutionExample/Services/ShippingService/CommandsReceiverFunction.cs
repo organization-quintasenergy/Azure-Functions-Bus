@@ -10,6 +10,12 @@ namespace ShippingService
     {
         static HandlersContainer container = new HandlersContainer();
 
+        static ShippingService()
+        {
+            HandlersContainer.AddDependency<IShippingRepository, InMemoryShippingRepository>();
+        }
+
+
         [FunctionName("ShippingServiceEndpointFunction")]
         public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, TraceWriter log)
         {

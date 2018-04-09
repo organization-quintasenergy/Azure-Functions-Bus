@@ -149,6 +149,7 @@
     <Compile Include="Bus\Bus.cs" />
     <Compile Include="Bus\IBus.cs" />
     <Compile Include="Bus\SendOnlyBus.cs" />
+    <Compile Include="Container\DependencyInfo.cs" />
     <Compile Include="Container\HandlersContainer.cs" />
     <Compile Include="Container\IHandlersContainer.cs" />
     <Compile Include="Container\SettingsUtil.cs" />

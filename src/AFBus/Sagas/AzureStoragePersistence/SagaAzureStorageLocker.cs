@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AFBus
 {
-    class SagaAzureStorageLocker : ISagaLocker
+    public class SagaAzureStorageLocker : ISagaLocker
     {
 
         const string CONTAINER_NAME = "afblocks";
@@ -22,6 +22,7 @@ namespace AFBus
             storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         }
 
+        
         public async Task CreateLocksContainer()
         {            
 
@@ -48,7 +49,19 @@ namespace AFBus
 
             blob.UploadText(sagaId);
 
-            var leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION).ConfigureAwait(false);            
+            var leaseId = string.Empty;
+
+            try
+            {
+                leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION);
+            }
+            catch (StorageException)
+            {
+                Random rnd = new Random();
+                await Task.Delay(rnd.Next(0, 1000));
+
+                throw;
+            }          
 
             return leaseId;
         }
@@ -68,8 +81,20 @@ namespace AFBus
 
             AccessCondition acc = new AccessCondition();
             acc.LeaseId = leaseId;
+
+            try
+            {
+                await blob.ReleaseLeaseAsync(acc);
+            }
+            catch (StorageException)
+            {
+                Random rnd = new Random();
+                await Task.Delay(rnd.Next(0, 1000));
+
+                throw;
+            }
+
             
-            await blob.ReleaseLeaseAsync(acc).ConfigureAwait(false);
         }
 
         public async Task DeleteLock(string sagaId, string leaseId)
@@ -85,7 +110,18 @@ namespace AFBus
 
             AccessCondition acc = new AccessCondition();
             acc.LeaseId = leaseId;
-            await blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,acc,null,null).ConfigureAwait(false);
+            
+            try
+            {
+                await blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, acc, null, null);
+            }
+            catch (StorageException)
+            {
+                Random rnd = new Random();
+                await Task.Delay(rnd.Next(0, 1000));
+
+                throw;
+            }
         }
 
         private string StringToGuid(string input)

@@ -12,6 +12,6 @@ namespace AFBus
     /// </summary>
     public interface IHandleStartingSaga<MessageType>
     {
-        Task HandleAsync(IBus bus, MessageType message, TraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType message, TraceWriter log);
     }
 }

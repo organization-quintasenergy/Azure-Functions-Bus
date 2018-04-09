@@ -9,6 +9,8 @@ namespace OrderSaga.Sagas
 {
     public class OrderSagaData : SagaData
     {
+        public string UserName { get; set; }
+
         public string Products { get; set; }
 
         public bool Shipped { get; set; }

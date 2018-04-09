@@ -16,7 +16,7 @@ namespace ShippingService
         }
 
 
-        [FunctionName("ShippingServiceCommandReceiverFunction")]
+        [FunctionName("ShippingServiceEndpointFunction")]
         public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, TraceWriter log)
         {
             log.Info($"C# Queue trigger function processed: {myQueueItem}");

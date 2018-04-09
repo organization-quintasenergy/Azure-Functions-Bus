@@ -207,11 +207,11 @@ namespace AFBus
         {
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
-                throw new Exception("Handler not found for this message.");
+                throw new Exception("Handler not found for this message." + serializer.Serialize(message));
 
-            await InvokeStatelessHandlers(message, log);
+            await InvokeStatelessHandlers(message, log).ConfigureAwait(false);
 
-            await InvokeSagaHandlers(message, log);
+            await InvokeSagaHandlers(message, log).ConfigureAwait(false);
            
 
         }
@@ -236,7 +236,7 @@ namespace AFBus
 
                     object[] lookForInstanceParametersArray = new object[] { message };
                     sagaDynamic.SagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), this.lockSaga);  
-                    dynamic sagaData = await (Task<SagaData>)sagaMessageToMethod.CorrelatingMethod.Invoke(saga, lookForInstanceParametersArray);
+                    dynamic sagaData = await ((Task<SagaData>)sagaMessageToMethod.CorrelatingMethod.Invoke(saga, lookForInstanceParametersArray)).ConfigureAwait(false);
 
                     if (sagaData != null)
                     {
@@ -246,7 +246,7 @@ namespace AFBus
 
                         await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
-                        await sagaPersistence.Update(sagaDynamic.Data);
+                        await sagaPersistence.Update(sagaDynamic.Data).ConfigureAwait(false);
 
                         instantiated = true;
                     }
@@ -262,7 +262,7 @@ namespace AFBus
                    
                     await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);                    
                                        
-                    await sagaPersistence.Insert(sagaDynamic.Data);
+                    await sagaPersistence.Insert(sagaDynamic.Data).ConfigureAwait(false);
 
                     instantiated = true;
                 }
@@ -291,7 +291,7 @@ namespace AFBus
                                
                 foreach (var m in methodsToInvoke)
                 {
-                    await ((Task)m.Invoke(handler, parametersArray));
+                    await ((Task)m.Invoke(handler, parametersArray)).ConfigureAwait(false);
                 }
 
             }
@@ -324,7 +324,7 @@ namespace AFBus
 
             var deserializedMessage = serializer.Deserialize(serializedMessage);
 
-            await HandleAsync(deserializedMessage,log);
+            await HandleAsync(deserializedMessage,log).ConfigureAwait(false);
             
         }
     }

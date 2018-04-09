@@ -27,7 +27,7 @@ namespace AFBus
         /// </summary>
         public async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class
         {
-            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay);
+            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay).ConfigureAwait(false);
            
         }
     }

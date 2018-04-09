@@ -16,7 +16,7 @@ namespace PaymentService
         }
 
 
-        [FunctionName("PaymentServiceCommandReceiverFunction")]
+        [FunctionName("PaymentServiceEndpointFunction")]
         public static async Task Run([QueueTrigger("paymentservice")]string myQueueItem, TraceWriter log)
         {
             log.Info($"PaymentServiceCommandReceiverFunction received a message: {myQueueItem}");

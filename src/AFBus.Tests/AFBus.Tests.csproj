@@ -187,6 +187,7 @@
     <Compile Include="Bus_Tests.cs" />
     <Compile Include="SendOnlyBus_Tests.cs" />
     <Compile Include="SagaWithLock_Tests.cs" />
+    <Compile Include="Performance_Tests.cs" />
     <Compile Include="DI_Tests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,7 @@ namespace AFBus.Tests
 
             SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
 
-            var stringMessage = QueueReader.ReadFromQueue(SERVICENAME).Result;
+            var stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
 
             var finalMessage = JsonConvert.DeserializeObject<TestMessage>(stringMessage, new JsonSerializerSettings()
             {
@@ -53,7 +53,7 @@ namespace AFBus.Tests
 
             do
             {
-                stringMessage = QueueReader.ReadFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 

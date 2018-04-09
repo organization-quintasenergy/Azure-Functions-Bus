@@ -16,8 +16,9 @@ namespace OrderSaga.Sagas
     {
         const string PARTITION_KEY = "OrderSaga";
         const string SERVICE_NAME = "ordersaga";
+        const string UI_SERVICE_NAME = "uiexample";
 
-        public Task HandleAsync(IBus bus, CartItemAdded message, TraceWriter Log)
+        public Task HandleAsync(IBus bus, CartItemAdded message, TraceWriter log)
         {
             
             var productsList = new List<string>();
@@ -27,7 +28,7 @@ namespace OrderSaga.Sagas
                 this.Data.PartitionKey = PARTITION_KEY;
                 this.Data.RowKey = message.UserName;
                 this.Data.Products = bus.serializer.Serialize(productsList);
-
+                this.Data.UserName = message.UserName;
             }
             else
             {
@@ -41,35 +42,38 @@ namespace OrderSaga.Sagas
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(IBus bus, ProcessOrder message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, ProcessOrder message, TraceWriter log)
         {
             await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "shippingservice");
 
             await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "paymentservice");
         }
 
-        public async Task HandleAsync(IBus bus, ShipOrderResponse message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, ShipOrderResponse message, TraceWriter log)
         {
             this.Data.Shipped = true;
-            await EndOfOrder(Log);
+            await EndOfOrder(bus, log);
 
         }
 
         
 
-        public async Task HandleAsync(IBus bus, PayOrderResponse message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, PayOrderResponse message, TraceWriter log)
         {
             this.Data.Payed = true;
 
-            await EndOfOrder(Log);
+            await EndOfOrder(bus,log);
 
         }
 
-        private async Task EndOfOrder(TraceWriter Log)
+        private async Task EndOfOrder(IBus bus, TraceWriter Log)
         {
             if (Data.Shipped && Data.Payed)
             {
                 Log.Info("Process finished");
+
+                await bus.SendAsync(new OrderFinished { UserName = Data.UserName }, UI_SERVICE_NAME);
+
                 await this.DeleteSaga();
             }
         }

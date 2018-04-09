@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CartItemAdded.cs" />
+    <Compile Include="OrderFinished.cs" />
     <Compile Include="ProcessOrder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

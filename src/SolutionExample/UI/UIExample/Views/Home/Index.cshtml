@@ -1,26 +1,21 @@
-﻿@model UIExample.Controllers.CardModel
+﻿@model UIExample.ViewModels.CartViewModel
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div style="height: 500px;padding-top:30px">
-    <p>Insert a product for an user. Each user will have their own saga (the userid is the correlation key). </p>
 
+    <p>Insert a product for an user. Each user will have their own saga (the userid is the correlation key). </p>
 
     <div style="width: 100%;float:left;">
         <div style="float: left; width: 400px">
             @using (Html.BeginForm("AddToCard", "Home", FormMethod.Post))
             {
                 <div style="float: left">
+
                     <div style="float: left; width: 100%">
-                        <div style="float: left">User:</div>
-                        <div style="float: right">
-                            @Html.TextBoxFor(model => model.User)
-                        </div>
-                    </div>
-                    <div style="float: left; width: 100%">
-                        @Html.ValidationMessageFor(model => model.User)
+
                         <div style="float: left">Product (Ej: Raspberry PI):</div>
                         <div style="float: right">
                             @Html.TextBoxFor(model => model.Product)
@@ -35,15 +30,28 @@
         </div>
     </div>
 
-    <p style="float: left;width: 100%;padding-top:30px">Process the order inserting the userid (the correlation key) </p>
+    <p>Current cart:</p>
+
+    <div style="width: 100%;float:left;">
+        
+        <ul>
+            @foreach (var c in Model.CartItemsAdded)
+            {
+            <li>@Html.DisplayName(c.ProductName)</li>
+                    
+            }
+           
+        </ul>
+        
+    </div>
+
+
+    <p style="float: left;width: 100%;padding-top:30px">Process the order clicking the button </p>
 
     <div style="float: left;width: 100%;">
 
         @using (Html.BeginForm("ProcessOrder", "Home", FormMethod.Post))
         {
-            <div>User:</div>
-            @Html.TextBoxFor(model => model.User)
-            @Html.ValidationMessageFor(model => model.User)
             <button type="submit">Process order</button>
         }
 

@@ -14,7 +14,7 @@ namespace AFBus.Tests
         [TestMethod]
         public void Sagas_Without_Locks_Are_Correctly_Scanned()
         {
-            var container = new HandlersContainer(null, null, null, false); 
+            var container = new HandlersContainer(false); 
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
         }
@@ -25,7 +25,7 @@ namespace AFBus.Tests
 
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(null, null, null, false);
+            var container = new HandlersContainer(false);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -41,7 +41,7 @@ namespace AFBus.Tests
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(null, null, null, false);
+            var container = new HandlersContainer(false);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -66,7 +66,7 @@ namespace AFBus.Tests
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(null, null, null, false);
+            var container = new HandlersContainer(false);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SingletonSagaStartingMessage)].Count == 1);
 

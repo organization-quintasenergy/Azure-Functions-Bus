@@ -13,7 +13,7 @@ namespace AFBus
         /// <summary>
         /// Handles a message in a stateless way.
         /// </summary>
-        Task HandleAsync(IBus bus, MessageType message, TraceWriter Log);
+        Task HandleAsync(IBus bus, MessageType message, TraceWriter log);
            
     }
 }

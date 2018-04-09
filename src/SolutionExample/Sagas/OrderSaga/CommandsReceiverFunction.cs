@@ -11,9 +11,9 @@ namespace OrderSaga
         static HandlersContainer container = new HandlersContainer();
 
         [FunctionName("OrderSagaEndpointFunction")]
-        public static async Task Run([QueueTrigger("ordersaga", Connection = "")]string orderSagaMessage, TraceWriter log)
+        public static async Task Run([QueueTrigger("ordersaga")]string orderSagaMessage, TraceWriter log)
         {
-            log.Info($"C# Queue trigger function processed: {orderSagaMessage}");
+            log.Info($"OrderSagaEndpointFunction message received: {orderSagaMessage}");
 
             await container.HandleAsync(orderSagaMessage, log);
         }

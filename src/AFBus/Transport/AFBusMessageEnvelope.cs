@@ -11,10 +11,10 @@ namespace AFBus
         public Guid MessageID { get; set; }
 
         public Guid? TransactionID { get; set; }
-               
+                      
+        public TimeSpan? DelayedTime { get; set; }
 
-        public DateTime? DelayedUntil { get; set; }
-
+        public string Destination { get; set; }
     }
 
     public class AFBusMessageEnvelope

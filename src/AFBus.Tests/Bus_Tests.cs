@@ -76,7 +76,7 @@ namespace AFBus.Tests
             bus.Context = new AFBusMessageContext();
 
             var before = DateTime.Now;
-            var timeDelayed = new TimeSpan(0, 0, 3);
+            var timeDelayed = new TimeSpan(0, 0, 5);
             bus.SendAsync(message, SERVICENAME, timeDelayed).Wait();
 
             string stringMessage = null;

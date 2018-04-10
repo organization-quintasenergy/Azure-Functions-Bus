@@ -43,17 +43,31 @@ namespace AFBus
                 Body = messageAsString
             };
 
+            messageContext.Destination = serviceName;
+
             TimeSpan? initialVisibilityDelay = null;
 
-            if (messageContext.DelayedFor != null && initialVisibilityDelay > MaxDelayInMinutes())
+            if (messageContext.DelayedTime != null && messageContext.DelayedTime >=  MaxDelay())
             {
-                initialVisibilityDelay = MaxDelayInMinutes();
+                initialVisibilityDelay = MaxDelay();
+
+                //substract the max delay from transport
+                messageContext.DelayedTime = messageContext.DelayedTime - MaxDelay();
             }
+            else if (messageContext.DelayedTime != null)
+            {
+                initialVisibilityDelay = messageContext.DelayedTime;
+
+                messageContext.DelayedTime = null;
+            }
+
+            if (messageContext.DelayedTime != null && initialVisibilityDelay.Value.TotalMilliseconds < 0)
+                initialVisibilityDelay = null;
 
             await queue.AddMessageAsync(new CloudQueueMessage(serializer.Serialize(messageWithEnvelope)), null, initialVisibilityDelay, null, null).ConfigureAwait(false);
         }
 
-        public TimeSpan MaxDelayInMinutes()
+        public TimeSpan MaxDelay()
         {
             return new TimeSpan(7,0, 0, 0);
         }

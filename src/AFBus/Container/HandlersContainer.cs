@@ -38,7 +38,8 @@ namespace AFBus
 
                 AddDependency<ISerializeMessages, JSONSerializer>();
                 AddDependency<ISagaLocker, SagaAzureStorageLocker>();
-                
+                AddDependency<ISendMessages, AzureStorageQueueSendTransport>(SolveDependency<ISerializeMessages>());
+
                 this.serializer = SolveDependency<ISerializeMessages>();
                 this.sagaLocker = SolveDependency<ISagaLocker>();
                 AddDependency<ISagaStoragePersistence, SagaAzureStoragePersistence>(this.sagaLocker as ISagaLocker, this.lockSaga);
@@ -87,7 +88,10 @@ namespace AFBus
             var dependencyInfo = dependencies[typeof(I)];
 
             if (dependencyInfo.instance == null)
+            {              
                 return (I)Activator.CreateInstance(dependencyInfo.ConcreteType, dependencyInfo.args);
+
+            }
             else
                 return (I)dependencyInfo.instance;
         }
@@ -204,10 +208,20 @@ namespace AFBus
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
         internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
-        {
+        {            
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));
+
+            //still sometime to wait, go back to queue
+            if(messageContext.DelayedTime !=null)
+            {
+                var transport = SolveDependency<ISendMessages>();
+
+                await transport.SendMessageAsync(message, messageContext.Destination, messageContext);
+
+                return;
+            }
 
             await InvokeStatelessHandlers(message, messageContext, log).ConfigureAwait(false);
 
@@ -283,8 +297,10 @@ namespace AFBus
                     {
                         sagaDynamic.Data = sagaData;
 
-                        var bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
-                        bus.Context = messageContext;
+                        var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                        {
+                            Context = messageContext
+                        };
 
                         object[] parametersArray = new object[] {bus , message, log };
 
@@ -301,8 +317,10 @@ namespace AFBus
                 //if not => create
                 if (!instantiated && sagaMessageToMethod!=null)
                 {
-                    var bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
-                    bus.Context = messageContext;
+                    var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                    {
+                        Context = messageContext
+                    };
 
                     object[] parametersArray = new object[] { bus, message, log };
                    
@@ -330,8 +348,13 @@ namespace AFBus
             foreach (var t in handlerTypeList)
             {
                 var handler = CreateInstance(t);
-                
-                object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
+
+                var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                {
+                    Context = messageContext
+                };
+
+                object[] parametersArray = new object[] { bus, message, log };
 
                 var methodsToInvoke = t.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType()));
                                

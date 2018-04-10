@@ -26,6 +26,11 @@ namespace AFBus
                
             };
 
+            if (initialVisibilityDelay != null)
+            {
+                context.DelayedTime = initialVisibilityDelay;
+            }
+
             await sender.SendMessageAsync(input, serviceName, context).ConfigureAwait(false);
 
         }

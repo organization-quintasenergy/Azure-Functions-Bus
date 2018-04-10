@@ -12,7 +12,7 @@ namespace AFBus
         /// Returns the max time the transport can delay a message
         /// </summary>
         /// <returns></returns>
-        TimeSpan MaxDelayInMinutes();
+        TimeSpan MaxDelay();
 
 
         Task SendMessageAsync<T>(T message, string serviceName, AFBusMessageContext context) where T : class;

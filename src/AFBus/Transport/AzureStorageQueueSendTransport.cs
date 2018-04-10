@@ -19,7 +19,7 @@ namespace AFBus
             this.serializer = serializer;
         }
 
-        public async Task AddMessageAsync<T>(T message, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class
+        public async Task SendMessageAsync<T>(T message, string serviceName, AFBusMessageContext messageContext) where T : class
         {
             serviceName = serviceName.ToLower();
 
@@ -37,7 +37,25 @@ namespace AFBus
             
             var messageAsString = serializer.Serialize(message);
 
-            await queue.AddMessageAsync(new CloudQueueMessage(messageAsString), null, initialVisibilityDelay, null, null).ConfigureAwait(false);
+            var messageWithEnvelope = new AFBusMessageEnvelope()
+            {
+                Context = messageContext,
+                Body = messageAsString
+            };
+
+            TimeSpan? initialVisibilityDelay = null;
+
+            if (messageContext.DelayedFor != null && initialVisibilityDelay > MaxDelayInMinutes())
+            {
+                initialVisibilityDelay = MaxDelayInMinutes();
+            }
+
+            await queue.AddMessageAsync(new CloudQueueMessage(serializer.Serialize(messageWithEnvelope)), null, initialVisibilityDelay, null, null).ConfigureAwait(false);
+        }
+
+        public TimeSpan MaxDelayInMinutes()
+        {
+            return new TimeSpan(7,0, 0, 0);
         }
     }
 }

@@ -22,12 +22,20 @@ namespace AFBus
 
         ISerializeMessages IBus.serializer => this.serializer;
 
+        public AFBusMessageContext Context { get; set; }
+
         /// <summary>
         /// Sends a message to a queue named like the service.
         /// </summary>
         public async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class
         {
-            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay).ConfigureAwait(false);
+            Context.MessageID = Guid.NewGuid();
+            Context.TransactionID = Context.TransactionID ?? Guid.NewGuid();
+            Context.DelayedFor = initialVisibilityDelay;
+            Context.TransportMaxDelay = sender.MaxDelayInMinutes();
+
+
+            await sender.SendMessageAsync(input, serviceName, Context).ConfigureAwait(false);
            
         }
     }

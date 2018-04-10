@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AFBus
+{
+    public class AFBusMessageContext
+    {
+        public Guid MessageID { get; set; }
+
+        public Guid? TransactionID { get; set; }
+               
+
+        public DateTime? DelayedUntil { get; set; }
+
+    }
+
+    public class AFBusMessageEnvelope
+    {
+        public AFBusMessageContext Context { get; set; }
+
+        public string Body { get; set; }
+    }
+}

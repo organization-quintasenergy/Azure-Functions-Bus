@@ -12,8 +12,9 @@ namespace AFBus
         /// Sends a message to a queue named like the service.
         /// </summary>
         Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class;
-
-
+        
         ISerializeMessages serializer { get; }
+
+        AFBusMessageContext Context { get; set; }
     }
 }

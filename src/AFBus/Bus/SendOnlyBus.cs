@@ -19,8 +19,14 @@ namespace AFBus
             serializer = serializer ?? new JSONSerializer();
             sender = sender ?? new AzureStorageQueueSendTransport(serializer);
 
+            var context = new AFBusMessageContext
+            {
+                MessageID = Guid.NewGuid(),
+                TransactionID = Guid.NewGuid(),
+               
+            };
 
-            await sender.AddMessageAsync(input, serviceName, initialVisibilityDelay).ConfigureAwait(false);
+            await sender.SendMessageAsync(input, serviceName, context).ConfigureAwait(false);
 
         }
     }

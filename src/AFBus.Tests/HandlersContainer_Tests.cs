@@ -47,14 +47,14 @@ namespace AFBus.Tests
         }
 
         [TestMethod]
-        public void HandlersContainer_IHandleTypesAreCorrectlyInvokedWithDelay()
+        public void HandlersContainer_HandleAsync_Sends_To_Delay_If_Some_Delay_Is_Left()
         {
-            int callCount = 0;
+            AFBusMessageContext context;
             var container = new HandlersContainer();
             var transportMock = new Mock<ISendMessages>();
             transportMock.Setup(t => t.MaxDelay()).Returns(new TimeSpan(0,0,1));
-            transportMock.Setup(t => t.SendMessageAsync(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()))
-                .Callback<Func<int>>(f => callCount++);
+            transportMock.Setup(t => t.SendMessageAsync<Object>(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()))
+                .Callback<Object, string, AFBusMessageContext>((m,s,c) => context=c).Returns(Task.CompletedTask);
 
             HandlersContainer.AddDependencyWithInstance<ISendMessages>(transportMock.Object);
 
@@ -82,7 +82,13 @@ namespace AFBus.Tests
 
             container.HandleAsync(serializer.Serialize(finalMessage), null).Wait();
 
-            transportMock.Verify(m => m.SendMessageAsync(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()), Times.AtLeastOnce());
+            transportMock.Verify(m => m.SendMessageAsync<Object>(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()), Times.Exactly(1));
+
+            finalMessage.Context.DelayedTime = new TimeSpan(0, 0, 0);
+
+            container.HandleAsync(serializer.Serialize(finalMessage), null).Wait();
+
+            transportMock.Verify(m => m.SendMessageAsync<Object>(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()), Times.Exactly(1));
         }
 
     }

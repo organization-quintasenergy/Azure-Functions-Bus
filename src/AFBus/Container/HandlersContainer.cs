@@ -214,7 +214,7 @@ namespace AFBus
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));
 
             //still sometime to wait, go back to queue
-            if(messageContext.DelayedTime !=null)
+            if(messageContext.DelayedTime !=null && messageContext.DelayedTime > TimeSpan.Zero)
             {
                 var transport = SolveDependency<ISendMessages>();
 

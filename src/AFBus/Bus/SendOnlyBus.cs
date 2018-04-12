@@ -28,7 +28,8 @@ namespace AFBus
 
             if (initialVisibilityDelay != null)
             {
-                context.DelayedTime = initialVisibilityDelay;
+                context.MessageDelayedTime = initialVisibilityDelay.Value ;
+                context.MessageFinalWakeUpTimeStamp = DateTime.UtcNow + initialVisibilityDelay;
             }
 
             await sender.SendMessageAsync(input, serviceName, context).ConfigureAwait(false);

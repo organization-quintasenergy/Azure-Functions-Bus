@@ -12,7 +12,9 @@ namespace AFBus
 
         public Guid? TransactionID { get; set; }
                       
-        public TimeSpan? DelayedTime { get; set; }
+        public TimeSpan? MessageDelayedTime { get; set; }
+
+        public DateTime? MessageFinalWakeUpTimeStamp { get; set; }
 
         public string Destination { get; set; }
     }

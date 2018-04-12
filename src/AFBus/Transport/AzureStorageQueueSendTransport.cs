@@ -29,11 +29,12 @@ namespace AFBus
 
             CloudQueue queue = queueClient.GetQueueReference(serviceName);
 
-            if (!createdQueues.Contains(serviceName) && queue.CreateIfNotExists())
-            {                
+            if (!createdQueues.Contains(serviceName))
+            {
+                queue.CreateIfNotExists();
                 createdQueues.Add(serviceName);
             }
-
+            
             
             var messageAsString = serializer.Serialize(message);
 
@@ -47,29 +48,31 @@ namespace AFBus
 
             TimeSpan? initialVisibilityDelay = null;
 
-            if (messageContext.DelayedTime != null && messageContext.DelayedTime >=  MaxDelay())
+            if (messageContext.MessageDelayedTime != null && messageContext.MessageDelayedTime >=  MaxDelay())
             {
                 initialVisibilityDelay = MaxDelay();
-
-                //substract the max delay from transport
-                messageContext.DelayedTime = messageContext.DelayedTime - MaxDelay();
+               
+                messageContext.MessageDelayedTime = MaxDelay();
             }
-            else if (messageContext.DelayedTime != null)
+            else if (messageContext.MessageDelayedTime != null)
             {
-                initialVisibilityDelay = messageContext.DelayedTime;
-
-                messageContext.DelayedTime = null;
+                initialVisibilityDelay = messageContext.MessageDelayedTime;
+                
             }
 
-            if (messageContext.DelayedTime != null && initialVisibilityDelay.Value.TotalMilliseconds < 0)
+            if (messageContext.MessageDelayedTime != null && initialVisibilityDelay.Value < TimeSpan.Zero)
+            {
                 initialVisibilityDelay = null;
+
+                messageContext.MessageDelayedTime = null;
+            }
 
             await queue.AddMessageAsync(new CloudQueueMessage(serializer.Serialize(messageWithEnvelope)), null, initialVisibilityDelay, null, null).ConfigureAwait(false);
         }
 
-        public TimeSpan MaxDelay()
+        public virtual TimeSpan MaxDelay()
         {
-            return new TimeSpan(7,0, 0, 0);
+            return new TimeSpan(7, 0, 0, 0);
         }
     }
 }

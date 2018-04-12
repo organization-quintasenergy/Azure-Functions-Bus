@@ -32,6 +32,8 @@ namespace AFBus.Tests
         [TestMethod]
         public void Bus_SendAsync_Nominal()
         {
+            QueueReader.CleanQueue(SERVICENAME).Wait();
+
             var id = Guid.NewGuid();
 
             var message = new TestMessage()
@@ -66,6 +68,8 @@ namespace AFBus.Tests
         [TestMethod]
         public void Bus_SendAsync_DelayedMessage()
         {
+            QueueReader.CleanQueue(SERVICENAME).Wait();
+
             var message = new TestMessage()
             {
                 SomeData = "delayed"

@@ -49,23 +49,56 @@ namespace AFBus.Tests
         [TestMethod]
         public void HandlersContainer_HandleAsync_Sends_To_Delay_If_Some_Delay_Is_Left()
         {
-            AFBusMessageContext context;
+            InvocationCounter.Instance.Reset();
+
             var container = new HandlersContainer();
-            var transportMock = new Mock<ISendMessages>();
-            transportMock.Setup(t => t.MaxDelay()).Returns(new TimeSpan(0,0,1));
-            transportMock.Setup(t => t.SendMessageAsync<Object>(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()))
-                .Callback<Object, string, AFBusMessageContext>((m,s,c) => context=c).Returns(Task.CompletedTask);
+           
+            HandlersContainer.AddDependencyWithInstance<ISendMessages>(new AzureStorageQueueSendTransportShortMaxDelay(HandlersContainer.SolveDependency<ISerializeMessages>()));
 
-            HandlersContainer.AddDependencyWithInstance<ISendMessages>(transportMock.Object);
-
-            var messageContext = new AFBusMessageContext()
+           
+            var message = new TestMessage()
             {
-                Destination = SERVICENAME,
-                DelayedTime = new TimeSpan(0, 0, 5),
-                MessageID = Guid.NewGuid(),
-                TransactionID = Guid.NewGuid()
-                
+                SomeData = "delayed"
             };
+
+            var serializer = HandlersContainer.SolveDependency<ISerializeMessages>();
+            
+
+            SendOnlyBus.SendAsync(message, SERVICENAME, TimeSpan.FromSeconds(10), serializer, new AzureStorageQueueSendTransportShortMaxDelay(serializer)).Wait();
+
+            string stringMessage = null;
+
+            do
+            {
+                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            }
+            while (string.IsNullOrEmpty(stringMessage));
+
+            container.HandleAsync(stringMessage, null).Wait();
+
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed");
+
+            do
+            {
+                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            }
+            while (string.IsNullOrEmpty(stringMessage));
+
+            container.HandleAsync(stringMessage, null).Wait();
+
+
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");
+        }
+
+        [TestMethod]
+        public void HandlersContainer_HandleAsync_Sends_To_Delay_If_Some_Delay_Is_Left_2()
+        {
+            InvocationCounter.Instance.Reset();
+
+            var container = new HandlersContainer();
+
+            HandlersContainer.AddDependencyWithInstance<ISendMessages>(new AzureStorageQueueSendTransportShortMaxDelay(HandlersContainer.SolveDependency<ISerializeMessages>()));
+
 
             var message = new TestMessage()
             {
@@ -74,22 +107,42 @@ namespace AFBus.Tests
 
             var serializer = HandlersContainer.SolveDependency<ISerializeMessages>();
 
-            var finalMessage = new AFBusMessageEnvelope()
+
+            SendOnlyBus.SendAsync(message, SERVICENAME, TimeSpan.FromSeconds(15), serializer, new AzureStorageQueueSendTransportShortMaxDelay(serializer)).Wait();
+
+            string stringMessage = null;
+
+            do
             {
-                Context = messageContext,
-                Body = serializer.Serialize(message)
-            };
+                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            }
+            while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(serializer.Serialize(finalMessage), null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
-            transportMock.Verify(m => m.SendMessageAsync<Object>(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()), Times.Exactly(1));
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed");
 
-            finalMessage.Context.DelayedTime = new TimeSpan(0, 0, 0);
+            
+            do
+            {
+                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            }
+            while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(serializer.Serialize(finalMessage), null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
-            transportMock.Verify(m => m.SendMessageAsync<Object>(It.IsAny<TestMessage>(), It.IsAny<string>(), It.IsAny<AFBusMessageContext>()), Times.Exactly(1));
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed 2");
+
+            do
+            {
+                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            }
+            while (string.IsNullOrEmpty(stringMessage));
+
+            container.HandleAsync(stringMessage, null).Wait();
+
+
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");
         }
-
     }
 }

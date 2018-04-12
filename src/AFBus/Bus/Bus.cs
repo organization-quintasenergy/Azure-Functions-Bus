@@ -35,7 +35,13 @@ namespace AFBus
 
             if (initialVisibilityDelay != null)
             {                
-                Context.DelayedTime = initialVisibilityDelay;
+                Context.MessageDelayedTime = initialVisibilityDelay;
+                Context.MessageFinalWakeUpTimeStamp = DateTime.UtcNow + initialVisibilityDelay;
+            }
+            else
+            {
+                Context.MessageDelayedTime = null;
+                Context.MessageFinalWakeUpTimeStamp = null;
             }
             
 

@@ -42,6 +42,8 @@ namespace AFBus.Tests
         [TestMethod]
         public void SendOnlyBus_SendAsync_DelayedMessage()
         {
+            QueueReader.CleanQueue(SERVICENAME).Wait();
+
             var message = new TestMessage()
             {
                 SomeData = "delayed"

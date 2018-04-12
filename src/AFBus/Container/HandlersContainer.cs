@@ -214,13 +214,28 @@ namespace AFBus
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));
 
             //still sometime to wait, go back to queue
-            if(messageContext.DelayedTime !=null && messageContext.DelayedTime > TimeSpan.Zero)
+            if(messageContext.MessageDelayedTime !=null && messageContext.MessageDelayedTime > TimeSpan.Zero)
             {
                 var transport = SolveDependency<ISendMessages>();
 
-                await transport.SendMessageAsync(message, messageContext.Destination, messageContext);
+                var differenceUntilFinalWakeUp = messageContext.MessageFinalWakeUpTimeStamp.Value - DateTime.UtcNow;
 
-                return;
+                if (differenceUntilFinalWakeUp > TimeSpan.FromSeconds(1))
+                {
+                    if (differenceUntilFinalWakeUp >= transport.MaxDelay())
+                    {
+                        messageContext.MessageDelayedTime = transport.MaxDelay();
+                    }
+                    else
+                    {
+                        messageContext.MessageDelayedTime = differenceUntilFinalWakeUp;
+                    }
+
+
+                    await transport.SendMessageAsync(message, messageContext.Destination, messageContext);
+
+                    return;
+                }
             }
 
             await InvokeStatelessHandlers(message, messageContext, log).ConfigureAwait(false);

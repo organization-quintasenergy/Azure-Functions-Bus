@@ -21,9 +21,12 @@ namespace AFBus.Tests
             queue.CreateIfNotExists();
 
             var message = await queue.GetMessageAsync().ConfigureAwait(false);
-
+            
             if (message != null)
+            {
+                queue.DeleteMessage(message);
                 return message.AsString;
+            }
             else
                 return null;
             

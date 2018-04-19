@@ -171,6 +171,7 @@
     <Compile Include="Container\SagaInfo.cs" />
     <Compile Include="Serializer\ISerializeMessages.cs" />
     <Compile Include="Serializer\JSONSerializer.cs" />
+    <Compile Include="Transport\AFBusMessageEnvelope.cs" />
     <Compile Include="Transport\AzureStorageQueueSendTransport.cs" />
     <Compile Include="Transport\ISendMessages.cs" />
   </ItemGroup>

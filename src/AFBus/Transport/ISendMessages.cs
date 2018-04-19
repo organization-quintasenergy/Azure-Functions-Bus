@@ -8,6 +8,13 @@ namespace AFBus
 {
     public interface ISendMessages
     {
-        Task AddMessageAsync<T>(T message, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class;
+        /// <summary>
+        /// Returns the max time the transport can delay a message
+        /// </summary>
+        /// <returns></returns>
+        TimeSpan MaxDelay();
+
+
+        Task SendMessageAsync<T>(T message, string serviceName, AFBusMessageContext context) where T : class;
     }
 }

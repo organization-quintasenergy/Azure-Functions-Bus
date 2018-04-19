@@ -32,6 +32,8 @@ namespace AFBus.Tests
         [TestMethod]
         public void Bus_SendAsync_Nominal()
         {
+            QueueReader.CleanQueue(SERVICENAME).Wait();
+
             var id = Guid.NewGuid();
 
             var message = new TestMessage()
@@ -41,11 +43,19 @@ namespace AFBus.Tests
 
             var serializer = new JSONSerializer();
             IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
+            bus.Context = new AFBusMessageContext();
+
             bus.SendAsync(message, SERVICENAME).Wait();
 
             var stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
 
-            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(stringMessage, new JsonSerializerSettings()
+            var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+            });
+
+            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
@@ -58,6 +68,8 @@ namespace AFBus.Tests
         [TestMethod]
         public void Bus_SendAsync_DelayedMessage()
         {
+            QueueReader.CleanQueue(SERVICENAME).Wait();
+
             var message = new TestMessage()
             {
                 SomeData = "delayed"
@@ -65,9 +77,10 @@ namespace AFBus.Tests
 
             var serializer = new JSONSerializer();
             IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
+            bus.Context = new AFBusMessageContext();
 
             var before = DateTime.Now;
-            var timeDelayed = new TimeSpan(0, 0, 3);
+            var timeDelayed = new TimeSpan(0, 0, 5);
             bus.SendAsync(message, SERVICENAME, timeDelayed).Wait();
 
             string stringMessage = null;
@@ -80,8 +93,13 @@ namespace AFBus.Tests
 
             var after = DateTime.Now;
 
+            var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+            });
 
-            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(stringMessage, new JsonSerializerSettings()
+            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple

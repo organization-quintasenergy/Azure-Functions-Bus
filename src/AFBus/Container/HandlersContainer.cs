@@ -38,7 +38,8 @@ namespace AFBus
 
                 AddDependency<ISerializeMessages, JSONSerializer>();
                 AddDependency<ISagaLocker, SagaAzureStorageLocker>();
-                
+                AddDependency<ISendMessages, AzureStorageQueueSendTransport>(SolveDependency<ISerializeMessages>());
+
                 this.serializer = SolveDependency<ISerializeMessages>();
                 this.sagaLocker = SolveDependency<ISagaLocker>();
                 AddDependency<ISagaStoragePersistence, SagaAzureStoragePersistence>(this.sagaLocker as ISagaLocker, this.lockSaga);
@@ -87,7 +88,10 @@ namespace AFBus
             var dependencyInfo = dependencies[typeof(I)];
 
             if (dependencyInfo.instance == null)
+            {              
                 return (I)Activator.CreateInstance(dependencyInfo.ConcreteType, dependencyInfo.args);
+
+            }
             else
                 return (I)dependencyInfo.instance;
         }
@@ -203,20 +207,86 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        public async Task HandleAsync<T>(T message, TraceWriter log) where T : class
-        {
+        internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        {            
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));
 
-            await InvokeStatelessHandlers(message, log).ConfigureAwait(false);
+            //still sometime to wait, go back to queue
+            if(messageContext.MessageDelayedTime !=null && messageContext.MessageDelayedTime > TimeSpan.Zero)
+            {
+                var transport = SolveDependency<ISendMessages>();
 
-            await InvokeSagaHandlers(message, log).ConfigureAwait(false);
-           
+                var differenceUntilFinalWakeUp = messageContext.MessageFinalWakeUpTimeStamp.Value - DateTime.UtcNow;
+
+                if (differenceUntilFinalWakeUp > TimeSpan.FromSeconds(1))
+                {
+                    if (differenceUntilFinalWakeUp >= transport.MaxDelay())
+                    {
+                        messageContext.MessageDelayedTime = transport.MaxDelay();
+                    }
+                    else
+                    {
+                        messageContext.MessageDelayedTime = differenceUntilFinalWakeUp;
+                    }
+
+
+                    await transport.SendMessageAsync(message, messageContext.Destination, messageContext);
+
+                    return;
+                }
+            }
+
+            await InvokeStatelessHandlers(message, messageContext, log).ConfigureAwait(false);
+
+            await InvokeSagaHandlers(message, messageContext, log).ConfigureAwait(false);
+          
+        }
+
+        /// <summary>
+        /// Deserializes and invokes the handlers.
+        /// </summary>
+        /// <param name="serializedMessage"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public async Task HandleAsync(string serializedMessage, TraceWriter log)
+        {
+
+            var deserializedMessageWrapper = serializer.Deserialize(serializedMessage) as AFBusMessageEnvelope;
+
+            var deserializedMessage = serializer.Deserialize(deserializedMessageWrapper.Body);
+            
+            await HandleAsync(deserializedMessage, deserializedMessageWrapper.Context, log).ConfigureAwait(false);
 
         }
 
-        private async Task InvokeSagaHandlers<T>(T message, TraceWriter log) where T : class
+        /// <summary>
+        /// Calls each function referenced by each message in the dictionary.
+        /// </summary>
+        public async Task HandleAsync<T>(T message, TraceWriter log) where T : class
+        {
+            if(message.GetType()==typeof(AFBusMessageEnvelope))
+            {
+                throw new Exception("AFBusMessageEnvelope type not permited");
+            }
+
+            if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
+                throw new Exception("Handler not found for this message." + serializer.Serialize(message));
+
+            var messageContext = new AFBusMessageContext()
+            {
+                MessageID = Guid.NewGuid(),
+                TransactionID = Guid.NewGuid()
+            };
+
+            await InvokeStatelessHandlers(message, messageContext, log).ConfigureAwait(false);
+
+            await InvokeSagaHandlers(message, messageContext, log).ConfigureAwait(false);
+
+        }
+
+        private async Task InvokeSagaHandlers<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
         {
             //The message can not be executed in a Saga
             if (!messageToSagaDictionary.ContainsKey(message.GetType()))
@@ -240,9 +310,14 @@ namespace AFBus
 
                     if (sagaData != null)
                     {
-                        sagaDynamic.Data = sagaData;                      
+                        sagaDynamic.Data = sagaData;
 
-                        object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
+                        var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                        {
+                            Context = messageContext
+                        };
+
+                        object[] parametersArray = new object[] {bus , message, log };
 
                         await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
@@ -256,9 +331,13 @@ namespace AFBus
                 sagaMessageToMethod = sagaInfo.MessagesThatActivateTheSaga.FirstOrDefault(m => m.Message == message.GetType());
                 //if not => create
                 if (!instantiated && sagaMessageToMethod!=null)
-                {                            
-                    
-                    object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
+                {
+                    var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                    {
+                        Context = messageContext
+                    };
+
+                    object[] parametersArray = new object[] { bus, message, log };
                    
                     await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);                    
                                        
@@ -273,7 +352,7 @@ namespace AFBus
             }
         }
 
-        private async Task InvokeStatelessHandlers<T>(T message, TraceWriter log) where T : class
+        private async Task InvokeStatelessHandlers<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
         {
             //The message can not be executed in a stateless handler
             if (!messageHandlersDictionary.ContainsKey(message.GetType()))
@@ -284,8 +363,13 @@ namespace AFBus
             foreach (var t in handlerTypeList)
             {
                 var handler = CreateInstance(t);
-                
-                object[] parametersArray = new object[] { new Bus(serializer, new AzureStorageQueueSendTransport(serializer)), message, log };
+
+                var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                {
+                    Context = messageContext
+                };
+
+                object[] parametersArray = new object[] { bus, message, log };
 
                 var methodsToInvoke = t.GetMethods().Where(m => m.GetParameters().Any(p => p.ParameterType == message.GetType()));
                                
@@ -313,19 +397,6 @@ namespace AFBus
             return Activator.CreateInstance(instanceType, args);
         }
 
-        /// <summary>
-        /// Deserializes and invokes the handlers.
-        /// </summary>
-        /// <param name="serializedMessage"></param>
-        /// <param name="log"></param>
-        /// <returns></returns>
-        public async Task HandleAsync(string serializedMessage, TraceWriter log)
-        {            
 
-            var deserializedMessage = serializer.Deserialize(serializedMessage);
-
-            await HandleAsync(deserializedMessage,log).ConfigureAwait(false);
-            
-        }
     }
 }

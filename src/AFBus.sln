@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UIExample", "SolutionExampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSaga.Tests", "SolutionExample\Sagas\OrderSaga.Tests\OrderSaga.Tests.csproj", "{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFBusCore", "AFBusCore\AFBusCore.csproj", "{54CBDB12-356B-4851-B4EF-0784D9CF6617}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AFBusCore.Tests", "AFBusCore.Tests\AFBusCore.Tests.csproj", "{DBD38718-30B0-4012-9306-DF3BA41D73FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +81,14 @@ Global
 		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54CBDB12-356B-4851-B4EF-0784D9CF6617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54CBDB12-356B-4851-B4EF-0784D9CF6617}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54CBDB12-356B-4851-B4EF-0784D9CF6617}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54CBDB12-356B-4851-B4EF-0784D9CF6617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBD38718-30B0-4012-9306-DF3BA41D73FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBD38718-30B0-4012-9306-DF3BA41D73FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBD38718-30B0-4012-9306-DF3BA41D73FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBD38718-30B0-4012-9306-DF3BA41D73FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

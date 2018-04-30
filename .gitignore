@@ -37,3 +37,8 @@
 /src/SolutionExample/UI/UIExample/obj
 
 /src/SolutionExample/UI/UIExample/node_modules
+/src/AFBusCore.Tests/bin/Debug/netcoreapp2.0
+/src/AFBusCore/bin/Debug/netstandard2.0
+/src/AFBusCore/obj
+/src/AFBusCore.Tests/obj
+/src/AFBusCore/bin/Debug

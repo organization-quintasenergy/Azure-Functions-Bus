@@ -26,7 +26,7 @@ namespace AFBus
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile("appsettings.json",true).AddJsonFile("local.settings.json",true);
 
 
             Configuration = builder.Build();
@@ -34,8 +34,12 @@ namespace AFBus
 
         public static T GetSettings<T>(string settingName) where T : IConvertible
         {                       
-            return (T)Convert.ChangeType(System.Environment.GetEnvironmentVariable(settingName)?? Configuration[settingName], typeof(T)); 
-            
+            T value =  (T)Convert.ChangeType(System.Environment.GetEnvironmentVariable(settingName)?? Configuration[settingName], typeof(T));
+
+            if (value == null)
+                throw new Exception(settingName + " not found in the settings");
+
+            return value;
         }
     }
 }

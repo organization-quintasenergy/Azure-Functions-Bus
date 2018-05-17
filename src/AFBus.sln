@@ -31,9 +31,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UIExample", "SolutionExampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSaga.Tests", "SolutionExample\Sagas\OrderSaga.Tests\OrderSaga.Tests.csproj", "{2238B73D-18D0-46AA-8C5A-16C2CF3A251C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFBusCore", "AFBusCore\AFBusCore.csproj", "{54CBDB12-356B-4851-B4EF-0784D9CF6617}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AFBusCore", "AFBusCore\AFBusCore.csproj", "{54CBDB12-356B-4851-B4EF-0784D9CF6617}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AFBusCore.Tests", "AFBusCore.Tests\AFBusCore.Tests.csproj", "{DBD38718-30B0-4012-9306-DF3BA41D73FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF30BDFF-603C-4DB5-A2AB-A2283E7C51CE}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

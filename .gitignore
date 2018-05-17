@@ -4,6 +4,7 @@
 
 /src/packages
 /.vs/
+/src/AFBus/*.nupkg
 /src/AFBus/obj
 /src/AFBus/bin/
 /src/AFBus.Tests/obj/
@@ -35,7 +36,6 @@
 /src/SolutionExample/Sagas/OrderSaga.Tests/obj/Debug
 /src/SolutionExample/UI/UIExample/bin/Debug
 /src/SolutionExample/UI/UIExample/obj
-
 /src/SolutionExample/UI/UIExample/node_modules
 /src/AFBusCore.Tests/bin/Debug/netcoreapp2.0
 /src/AFBusCore/bin/Debug/netstandard2.0

@@ -8,7 +8,7 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
 * You can have sagas.
 
 ## First steps
-* Grab the [nuget package](https://www.nuget.org/packages/AFBus/) for AFBus.
+* Grab the [nuget package](https://www.nuget.org/packages/AFBusCore/) for AFBus.
 * Define the connection string in the host.json 
 ```json
 "Values": {
@@ -16,21 +16,14 @@ Azure Functions Bus is a simple framework that creates a message bus on top of t
   }
 ```
 
-or in the appconfig if you want to modify the tests 
+or in the appsettings.json or local.settings.json if you want to modify the tests 
 
-```xml
-    <configSections>
-        <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-            <section name="AFBus.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
-        </sectionGroup>
-    </configSections>
-    <applicationSettings>
-        <AFBus.Properties.Settings>
-            <setting name="StorageConnectionString" serializeAs="String">
-                <value>UseDevelopmentStorage=true</value>
-            </setting>
-        </AFBus.Properties.Settings>
-    </applicationSettings>
+```json
+{
+  "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+  "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+  "LockSagas": "True"
+}
 ```
 
 ## Recommended solution structure (Please see the SolutionExample folder)
@@ -81,10 +74,22 @@ Defining a stateless handler is just implementing the IHandle<MessageType> inter
 ```cs
     public class ShipOrderHandler : IHandle<ShipOrder>
     {
-        public async Task HandleAsync(IBus bus, ShipOrder message, ITraceWriter Log)
-        {           
-            //this sends a message to another endpoint            
-            await bus.SendAsync(new ShipOrderResponse() { UserName = "pablo" }, "ordersaga");            
+        IShippingRepository rep;
+
+        public ShipOrderHandler(IShippingRepository rep)
+        {
+            this.rep = rep;
+        }
+
+        public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
+        {
+            Log.Info("order shipped");
+
+            rep.AddOrderShipped(new OrderShipped { User = message.UserName });
+
+            await bus.SendAsync(new ShipOrderResponse() { UserName = message.UserName }, message.ReplyTo);
+
+            
         }
     }
 ```
@@ -138,8 +143,8 @@ Sagas are stateful components that orchestrates differents messages. In a saga y
         }
     }
 ```
-#### How to send a message out of a function
-Messages outside the framework can be launched using the SendOnlyBus class.
+#### How to send a message out of a handler
+Messages outside the AFBus framework can be launched using the SendOnlyBus class.
 
 ```cs
 SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
@@ -149,4 +154,55 @@ Messages inside the framework can be launched using the bus object parameter in 
 
 ```cs
 bus.SendAsync(new PayOrderResponse() { UserName = "pablo"}, message.ReplyTo);
+```
+
+
+#### Dependency Injection
+Dependency injection can be set using special methods for it
+
+Here a dependency is set in the static constructor
+```cs
+public static class ShippingService
+{
+    static HandlersContainer container = new HandlersContainer();
+
+    static ShippingService()
+    {
+        HandlersContainer.AddDependency<IShippingRepository, InMemoryShippingRepository>();
+    }
+
+
+    [FunctionName("ShippingServiceEndpointFunction")]
+    public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, TraceWriter log)
+    {
+        log.Info($"C# Queue trigger function processed: {myQueueItem}");
+
+        await container.HandleAsync(myQueueItem, log);
+    }
+}
+```
+
+Here the dependency is injected into the constructor
+```cs
+public class ShipOrderHandler : IHandle<ShipOrder>
+{
+
+    IShippingRepository rep;
+
+    public ShipOrderHandler(IShippingRepository rep)
+    {
+        this.rep = rep;
+    }
+
+    public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
+    {
+        Log.Info("order shipped");
+
+        rep.AddOrderShipped(new OrderShipped { User = message.UserName });
+
+        await bus.SendAsync(new ShipOrderResponse() { UserName = message.UserName }, message.ReplyTo);
+
+        
+    }
+}
 ```

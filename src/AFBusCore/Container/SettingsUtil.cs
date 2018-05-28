@@ -26,20 +26,25 @@ namespace AFBus
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json",true).AddJsonFile("local.settings.json",true);
+                .AddJsonFile("appsettings.json",true).AddJsonFile("host.json",true).AddJsonFile("local.settings.json", true);
 
 
             Configuration = builder.Build();
         }
 
         public static T GetSettings<T>(string settingName) where T : IConvertible
-        {                       
-            T value =  (T)Convert.ChangeType(System.Environment.GetEnvironmentVariable(settingName)?? Configuration[settingName], typeof(T));
+        {
+            try
+            {
+                T value = (T)Convert.ChangeType(System.Environment.GetEnvironmentVariable(settingName) ?? Configuration[settingName], typeof(T));
 
-            if (value == null)
-                throw new Exception(settingName + " not found in the settings");
-
-            return value;
+                return value;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(settingName + " not found in the local.settings.json or host.json or appsettings.json",ex);
+            }
+            
         }
     }
 }

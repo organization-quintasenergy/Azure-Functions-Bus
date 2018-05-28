@@ -7,10 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionExample", "Solution
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{554C4C7B-231E-447D-9A4F-9A4FBBE888DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFBus", "AFBus\AFBus.csproj", "{823C9F39-E2F4-4F6A-ACC4-36C4DAB521B3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFBus.Tests", "AFBus.Tests\AFBus.Tests.csproj", "{48E4DB04-35AE-42B7-B30C-2A57A5C2F1E9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sagas", "Sagas", "{1651633C-6107-42C4-A48F-4B565754EA60}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderSaga", "SolutionExample\Sagas\OrderSaga\OrderSaga.csproj", "{19B93CAA-047C-4ABA-A03E-1C2B5C5C63EC}"
@@ -46,14 +42,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{823C9F39-E2F4-4F6A-ACC4-36C4DAB521B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{823C9F39-E2F4-4F6A-ACC4-36C4DAB521B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{823C9F39-E2F4-4F6A-ACC4-36C4DAB521B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{823C9F39-E2F4-4F6A-ACC4-36C4DAB521B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48E4DB04-35AE-42B7-B30C-2A57A5C2F1E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48E4DB04-35AE-42B7-B30C-2A57A5C2F1E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48E4DB04-35AE-42B7-B30C-2A57A5C2F1E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48E4DB04-35AE-42B7-B30C-2A57A5C2F1E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19B93CAA-047C-4ABA-A03E-1C2B5C5C63EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19B93CAA-047C-4ABA-A03E-1C2B5C5C63EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19B93CAA-047C-4ABA-A03E-1C2B5C5C63EC}.Release|Any CPU.ActiveCfg = Release|Any CPU

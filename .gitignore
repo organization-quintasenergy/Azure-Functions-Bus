@@ -34,6 +34,7 @@
 /src/SolutionExample/Services/ShippingService.Messages/bin/Release
 /src/SolutionExample/Sagas/OrderSaga.Tests/bin/Debug
 /src/SolutionExample/Sagas/OrderSaga.Tests/obj/Debug
+/src/SolutionExample/Sagas/OrderSaga.Tests/obj/
 /src/SolutionExample/UI/UIExample/bin/Debug
 /src/SolutionExample/UI/UIExample/obj
 /src/SolutionExample/UI/UIExample/node_modules

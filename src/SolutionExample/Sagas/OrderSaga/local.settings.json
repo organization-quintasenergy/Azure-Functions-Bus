@@ -5,8 +5,8 @@
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "LockSagas": "True"
   },
-  "Host": {
-    "LocalHttpPort": 7071,
-    "CORS": "*"
-  }
+
+  "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+  "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+  "LockSagas": "True"
 }

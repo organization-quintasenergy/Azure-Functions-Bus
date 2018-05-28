@@ -15,9 +15,16 @@ namespace AFBus
             var deserialized = JsonConvert.DeserializeObject(input, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
-                
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+                                
             });
+
+            return deserialized;
+        }
+
+        public object Deserialize(string input, Type type)
+        {
+            var deserialized = JsonConvert.DeserializeObject(input, type);
 
             return deserialized;
         }

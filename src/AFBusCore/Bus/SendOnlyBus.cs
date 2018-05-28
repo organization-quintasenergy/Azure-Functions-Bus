@@ -23,7 +23,7 @@ namespace AFBus
             {
                 MessageID = Guid.NewGuid(),
                 TransactionID = Guid.NewGuid(),
-               
+                BodyType = typeof(T).AssemblyQualifiedName
             };
 
             if (initialVisibilityDelay != null)

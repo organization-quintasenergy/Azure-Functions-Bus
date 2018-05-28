@@ -76,20 +76,20 @@ namespace UIExample
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             CloudQueue queue = queueClient.GetQueueReference(UI_SERVICE_NAME.ToLower());
-            queue.CreateIfNotExists();
+            await queue.CreateIfNotExistsAsync();
 
 
             while (!cancellationToken.IsCancellationRequested)
             {               
                 // Get the next message
-                CloudQueueMessage retrievedMessage = queue.GetMessage();
+                CloudQueueMessage retrievedMessage = await queue.GetMessageAsync();
 
                 if (retrievedMessage != null)
                 {
                     await handlerContainer.HandleAsync(retrievedMessage.AsString, null);
 
                     //Process the message in less than 30 seconds, and then delete the message
-                    queue.DeleteMessage(retrievedMessage);
+                    await queue.DeleteMessageAsync(retrievedMessage);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);

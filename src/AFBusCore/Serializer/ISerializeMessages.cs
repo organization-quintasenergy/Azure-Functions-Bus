@@ -10,6 +10,8 @@ namespace AFBus
     {
         object Deserialize(string input);
 
+        object Deserialize(string input, Type type);
+
         string Serialize<T>(T input);
     }
 }

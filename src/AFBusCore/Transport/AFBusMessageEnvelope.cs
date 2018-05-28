@@ -16,6 +16,8 @@ namespace AFBus
 
         public DateTime? MessageFinalWakeUpTimeStamp { get; set; }
 
+        public string BodyType { get; set; }
+
         public string Destination { get; set; }
     }
 

@@ -2,7 +2,7 @@
   "profiles": {
     "ShippingService": {
       "commandName": "Project",
-      "commandLineArgs": "host start --pause-on-error --nodeDebugPort 5860"
+      "commandLineArgs": "%AppData%\\..\\Local\\AzureFunctionsTools\\Releases\\2.1.0\\cli\\func.dll host start --port 7073 --pause-on-error"
     }
   }
 }

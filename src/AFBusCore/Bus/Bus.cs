@@ -32,6 +32,7 @@ namespace AFBus
 
             Context.MessageID = Guid.NewGuid();
             Context.TransactionID = Context.TransactionID ?? Guid.NewGuid();
+            Context.BodyType = typeof(T).AssemblyQualifiedName;
 
             if (initialVisibilityDelay != null)
             {                

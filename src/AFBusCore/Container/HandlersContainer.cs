@@ -253,9 +253,9 @@ namespace AFBus
         public async Task HandleAsync(string serializedMessage, TraceWriter log)
         {
 
-            var deserializedMessageWrapper = serializer.Deserialize(serializedMessage) as AFBusMessageEnvelope;
+            var deserializedMessageWrapper = serializer.Deserialize(serializedMessage,typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
 
-            var deserializedMessage = serializer.Deserialize(deserializedMessageWrapper.Body);
+            var deserializedMessage = serializer.Deserialize(deserializedMessageWrapper.Body, Type.GetType(deserializedMessageWrapper.Context.BodyType));
             
             await HandleAsync(deserializedMessage, deserializedMessageWrapper.Context, log).ConfigureAwait(false);
 

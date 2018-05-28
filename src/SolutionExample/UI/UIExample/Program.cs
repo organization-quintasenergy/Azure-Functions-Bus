@@ -16,13 +16,13 @@ namespace UIExample
 
         public static void Main(string[] args)
         {
+            var wh = BuildWebHost(args);
 
-
-            BuildWebHost(args).Run();
+            wh.Run();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+            WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
                 .Build();
     }

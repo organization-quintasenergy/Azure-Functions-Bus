@@ -10,13 +10,13 @@ namespace ShippingService
 {
     public static class ShippingReadAPI
     {
-        [FunctionName("GetOrdersShipped")]
+      /*  [FunctionName("GetOrdersShipped")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
             // parse query parameter
-            string name = req.GetQueryNameValuePairs()
+            string name = req.RequestUri..GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
                 .Value;
 
@@ -29,6 +29,6 @@ namespace ShippingService
             return name == null
                 ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
                 : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
-        }
+        }*/
     }
 }

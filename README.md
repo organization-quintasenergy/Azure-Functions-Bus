@@ -206,3 +206,6 @@ public class ShipOrderHandler : IHandle<ShipOrder>
     }
 }
 ```
+
+#### UI Integration
+Look into AFBusService.cs in the ASP.NET Core example. There you can see how the UI receives commands and sends a SignalR message to the UI.

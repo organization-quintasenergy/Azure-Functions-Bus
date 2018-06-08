@@ -3,6 +3,7 @@ using AFBus.Tests;
 using AFBus.Tests.TestClasses;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace AFBus.Tests
 
        
         [TestMethod]
-        public void BigMessage_GoingToFileInSend()
+        public void BigMessage_Going_To_File_In_Send()
         {
             InvocationCounter.Instance.Reset();
 
@@ -36,6 +37,29 @@ namespace AFBus.Tests
             container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter==1);
+        }
+
+        [TestMethod]
+        public void BigMessage_BodyInFile_Flag_IsReseted()
+        {
+            var context = new AFBusMessageContext();
+
+            var messageSenderMock = new Mock<ISendMessages>();
+            messageSenderMock.Setup(m => m.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>(), context));
+                       
+            var message = new BigMessage();
+            message.Data = new string('*', 66000);
+
+            var serializer = new JSONSerializer();
+            IBus bus = new Bus(serializer, messageSenderMock.Object);
+            bus.Context = context;
+            bus.Context.BodyInFile = true;
+
+            bus.SendAsync(message, SERVICENAME).Wait();
+            
+
+            Assert.IsTrue(bus.Context.BodyInFile == false);
+
         }
     }
 

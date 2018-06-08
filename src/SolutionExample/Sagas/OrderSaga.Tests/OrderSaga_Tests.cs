@@ -19,7 +19,7 @@ namespace OrderSaga.Tests
 
             var busMock = new Mock<IBus>();
 
-            busMock.Setup<ISerializeMessages>(m => m.serializer).Returns(new JSONSerializer());
+            busMock.Setup<ISerializeMessages>(m => m.Serializer).Returns(new JSONSerializer());
 
             saga.HandleAsync(busMock.Object, new CartItemAdded() { ProductName = "any product", UserName = "username" }, null).Wait();
 
@@ -33,7 +33,7 @@ namespace OrderSaga.Tests
 
             var busMock = new Mock<IBus>();
 
-            busMock.Setup<ISerializeMessages>(m => m.serializer).Returns(new JSONSerializer());
+            busMock.Setup<ISerializeMessages>(m => m.Serializer).Returns(new JSONSerializer());
 
             busMock.Setup<Task>(m => m.SendAsync(It.IsAny<ShipOrder>(), It.IsAny<string>(),null)).Returns(Task.CompletedTask);
             busMock.Setup<Task>(m => m.SendAsync(It.IsAny<PayOrder>(), It.IsAny<string>(), null)).Returns(Task.CompletedTask);

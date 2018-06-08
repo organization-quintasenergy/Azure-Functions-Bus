@@ -13,7 +13,7 @@ namespace AFBus
         /// </summary>
         Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class;
         
-        ISerializeMessages serializer { get; }
+        ISerializeMessages Serializer { get; }
 
         AFBusMessageContext Context { get; set; }
     }

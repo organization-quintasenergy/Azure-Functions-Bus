@@ -20,7 +20,7 @@ namespace AFBus
             this.sender = sender;
         }
 
-        ISerializeMessages IBus.serializer => this.serializer;
+        ISerializeMessages IBus.Serializer => this.serializer;
 
         public AFBusMessageContext Context { get; set; }
 
@@ -33,6 +33,7 @@ namespace AFBus
             Context.MessageID = Guid.NewGuid();
             Context.TransactionID = Context.TransactionID ?? Guid.NewGuid();
             Context.BodyType = typeof(T).AssemblyQualifiedName;
+            Context.BodyInFile = false;
 
             if (initialVisibilityDelay != null)
             {                

@@ -27,7 +27,7 @@ namespace OrderSaga.Sagas
             {
                 this.Data.PartitionKey = PARTITION_KEY;
                 this.Data.RowKey = message.UserName;
-                this.Data.Products = bus.serializer.Serialize(productsList);
+                this.Data.Products = bus.Serializer.Serialize(productsList);
                 this.Data.UserName = message.UserName;
             }
             else

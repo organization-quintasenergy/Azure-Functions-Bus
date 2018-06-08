@@ -2560,7 +2560,7 @@
           "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {}
         }
       },
-      "AFBusCore/1.0.0-beta5": {
+      "AFBusCore/1.0.0-beta6": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
@@ -2578,7 +2578,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "AFBusCore": "1.0.0-beta5",
+          "AFBusCore": "1.0.0-beta6",
           "Microsoft.Azure.WebJobs": "3.0.0-beta5",
           "Microsoft.NET.Sdk.Functions": "1.0.13",
           "Newtonsoft.Json": "10.0.3",
@@ -8012,7 +8012,7 @@
         "windowsazure.storage.nuspec"
       ]
     },
-    "AFBusCore/1.0.0-beta5": {
+    "AFBusCore/1.0.0-beta6": {
       "type": "project",
       "path": "../../../AFBusCore/AFBusCore.csproj",
       "msbuildProject": "../../../AFBusCore/AFBusCore.csproj"
@@ -8040,7 +8040,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
-      "AFBusCore >= 1.0.0-beta5",
+      "AFBusCore >= 1.0.0-beta6",
       "MSTest.TestAdapter >= 1.2.1",
       "MSTest.TestFramework >= 1.2.1",
       "Microsoft.NET.Test.Sdk >= 15.7.0",

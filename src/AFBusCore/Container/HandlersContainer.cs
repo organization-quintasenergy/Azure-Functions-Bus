@@ -24,6 +24,7 @@ namespace AFBus
         private ISagaStoragePersistence sagaPersistence;
         private ISagaLocker sagaLocker;
         private ISerializeMessages serializer = null;
+        private ISendMessages messageSender;
         private bool lockSaga = false;
         
 
@@ -45,6 +46,7 @@ namespace AFBus
                 AddDependency<ISagaStoragePersistence, SagaAzureStoragePersistence>(this.sagaLocker as ISagaLocker, this.lockSaga);
 
                 sagaPersistence = SolveDependency<ISagaStoragePersistence>();
+                messageSender = SolveDependency<ISendMessages>();
 
                 var assemblies = new List<Assembly>();
 
@@ -255,9 +257,21 @@ namespace AFBus
 
             var deserializedMessageWrapper = serializer.Deserialize(serializedMessage,typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
 
-            var deserializedMessage = serializer.Deserialize(deserializedMessageWrapper.Body, Type.GetType(deserializedMessageWrapper.Context.BodyType));
+            string messageBody = deserializedMessageWrapper.Body;
+
+            if (deserializedMessageWrapper.Context.BodyInFile)
+            {
+                messageBody = await messageSender.ReadMessageBodyFromFileAsync(messageBody).ConfigureAwait(false);
+            }
+
+            var deserializedMessage = serializer.Deserialize(messageBody, Type.GetType(deserializedMessageWrapper.Context.BodyType));
             
             await HandleAsync(deserializedMessage, deserializedMessageWrapper.Context, log).ConfigureAwait(false);
+
+            if (deserializedMessageWrapper.Context.BodyInFile)
+            {
+                await messageSender.DeleteFileWithMessageBodyAsync(deserializedMessageWrapper.Body).ConfigureAwait(false);
+            }
 
         }
 

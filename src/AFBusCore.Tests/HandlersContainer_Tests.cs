@@ -25,6 +25,8 @@ namespace AFBus.Tests
         [TestMethod]
         public void HandlersContainer_IHandleTypesAreCorrectlyInvoked()
         {
+            InvocationCounter.Instance.Reset();
+
             var container = new HandlersContainer();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);

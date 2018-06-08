@@ -19,6 +19,8 @@ namespace AFBus
         public string BodyType { get; set; }
 
         public string Destination { get; set; }
+
+        public bool BodyInFile { get; set; }
     }
 
     public class AFBusMessageEnvelope

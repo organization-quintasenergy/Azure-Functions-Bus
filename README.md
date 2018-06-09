@@ -208,4 +208,8 @@ public class ShipOrderHandler : IHandle<ShipOrder>
 ```
 
 #### UI Integration
-Look into AFBusService.cs in the ASP.NET Core example. There you can see how the UI receives commands and sends a SignalR message to the UI.
+Look into AFBusService.cs in the ASP.NET Core example. There you can see how the UI receives commands in its own queue and sends a SignalR message to the UI.
+
+
+#### Big messages in commands
+If messages are bigger than 65k the body of it is saved in a blob storage that will be read in the reception.

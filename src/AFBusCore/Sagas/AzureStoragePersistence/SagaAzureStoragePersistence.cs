@@ -54,7 +54,7 @@ namespace AFBus
 
             
             // Create the TableOperation object that inserts the customer entity.
-            TableOperation insertOperation = TableOperation.InsertOrReplace(entity as ITableEntity);
+            TableOperation insertOperation = TableOperation.Insert(entity as ITableEntity);
 
             // Execute the insert operation.
             await table.ExecuteAsync(insertOperation).ConfigureAwait(false);

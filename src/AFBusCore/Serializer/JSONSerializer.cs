@@ -16,6 +16,7 @@ namespace AFBus
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind
                                 
             });
 
@@ -34,7 +35,8 @@ namespace AFBus
             return JsonConvert.SerializeObject(input, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind
             });
         }
     }

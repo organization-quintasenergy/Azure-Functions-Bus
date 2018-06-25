@@ -316,28 +316,39 @@ namespace AFBus
 
                 //try to load saga from repository
                 if (sagaMessageToMethod!=null)
-                {                        
-
+                {
+                    var locker = new SagaAzureStorageLocker();
                     object[] lookForInstanceParametersArray = new object[] { message };
-                    sagaDynamic.SagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), this.lockSaga);  
+                    sagaDynamic.SagaPersistence = new SagaAzureStoragePersistence(locker, this.lockSaga);  
                     dynamic sagaData = await ((Task<SagaData>)sagaMessageToMethod.CorrelatingMethod.Invoke(saga, lookForInstanceParametersArray)).ConfigureAwait(false);
 
                     if (sagaData != null)
                     {
-                        sagaDynamic.Data = sagaData;
-
-                        var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                        try
                         {
-                            Context = messageContext
-                        };
+                            sagaDynamic.Data = sagaData;
 
-                        object[] parametersArray = new object[] {bus , message, log };
+                            var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                            {
+                                Context = messageContext
+                            };
 
-                        await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
+                            object[] parametersArray = new object[] { bus, message, log };
 
-                        await sagaPersistence.Update(sagaDynamic.Data).ConfigureAwait(false);
+                            await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
-                        instantiated = true;
+                            await sagaPersistence.Update(sagaDynamic.Data).ConfigureAwait(false);
+
+                            instantiated = true;
+                        }
+                        catch(Exception ex)
+                        {
+                            //if there is an error release the lock.
+                            log?.Error(ex.Message,ex);
+                            var sagaID = sagaData.PartitionKey + sagaData.RowKey;
+                            await locker.ReleaseLock(sagaID, sagaData.LockID);
+                            throw ex;
+                        }
                     }
                 }
 

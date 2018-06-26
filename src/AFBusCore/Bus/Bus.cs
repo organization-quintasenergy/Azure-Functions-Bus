@@ -28,26 +28,28 @@ namespace AFBus
         /// Sends a message to a queue named like the service.
         /// </summary>
         public async Task SendAsync<T>(T input, string serviceName, TimeSpan? initialVisibilityDelay = null) where T : class
-        {           
+        {
+            var newContext = new AFBusMessageContext();
 
-            Context.MessageID = Guid.NewGuid();
-            Context.TransactionID = Context.TransactionID ?? Guid.NewGuid();
-            Context.BodyType = typeof(T).AssemblyQualifiedName;
-            Context.BodyInFile = false;
+            newContext.MessageID = Guid.NewGuid();
+            newContext.TransactionID = Context.TransactionID ?? Guid.NewGuid();
+            newContext.BodyType = typeof(T).AssemblyQualifiedName;
+            newContext.BodyInFile = false;
+            newContext.Destination = serviceName;
 
             if (initialVisibilityDelay != null)
-            {                
-                Context.MessageDelayedTime = initialVisibilityDelay;
-                Context.MessageFinalWakeUpTimeStamp = DateTime.UtcNow + initialVisibilityDelay;
+            {
+                newContext.MessageDelayedTime = initialVisibilityDelay;
+                newContext.MessageFinalWakeUpTimeStamp = DateTime.UtcNow + initialVisibilityDelay;
             }
             else
             {
-                Context.MessageDelayedTime = null;
-                Context.MessageFinalWakeUpTimeStamp = null;
+                newContext.MessageDelayedTime = null;
+                newContext.MessageFinalWakeUpTimeStamp = null;
             }
             
 
-            await sender.SendMessageAsync(input, serviceName, Context).ConfigureAwait(false);
+            await sender.SendMessageAsync(input, serviceName, newContext).ConfigureAwait(false);
            
         }
     }

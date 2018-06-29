@@ -30,7 +30,7 @@ namespace AFBusCore.Sagas.AzureStoragePersistence
 
             await blockBlob.UploadTextAsync(jsonSerializer.Serialize(property));
 
-            wrapper.PropertyType = typeof(T);
+            wrapper.PropertyType = typeof(T).AssemblyQualifiedName;
             wrapper.FileName = blockBlob.Name;
 
             return jsonSerializer.Serialize(wrapper);
@@ -53,7 +53,7 @@ namespace AFBusCore.Sagas.AzureStoragePersistence
 
             var fileContent=await blockBlob.DownloadTextAsync();
                        
-            return (T)jsonSerializer.Deserialize(fileContent,wrapper.PropertyType);
+            return (T)jsonSerializer.Deserialize(fileContent, Type.GetType(wrapper.PropertyType));
 
         }
 
@@ -80,7 +80,7 @@ namespace AFBusCore.Sagas.AzureStoragePersistence
         {
             public string FileName { get; set; }
 
-            public Type PropertyType { get; set; }
+            public string PropertyType { get; set; }
         }
     }
 

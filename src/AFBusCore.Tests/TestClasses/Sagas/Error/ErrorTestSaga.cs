@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class ErrorTestSaga : Saga<ErrorTestSagaData>, IHandleStartingSaga<ErrorSagaStartingMessage>, IHandleWithCorrelation<ErrorSagaIntermediateMessage>, IHandleWithCorrelation<ErrorSagaTerminatingMessage>
+    public class ErrorTestSaga : Saga<ErrorTestSagaData>, IHandleCommandStartingSaga<ErrorSagaStartingMessage>, IHandleCommandWithCorrelation<ErrorSagaIntermediateMessage>, IHandleCommandWithCorrelation<ErrorSagaTerminatingMessage>
     {
         public static string PARTITION_KEY = "ErrorTestSaga";
 
 
-        public Task HandleAsync(IBus bus, ErrorSagaStartingMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, ErrorSagaStartingMessage input, TraceWriter Log)
         {
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -23,14 +23,14 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        public Task HandleAsync(IBus bus, ErrorSagaIntermediateMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, ErrorSagaIntermediateMessage input, TraceWriter Log)
         {
             throw new Exception();
 
-            return Task.CompletedTask;
+           
         }
 
-        public async Task HandleAsync(IBus bus, ErrorSagaTerminatingMessage message, TraceWriter Log)
+        public async Task HandleCommandAsync(IBus bus, ErrorSagaTerminatingMessage message, TraceWriter Log)
         {
             await this.DeleteSaga();
         }

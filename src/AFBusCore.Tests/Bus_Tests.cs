@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AFBus.Tests.TestClasses;
 using System.Diagnostics;
+using Moq;
 
 namespace AFBus.Tests
 {
@@ -11,11 +12,12 @@ namespace AFBus.Tests
     public class Bus_Tests
     {
         readonly static string SERVICENAME = "FAKESERVICE";
+        readonly static string TOPICNAME = "FAKETOPIC";
 
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
-            QueueReader.CleanQueue(SERVICENAME).Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
 
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -32,7 +34,7 @@ namespace AFBus.Tests
         [TestMethod]
         public void Bus_SendAsync_Nominal()
         {
-            QueueReader.CleanQueue(SERVICENAME).Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
 
             var id = Guid.NewGuid();
 
@@ -42,12 +44,13 @@ namespace AFBus.Tests
             };
 
             var serializer = new JSONSerializer();
-            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
+            var publisher = new Mock<IPublishEvents>();
+            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer), publisher.Object);
             bus.Context = new AFBusMessageContext();
 
             bus.SendAsync(message, SERVICENAME).Wait();
 
-            var stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
 
             var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
             {
@@ -69,7 +72,7 @@ namespace AFBus.Tests
         [TestMethod]
         public void Bus_SendAsync_DelayedMessage()
         {
-            QueueReader.CleanQueue(SERVICENAME).Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
 
             var message = new TestMessage()
             {
@@ -77,7 +80,8 @@ namespace AFBus.Tests
             };
 
             var serializer = new JSONSerializer();
-            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
+            var publisher = new Mock<IPublishEvents>();
+            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer), publisher.Object);
             bus.Context = new AFBusMessageContext();
 
             var before = DateTime.Now;
@@ -88,7 +92,7 @@ namespace AFBus.Tests
 
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 
@@ -107,6 +111,43 @@ namespace AFBus.Tests
             });
 
             Assert.IsTrue(after-before> timeDelayed,"Delay failed");
+        }
+
+        [TestMethod]
+        public void Bus_PublishAsync_Nominal()
+        {
+           
+            var id = Guid.NewGuid();
+
+            var message = new TestMessage()
+            {
+                SomeData = id.ToString()
+            };
+
+            var serializer = new JSONSerializer();
+            var publisher = new AzureServiceBusPublishTransport(serializer);
+            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer), publisher);
+            bus.Context = new AFBusMessageContext();
+
+            bus.PublishAsync(message, TOPICNAME).Wait();
+
+           /* var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
+
+            var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+
+            });
+
+            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+            });
+
+            Assert.IsTrue(id.ToString() == finalMessage.SomeData);*/
+
         }
     }
 }

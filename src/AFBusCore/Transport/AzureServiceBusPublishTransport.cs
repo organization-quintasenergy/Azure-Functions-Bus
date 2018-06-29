@@ -1,44 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Queue;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AFBus
 {
-    class AzureStorageQueueSendTransport : ISendMessages
+    public class AzureServiceBusPublishTransport : IPublishEvents
     {
-        private const int MAX_MESSAGE_SIZE = 65536;
+        private const int MAX_MESSAGE_SIZE = 256000;
         private const string CONTAINER_NAME = "bigmessages";
         ISerializeMessages serializer;
 
-        private static HashSet<string> createdQueues = new HashSet<string>();
-
-        public AzureStorageQueueSendTransport(ISerializeMessages serializer)
+        public AzureServiceBusPublishTransport(ISerializeMessages serializer)
         {
             this.serializer = serializer;
         }
 
-        public async Task SendMessageAsync<T>(T message, string serviceName, AFBusMessageContext messageContext) where T : class
+        public async Task PublishEventsAsync<T>(T message, string topicName, AFBusMessageContext messageContext) where T : class
         {
-            serviceName = serviceName.ToLower();
-
+            
+            var sender = new MessageSender(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_SERVICEBUS), topicName.ToLower());
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-            CloudQueue queue = queueClient.GetQueueReference(serviceName);
-
-            if (!createdQueues.Contains(serviceName))
-            {
-                await queue.CreateIfNotExistsAsync();
-                createdQueues.Add(serviceName);
-            }
-            
-            
             var messageAsString = serializer.Serialize(message);
 
             var messageWithEnvelope = new AFBusMessageEnvelope()
@@ -47,20 +35,20 @@ namespace AFBus
                 Body = messageAsString
             };
 
-            messageContext.Destination = serviceName;
+            messageContext.Destination = topicName;
 
             TimeSpan? initialVisibilityDelay = null;
 
-            if (messageContext.MessageDelayedTime != null && messageContext.MessageDelayedTime >=  MaxDelay())
+            if (messageContext.MessageDelayedTime != null && messageContext.MessageDelayedTime >= MaxDelay())
             {
                 initialVisibilityDelay = MaxDelay();
-               
+
                 messageContext.MessageDelayedTime = MaxDelay();
             }
             else if (messageContext.MessageDelayedTime != null)
             {
                 initialVisibilityDelay = messageContext.MessageDelayedTime;
-                
+
             }
 
             if (messageContext.MessageDelayedTime != null && initialVisibilityDelay.Value < TimeSpan.Zero)
@@ -73,7 +61,7 @@ namespace AFBus
             var finalMessage = serializer.Serialize(messageWithEnvelope);
 
             //if the message is bigger than the limit put the body in the blob storage
-            if((finalMessage.Length * sizeof(Char))> MAX_MESSAGE_SIZE)
+            if ((finalMessage.Length * sizeof(Char)) > MAX_MESSAGE_SIZE)
             {
                 var fileName = Guid.NewGuid().ToString("N").ToLower() + ".afbus";
                 messageWithEnvelope.Context.BodyInFile = true;
@@ -92,14 +80,24 @@ namespace AFBus
                 finalMessage = serializer.Serialize(messageWithEnvelope);
             }
 
-            await queue.AddMessageAsync(new CloudQueueMessage(finalMessage), null, initialVisibilityDelay, null, null).ConfigureAwait(false);
+
+            var finalSBMessage = new Message(Encoding.UTF8.GetBytes(finalMessage))
+            {
+                ContentType = "application/json",
+                Label = topicName,
+                MessageId = messageContext.MessageID.ToString(),
+                TimeToLive = TimeSpan.FromDays(10)               
+            };
+
+            if (messageContext.MessageDelayedTime.HasValue)
+                finalSBMessage.ScheduledEnqueueTimeUtc = DateTime.UtcNow + messageContext.MessageDelayedTime.Value;
+
+
+            await sender.SendAsync(finalSBMessage).ConfigureAwait(false); 
+            
         }
 
-        public virtual TimeSpan MaxDelay()
-        {
-            return new TimeSpan(7, 0, 0, 0);
-        }
-
+       
         public async Task<string> ReadMessageBodyFromFileAsync(string fileName)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
@@ -112,7 +110,7 @@ namespace AFBus
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             return await blockBlob.DownloadTextAsync();
 
-           
+
         }
 
         public async Task DeleteFileWithMessageBodyAsync(string fileName)
@@ -131,6 +129,11 @@ namespace AFBus
         public int MaxMessageSize()
         {
             return MAX_MESSAGE_SIZE;
+        }
+
+        public virtual TimeSpan MaxDelay()
+        {
+            return new TimeSpan(7, 0, 0, 0);
         }
     }
 }

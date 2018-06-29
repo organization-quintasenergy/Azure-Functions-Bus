@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class SimpleTestSaga : Saga<SimpleTestSagaData>, IHandleStartingSaga<SimpleSagaStartingMessage>,  IHandleWithCorrelation<SimpleSagaIntermediateMessage>, IHandleWithCorrelation<SimpleSagaTerminatingMessage>
+    public class SimpleTestSaga : Saga<SimpleTestSagaData>, IHandleCommandStartingSaga<SimpleSagaStartingMessage>,  IHandleCommandWithCorrelation<SimpleSagaIntermediateMessage>, IHandleCommandWithCorrelation<SimpleSagaTerminatingMessage>
     {
         private const string PARTITION_KEY = "SimpleTestSaga";
 
         
-        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SimpleSagaStartingMessage input, TraceWriter Log)
         {           
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -23,7 +23,7 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SimpleSagaIntermediateMessage input, TraceWriter Log)
         {
             this.Data.Counter++;
 
@@ -32,7 +32,7 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, TraceWriter Log)
+        public async Task HandleCommandAsync(IBus bus, SimpleSagaTerminatingMessage message, TraceWriter Log)
         {
             await this.DeleteSaga();
         }

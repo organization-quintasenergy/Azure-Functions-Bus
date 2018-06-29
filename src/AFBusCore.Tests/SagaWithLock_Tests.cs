@@ -28,10 +28,10 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
-            container.HandleAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
                         
             //non correlating message
-            container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = Guid.NewGuid() }, null).Wait();          
+            container.HandleCommandAsync(new SimpleSagaIntermediateMessage() { Id = Guid.NewGuid() }, null).Wait();          
             
         }
 
@@ -44,10 +44,10 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
-            container.HandleAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
 
             for(int i=0;i<10;i++)
-                container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
+                container.HandleCommandAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
 
             var lockSaga = false;
             var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);
@@ -56,7 +56,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(sagaData.Counter == 11);
 
-            container.HandleAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
-            container.HandleAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
 
             Parallel.For(0, 10, i =>
             {
@@ -78,7 +78,7 @@ namespace AFBus.Tests
                 {
                     try
                     {
-                        container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
+                        container.HandleCommandAsync(new SimpleSagaIntermediateMessage() { Id = sagaId }, null).Wait();
                         retry = false;
                     }
                     catch(Exception)
@@ -98,7 +98,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 11);
             
-            container.HandleAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
 
         [TestMethod]
@@ -110,9 +110,9 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SingletonSagaStartingMessage)].Count == 1);
 
-            container.HandleAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
            
-            container.HandleAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleCommandAsync(new SingletonSagaStartingMessage() { Id = sagaId }, null).Wait();
 
             var lockSaga = false;
             var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);

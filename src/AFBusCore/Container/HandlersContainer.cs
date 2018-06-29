@@ -40,6 +40,7 @@ namespace AFBus
                 AddDependency<ISerializeMessages, JSONSerializer>();
                 AddDependency<ISagaLocker, SagaAzureStorageLocker>();
                 AddDependency<ISendMessages, AzureStorageQueueSendTransport>(SolveDependency<ISerializeMessages>());
+                AddDependency<IPublishEvents, AzureServiceBusPublishTransport>(SolveDependency<ISerializeMessages>());
 
                 this.serializer = SolveDependency<ISerializeMessages>();
                 this.sagaLocker = SolveDependency<ISagaLocker>();
@@ -128,7 +129,7 @@ namespace AFBus
                 sagaInfo.SagaType = s;
 
                 //messages with correlation
-                var interfacesWithCorrelation = s.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleWithCorrelation<>));
+                var interfacesWithCorrelation = s.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleCommandWithCorrelation<>));
                 var messageTypes = interfacesWithCorrelation.Select(i => i.GetGenericArguments()[0]).ToList();                
                 sagaInfo.MessagesThatAreCorrelatedByTheSaga = interfacesWithCorrelation.
                                                                     Select(
@@ -140,7 +141,7 @@ namespace AFBus
                                                                            }).ToList();
 
                 //messages starting sagas
-                var interfacesStartingSagas = s.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleStartingSaga<>));
+                var interfacesStartingSagas = s.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleCommandStartingSaga<>));
                 var startingMessageTypes = interfacesStartingSagas.Select(i => i.GetGenericArguments()[0]);
                 sagaInfo.MessagesThatActivateTheSaga = interfacesStartingSagas.
                                                                     Select(
@@ -252,7 +253,7 @@ namespace AFBus
         /// <param name="serializedMessage"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public async Task HandleAsync(string serializedMessage, TraceWriter log)
+        public async Task HandleCommandAsync(string serializedMessage, TraceWriter log)
         {
 
             var deserializedMessageWrapper = serializer.Deserialize(serializedMessage,typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
@@ -278,7 +279,7 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        public async Task HandleAsync<T>(T message, TraceWriter log) where T : class
+        public async Task HandleCommandAsync<T>(T message, TraceWriter log) where T : class
         {
             if(message.GetType()==typeof(AFBusMessageEnvelope))
             {
@@ -328,7 +329,7 @@ namespace AFBus
                         {
                             sagaDynamic.Data = sagaData;
 
-                            var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                            var bus = new Bus(serializer, SolveDependency<ISendMessages>(), SolveDependency<IPublishEvents>())
                             {
                                 Context = messageContext
                             };
@@ -357,7 +358,7 @@ namespace AFBus
                 //if not => create
                 if (!instantiated && sagaMessageToMethod!=null)
                 {
-                    var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                    var bus = new Bus(serializer, SolveDependency<ISendMessages>(), SolveDependency<IPublishEvents>())
                     {
                         Context = messageContext
                     };
@@ -389,7 +390,7 @@ namespace AFBus
             {
                 var handler = CreateInstance(t);
 
-                var bus = new Bus(serializer, SolveDependency<ISendMessages>())
+                var bus = new Bus(serializer, SolveDependency<ISendMessages>(), SolveDependency<IPublishEvents>())
                 {
                     Context = messageContext
                 };

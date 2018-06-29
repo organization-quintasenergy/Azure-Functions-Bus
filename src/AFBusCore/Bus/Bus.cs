@@ -13,11 +13,13 @@ namespace AFBus
     {
         ISerializeMessages serializer; 
         ISendMessages sender;
+        IPublishEvents publisher;
 
-        internal Bus(ISerializeMessages serializer, ISendMessages sender)
+        internal Bus(ISerializeMessages serializer, ISendMessages sender, IPublishEvents publisher)
         {
             this.serializer = serializer;
             this.sender = sender;
+            this.publisher = publisher;
         }
 
         ISerializeMessages IBus.Serializer => this.serializer;
@@ -51,6 +53,31 @@ namespace AFBus
 
             await sender.SendMessageAsync(input, serviceName, newContext).ConfigureAwait(false);
            
+        }
+
+        public async Task PublishAsync<T>(T input, string topic, TimeSpan? initialVisibilityDelay = null) where T : class
+        {
+            var newContext = new AFBusMessageContext();
+
+            newContext.MessageID = Guid.NewGuid();
+            newContext.TransactionID = Context.TransactionID ?? Guid.NewGuid();
+            newContext.BodyType = typeof(T).AssemblyQualifiedName;
+            newContext.BodyInFile = false;
+            newContext.Destination = topic;
+
+            if (initialVisibilityDelay != null)
+            {
+                newContext.MessageDelayedTime = initialVisibilityDelay;
+                newContext.MessageFinalWakeUpTimeStamp = DateTime.UtcNow + initialVisibilityDelay;
+            }
+            else
+            {
+                newContext.MessageDelayedTime = null;
+                newContext.MessageFinalWakeUpTimeStamp = null;
+            }
+
+
+            await publisher.PublishEventsAsync(input, topic, newContext).ConfigureAwait(false);
         }
     }
 }

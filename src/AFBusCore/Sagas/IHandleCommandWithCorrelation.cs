@@ -10,7 +10,7 @@ namespace AFBus
     /// <summary>
     /// This interface defines that a message will continue a saga. 
     /// </summary>
-    public interface IHandleWithCorrelation<MessageType>
+    public interface IHandleCommandWithCorrelation<MessageType>
     {
         /// <summary>
         /// Handles a message
@@ -18,7 +18,7 @@ namespace AFBus
         /// <param name="bus"></param>
         /// <param name="message"></param>
         /// <param name="Log"></param>
-        Task HandleAsync(IBus bus, MessageType message, TraceWriter log);
+        Task HandleCommandAsync(IBus bus, MessageType message, TraceWriter log);
 
         /// <summary>
         /// Defines how a message correlates to a saga instance

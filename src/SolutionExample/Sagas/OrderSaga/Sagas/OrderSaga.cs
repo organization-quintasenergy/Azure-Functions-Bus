@@ -12,13 +12,13 @@ using System.Threading.Tasks;
 
 namespace OrderSaga.Sagas
 {
-    public class OrderSaga : Saga<OrderSagaData>, IHandleStartingSaga<CartItemAdded>, IHandleWithCorrelation<CartItemAdded>, IHandleWithCorrelation<ProcessOrder>, IHandleWithCorrelation<ShipOrderResponse>, IHandleWithCorrelation<PayOrderResponse>
+    public class OrderSaga : Saga<OrderSagaData>, IHandleCommandStartingSaga<CartItemAdded>, IHandleCommandWithCorrelation<CartItemAdded>, IHandleCommandWithCorrelation<ProcessOrder>, IHandleCommandWithCorrelation<ShipOrderResponse>, IHandleCommandWithCorrelation<PayOrderResponse>
     {
         const string PARTITION_KEY = "OrderSaga";
         const string SERVICE_NAME = "ordersaga";
         const string UI_SERVICE_NAME = "uiexample";
 
-        public Task HandleAsync(IBus bus, CartItemAdded message, TraceWriter log)
+        public Task HandleCommandAsync(IBus bus, CartItemAdded message, TraceWriter log)
         {
             
             var productsList = new List<string>();
@@ -42,14 +42,14 @@ namespace OrderSaga.Sagas
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(IBus bus, ProcessOrder message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, ProcessOrder message, TraceWriter log)
         {
             await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "shippingservice");
 
             await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "paymentservice");
         }
 
-        public async Task HandleAsync(IBus bus, ShipOrderResponse message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, ShipOrderResponse message, TraceWriter log)
         {
             this.Data.Shipped = true;
             await EndOfOrder(bus, log);
@@ -58,7 +58,7 @@ namespace OrderSaga.Sagas
 
         
 
-        public async Task HandleAsync(IBus bus, PayOrderResponse message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, PayOrderResponse message, TraceWriter log)
         {
             this.Data.Payed = true;
 

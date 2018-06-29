@@ -1,6 +1,7 @@
 ﻿using System;
 using AFBus.Tests.TestClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Newtonsoft.Json;
 
 namespace AFBus.Tests
@@ -22,7 +23,7 @@ namespace AFBus.Tests
 
             SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
 
-            var stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
 
             var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
             {
@@ -42,7 +43,7 @@ namespace AFBus.Tests
         [TestMethod]
         public void SendOnlyBus_SendAsync_DelayedMessage()
         {
-            QueueReader.CleanQueue(SERVICENAME).Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
 
             var message = new TestMessage()
             {
@@ -50,7 +51,8 @@ namespace AFBus.Tests
             };
 
             var serializer = new JSONSerializer();
-            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer));
+            var publisher = new Mock<IPublishEvents>();
+            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer), publisher.Object);
 
             var before = DateTime.Now;
             var timeDelayed = new TimeSpan(0, 0, 3);
@@ -61,7 +63,7 @@ namespace AFBus.Tests
 
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 

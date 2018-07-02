@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using AFBus.Tests.TestClasses;
 using System.Diagnostics;
 using Moq;
+using Microsoft.Azure.EventHubs.Processor;
+using Microsoft.Azure.EventHubs;
 
 namespace AFBus.Tests
 {
@@ -114,10 +116,12 @@ namespace AFBus.Tests
         }
 
         [TestMethod]
-        public void Bus_PublishAsync_Nominal()
+        public void Bus_PublishAsync_EventHub_Nominal()
         {
            
             var id = Guid.NewGuid();
+
+            bool testOk = false;
 
             var message = new TestMessage()
             {
@@ -125,28 +129,43 @@ namespace AFBus.Tests
             };
 
             var serializer = new JSONSerializer();
-            var publisher = new AzureServiceBusPublishTransport(serializer);
+            var publisher = new AzureEventHubPublishTransport(serializer);
             IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer), publisher);
             bus.Context = new AFBusMessageContext();
 
             bus.PublishAsync(message, TOPICNAME).Wait();
 
-           /* var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
+            var eventProcessorHost = new EventProcessorHost(TOPICNAME, PartitionReceiver.DefaultConsumerGroupName, SettingsUtil.GetSettings<string>(SETTINGS.AZURE_EVENTHUB), SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE), "eventhubcontainer");
 
-            var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+            // Registers the Event Processor Host and starts receiving messages
+            var readingTask = eventProcessorHost.RegisterEventProcessorFactoryAsync(new AzureStreamProcessorFactory(stringMessage =>
+
             {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+                var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
 
-            });
+                });
 
-            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
-            });
+                var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+                });
 
-            Assert.IsTrue(id.ToString() == finalMessage.SomeData);*/
+                testOk = testOk || (id.ToString() == finalMessage.SomeData);
+            }));
+
+            
+
+            Task.Delay(5000).Wait();
+            
+
+            // Disposes of the Event Processor Host
+            eventProcessorHost.UnregisterEventProcessorAsync().Wait();
+
+            Assert.IsTrue(testOk);
 
         }
     }

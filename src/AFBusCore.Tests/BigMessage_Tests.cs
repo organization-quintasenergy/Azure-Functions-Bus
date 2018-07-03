@@ -36,7 +36,7 @@ namespace AFBus.Tests
 
             var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter==1);
         }
@@ -58,7 +58,7 @@ namespace AFBus.Tests
 
             var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(BlobReader.ListFilesAsync().Result.Count() == 0);
         }       

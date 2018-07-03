@@ -21,7 +21,7 @@ namespace PaymentService
         {
             log.Info($"PaymentServiceCommandReceiverFunction received a message: {myQueueItem}");
 
-            await container.HandleCommandAsync(myQueueItem, log);
+            await container.HandleAsync(myQueueItem, log);
         }
     }
 }

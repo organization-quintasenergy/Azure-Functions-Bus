@@ -2,7 +2,7 @@
   "profiles": {
     "OrderSaga": {
       "commandName": "Project",
-      "commandLineArgs": "%AppData%\\..\\Local\\AzureFunctionsTools\\Releases\\2.1.0\\cli\\func.dll host start --port 7071 --pause-on-error"
+      "commandLineArgs": "host start --port 7071 --pause-on-error"
     }
   }
 }

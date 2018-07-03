@@ -11,7 +11,7 @@ namespace AFBus.Tests
 {
     internal class QueueReader
     {
-        internal static async Task<string> ReadOneMessageFromQueue(string serviceName)
+        internal static async Task<string> ReadOneMessageFromQueueAsync(string serviceName)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
@@ -32,7 +32,7 @@ namespace AFBus.Tests
             
         }
 
-        internal static async Task<IEnumerable<string>> ReadEveryMessageFromQueue(string serviceName)
+        internal static async Task<IEnumerable<string>> ReadEveryMessageFromQueueAsync(string serviceName)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
@@ -54,7 +54,7 @@ namespace AFBus.Tests
         {
             IEnumerable<string> result;
 
-            while ((result = ReadEveryMessageFromQueue(serviceName).Result) != null && result.Count()>0)
+            while ((result = ReadEveryMessageFromQueueAsync(serviceName).Result) != null && result.Count()>0)
             {
                 foreach (var e in result)
                 {
@@ -66,7 +66,7 @@ namespace AFBus.Tests
             
         }
 
-        internal static async Task CleanQueue(string serviceName)
+        internal static async Task CleanQueueAsync(string serviceName)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 

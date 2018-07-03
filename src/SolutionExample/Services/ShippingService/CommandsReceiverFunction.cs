@@ -21,7 +21,7 @@ namespace ShippingService
         {
             log.Info($"C# Queue trigger function processed: {myQueueItem}");
 
-            await container.HandleAsync(myQueueItem, log);
+            await container.HandleCommandAsync(myQueueItem, log);
         }
     }
 }

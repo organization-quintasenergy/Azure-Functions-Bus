@@ -15,7 +15,7 @@ namespace OrderSaga
         {
             log.Info($"OrderSagaEndpointFunction message received: {orderSagaMessage}");
 
-            await container.HandleAsync(orderSagaMessage, log);
+            await container.HandleCommandAsync(orderSagaMessage, log);
         }
     }
 }

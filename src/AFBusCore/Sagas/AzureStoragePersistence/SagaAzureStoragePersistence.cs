@@ -23,7 +23,7 @@ namespace AFBus
             storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         }
 
-        public async Task CreateSagaPersistenceTable()
+        public async Task CreateSagaPersistenceTableAsync()
         {          
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -35,7 +35,7 @@ namespace AFBus
             await table.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
 
-        public async Task Insert(SagaData entity)
+        public async Task InsertAsync(SagaData entity)
         {
             var sagaID = entity.PartitionKey + entity.RowKey;
             var lockID = string.Empty;
@@ -65,7 +65,7 @@ namespace AFBus
             }
         }
 
-        public async Task Update(SagaData entity)
+        public async Task UpdateAsync(SagaData entity)
         {
             if (entity.IsDeleted)
                 return;
@@ -90,7 +90,7 @@ namespace AFBus
                 await sagaLock.ReleaseLock(sagaID, entity.LockID).ConfigureAwait(false);
         }
 
-        public async Task<T> GetSagaData<T>(string partitionKey, string rowKey) where T :SagaData
+        public async Task<T> GetSagaDataAsync<T>(string partitionKey, string rowKey) where T :SagaData
         {
             var sagaID = partitionKey + rowKey;
             var lockID = string.Empty;
@@ -123,7 +123,7 @@ namespace AFBus
             return result;
         }
 
-        public async Task Delete(SagaData entity)
+        public async Task DeleteAsync(SagaData entity)
         {
             entity.IsDeleted = true;
             entity.FinishingTimeStamp = DateTime.UtcNow;
@@ -156,6 +156,21 @@ namespace AFBus
             {
                 await sagaLock.DeleteLock(sagaID, entity.LockID);
             }*/
+        }
+
+        public async Task<List<T>> FindSagaDataAsync<T>(TableQuery<T> tableQuery) where T : SagaData, ITableEntity, new()
+        {
+
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+
+            CloudTable table = tableClient.GetTableReference(TABLE_NAME);
+           
+
+            // Execute the operation.
+            var result = await table.ExecuteQueryAsync(tableQuery).ConfigureAwait(false);
+                     
+
+            return result;
         }
     }
 }

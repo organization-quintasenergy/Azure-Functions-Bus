@@ -43,3 +43,4 @@
 /src/AFBusCore/obj
 /src/AFBusCore.Tests/obj
 /src/AFBusCore/bin/Debug
+/src/AFBusCore.Tests/gitignoreappsettings.json

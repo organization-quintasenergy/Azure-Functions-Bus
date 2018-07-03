@@ -15,7 +15,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(DIMessage)].Count == 1);
 
-            container.HandleCommandAsync(new DIMessage(), null).Wait();
+            container.HandleAsync(new DIMessage(), null).Wait();
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace AFBus.Tests
 
             try
             {
-                container.HandleCommandAsync(new DIMessage(), null).Wait();
+                container.HandleAsync(new DIMessage(), null).Wait();
             }
             catch (Exception ex)
             {

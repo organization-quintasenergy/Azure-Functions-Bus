@@ -267,7 +267,7 @@ namespace AFBus
         /// <param name="serializedMessage"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public async Task HandleCommandAsync(string serializedMessage, TraceWriter log)
+        public async Task HandleAsync(string serializedMessage, TraceWriter log)
         {
 
             var deserializedMessageWrapper = serializer.Deserialize(serializedMessage,typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
@@ -293,7 +293,7 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        public async Task HandleCommandAsync<T>(T message, TraceWriter log) where T : class
+        public async Task HandleAsync<T>(T message, TraceWriter log) where T : class
         {
             if(message.GetType()==typeof(AFBusMessageEnvelope))
             {

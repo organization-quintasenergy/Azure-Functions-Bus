@@ -31,7 +31,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
-            container.HandleCommandAsync(new TestMessage(), null).Wait();
+            container.HandleAsync(new TestMessage(), null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2);
         }
@@ -44,7 +44,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
-            container.HandleCommandAsync(new TestMessageHandler2(), null).Wait();
+            container.HandleAsync(new TestMessageHandler2(), null).Wait();
             
         }
 
@@ -76,7 +76,7 @@ namespace AFBus.Tests
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed");
 
@@ -86,7 +86,7 @@ namespace AFBus.Tests
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");
@@ -120,7 +120,7 @@ namespace AFBus.Tests
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed");
 
@@ -131,7 +131,7 @@ namespace AFBus.Tests
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed 2");
 
@@ -141,7 +141,7 @@ namespace AFBus.Tests
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleCommandAsync(stringMessage, null).Wait();
+            container.HandleAsync(stringMessage, null).Wait();
 
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");

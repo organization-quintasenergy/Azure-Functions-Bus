@@ -19,11 +19,11 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(ErrorSagaStartingMessage)].Count == 1);
 
-            container.HandleCommandAsync(new ErrorSagaStartingMessage() { Id = sagaId }, null).Wait();
+            container.HandleAsync(new ErrorSagaStartingMessage() { Id = sagaId }, null).Wait();
 
             try
             {
-                container.HandleCommandAsync(new ErrorSagaIntermediateMessage() { Id = sagaId }, null).Wait();
+                container.HandleAsync(new ErrorSagaIntermediateMessage() { Id = sagaId }, null).Wait();
             }
             catch
             { }

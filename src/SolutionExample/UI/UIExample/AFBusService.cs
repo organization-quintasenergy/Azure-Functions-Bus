@@ -86,7 +86,7 @@ namespace UIExample
 
                 if (retrievedMessage != null)
                 {
-                    await handlerContainer.HandleCommandAsync(retrievedMessage.AsString, null);
+                    await handlerContainer.HandleAsync(retrievedMessage.AsString, null);
 
                     //Process the message in less than 30 seconds, and then delete the message
                     await queue.DeleteMessageAsync(retrievedMessage);

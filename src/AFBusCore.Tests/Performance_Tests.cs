@@ -30,7 +30,7 @@ namespace AFBus.Tests
                        
             Parallel.ForEach(messages, m =>
             {
-                container.HandleCommandAsync(m, null).Wait();
+                container.HandleAsync(m, null).Wait();
 
             });
 

@@ -11,7 +11,7 @@ namespace AFBus.Tests.TestClasses
     {
         private const string PARTITION_KEY = "SingletonTestSaga";
 
-        Task IHandleCommandStartingSaga<SingletonSagaStartingMessage>.HandleCommandAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
         {
             Data.PartitionKey = PARTITION_KEY;
             Data.RowKey = message.Id.ToString();
@@ -21,15 +21,11 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        Task IHandleCommandWithCorrelation<SingletonSagaStartingMessage>.HandleCommandAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
-        {
+       
 
-            return Task.CompletedTask;
-        }
-
-        async Task<SagaData> IHandleCommandWithCorrelation<SingletonSagaStartingMessage>.LookForInstance(SingletonSagaStartingMessage message)
+        public async Task<SagaData> LookForInstanceAsync(SingletonSagaStartingMessage message)
         {
-            var sagaData = await SagaPersistence.GetSagaData<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData = await SagaPersistence.GetSagaDataAsync<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }

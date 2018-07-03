@@ -17,9 +17,7 @@ namespace AFBus
 
         public List<MessageToMethod> CommandsThatAreCorrelatedByTheSaga { get; set; }
 
-        public List<MessageToMethod> CommandsThatActivateTheSaga { get; set; }
-
-        public List<MessageToMethod> EventsThatActivateTheSaga { get; set; }
+        public List<MessageToMethod> CommandsThatActivateTheSaga { get; set; }       
 
         public List<MessageToMethod> EventsThatCorrelatesSagas { get; set; }
     }

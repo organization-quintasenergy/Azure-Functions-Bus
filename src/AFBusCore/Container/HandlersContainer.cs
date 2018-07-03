@@ -61,7 +61,7 @@ namespace AFBus
                 LookForHandlers(types);
 
                 this.sagaLocker.CreateLocksContainer();
-                sagaPersistence.CreateSagaPersistenceTable().Wait();
+                sagaPersistence.CreateSagaPersistenceTableAsync().Wait();
 
             }
 
@@ -129,9 +129,9 @@ namespace AFBus
                 sagaInfo.SagaType = s;
 
                 //events that correlates the saga
-                var interfacesWithCorrelation = s.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleCommandWithCorrelation<>));
+                var interfacesWithCorrelation = s.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleEventWithCorrelation<>));
                 var messageTypes = interfacesWithCorrelation.Select(i => i.GetGenericArguments()[0]).ToList();
-                sagaInfo.CommandsThatAreCorrelatedByTheSaga = interfacesWithCorrelation.
+                sagaInfo.EventsThatCorrelatesSagas = interfacesWithCorrelation.
                                                                     Select(
                                                                            i => new MessageToMethod()
                                                                            {
@@ -321,16 +321,21 @@ namespace AFBus
             if (!messageToSagaDictionary.ContainsKey(message.GetType()))
                 return;
 
-            await LookForCommandsProcessedByASaga(message, messageContext, log).ConfigureAwait(false);
-            await LookForEventsProcessedBySagas(message, messageContext, log).ConfigureAwait(false); 
+            var instantiated = await LookForCommandsProcessedByASaga(message, messageContext, log).ConfigureAwait(false);
+            instantiated = instantiated || await LookForEventsProcessedBySagas(message, messageContext, log).ConfigureAwait(false);
+
+            if (!instantiated)
+                log?.Info("Saga not found for message " + serializer.Serialize(message));
 
         }
 
-        private async Task LookForCommandsProcessedByASaga<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        private async Task<bool> LookForCommandsProcessedByASaga<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
         {
+            var instantiated = false;
+
             foreach (var sagaInfo in messageToSagaDictionary[message.GetType()])
             {
-                var instantiated = false;
+               
                 var saga = CreateInstance(sagaInfo.SagaType);//Activator.CreateInstance(sagaInfo.SagaType);
                 dynamic sagaDynamic = saga;
 
@@ -359,7 +364,7 @@ namespace AFBus
 
                             await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
-                            await sagaPersistence.Update(sagaDynamic.Data).ConfigureAwait(false);
+                            await sagaPersistence.UpdateAsync(sagaDynamic.Data).ConfigureAwait(false);
 
                             instantiated = true;
                         }
@@ -376,7 +381,7 @@ namespace AFBus
 
 
                 sagaMessageToMethod = sagaInfo.CommandsThatActivateTheSaga.FirstOrDefault(m => m.Message == message.GetType());
-                //if not => create
+                //if not => create the saga
                 if (!instantiated && sagaMessageToMethod != null)
                 {
                     var bus = new Bus(serializer, SolveDependency<ISendMessages>(), SolveDependency<IPublishEvents>())
@@ -388,22 +393,23 @@ namespace AFBus
 
                     await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
-                    await sagaPersistence.Insert(sagaDynamic.Data).ConfigureAwait(false);
+                    await sagaPersistence.InsertAsync(sagaDynamic.Data).ConfigureAwait(false);
 
                     instantiated = true;
                 }
-
-                if (!instantiated)
-                    log?.Info("Saga not found for message " + serializer.Serialize(message));
-
+                                               
             }
+
+            return instantiated;
         }
 
-        private async Task LookForEventsProcessedBySagas<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        private async Task<bool> LookForEventsProcessedBySagas<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
         {
+            var instantiated = false;
+
             foreach (var sagaInfo in messageToSagaDictionary[message.GetType()])
             {
-                var instantiated = false;
+                
                 var saga = CreateInstance(sagaInfo.SagaType);
                 dynamic sagaDynamic = saga;
 
@@ -419,11 +425,18 @@ namespace AFBus
 
                     if (sagasData != null)
                     {
+                        //process each saga data independently
                         foreach (var sagaData in sagasData)
                         {
                             try
                             {
-                                sagaDynamic.Data = sagaData;
+                                dynamic finalSagaData = sagaData;
+                                SagaData lockedSagaData = await sagaDynamic.SagaPersistence.GetSagaDataAsync<SagaData>(sagaData.PartitionKey, sagaData.RowKey).ConfigureAwait(false);
+                                finalSagaData.Timestamp = lockedSagaData.Timestamp;
+                                finalSagaData.ETag = lockedSagaData.ETag;
+                                finalSagaData.LockID = lockedSagaData.LockID;
+
+                                sagaDynamic.Data = finalSagaData;
 
                                 var bus = new Bus(serializer, SolveDependency<ISendMessages>(), SolveDependency<IPublishEvents>())
                                 {
@@ -434,7 +447,7 @@ namespace AFBus
 
                                 await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
-                                await sagaPersistence.Update(sagaDynamic.Data).ConfigureAwait(false);
+                                await sagaPersistence.UpdateAsync(sagaDynamic.Data).ConfigureAwait(false);
 
                                 instantiated = true;
 
@@ -450,12 +463,10 @@ namespace AFBus
                         }
                     }
                 }
-
-
-                if (!instantiated)
-                    log?.Info("Saga not found for message " + serializer.Serialize(message));
-
+                                               
             }
+
+            return instantiated;
         }
 
         private async Task InvokeStatelessHandlers<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class

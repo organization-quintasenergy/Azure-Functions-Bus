@@ -35,5 +35,22 @@ namespace AFBus
             await sender.SendMessageAsync(input, serviceName, context).ConfigureAwait(false);
 
         }
+
+        public static async Task PublishAsync<T>(T input, string topic, ISerializeMessages serializer = null, IPublishEvents publisher = null) where T : class
+        {
+            serializer = serializer ?? new JSONSerializer();
+
+            var newContext = new AFBusMessageContext
+            {
+                MessageID = Guid.NewGuid(),
+                TransactionID = Guid.NewGuid(),
+                BodyType = typeof(T).AssemblyQualifiedName
+            };
+
+            publisher = publisher ?? new AzureEventHubPublishTransport(serializer);
+
+
+            await publisher.PublishEventsAsync(input, topic, newContext).ConfigureAwait(false);
+        }
     }
 }

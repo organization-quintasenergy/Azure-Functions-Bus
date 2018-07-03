@@ -30,7 +30,7 @@ namespace AFBus
         /// </summary>       
         public async Task DeleteSaga()
         {
-            await SagaPersistence.Delete(Data);
+            await SagaPersistence.DeleteAsync(Data);
 
         }
     }

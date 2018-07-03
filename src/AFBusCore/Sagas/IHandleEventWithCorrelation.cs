@@ -20,6 +20,6 @@ namespace AFBus
         /// <summary>
         /// Defines how a message correlates to a saga instance
         /// </summary>
-        Task<List<SagaData>> LookForInstance(MessageType message);
+        Task<List<SagaData>> LookForInstanceAsync(MessageType message);
     }
 }

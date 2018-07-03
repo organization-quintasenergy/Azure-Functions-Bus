@@ -78,24 +78,24 @@ namespace OrderSaga.Sagas
             }
         }
 
-        public async Task<SagaData> LookForInstance(CartItemAdded message)
+        public async Task<SagaData> LookForInstanceAsync(CartItemAdded message)
         {
-            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaDataAsync<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
 
-        public async Task<SagaData> LookForInstance(ProcessOrder message)
+        public async Task<SagaData> LookForInstanceAsync(ProcessOrder message)
         {
-            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaDataAsync<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
 
-        public async Task<SagaData> LookForInstance(ShipOrderResponse message)
+        public async Task<SagaData> LookForInstanceAsync(ShipOrderResponse message)
         {
-            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaDataAsync<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
 
-        public async Task<SagaData> LookForInstance(PayOrderResponse message)
+        public async Task<SagaData> LookForInstanceAsync(PayOrderResponse message)
         {
-            return await SagaPersistence.GetSagaData<OrderSagaData>(PARTITION_KEY, message.UserName);
+            return await SagaPersistence.GetSagaDataAsync<OrderSagaData>(PARTITION_KEY, message.UserName);
         }
     }
 }

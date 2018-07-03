@@ -37,16 +37,16 @@ namespace AFBus.Tests.TestClasses
             await this.DeleteSaga();
         }
 
-        public async Task<SagaData> LookForInstance(SimpleSagaIntermediateMessage message)
+        public async Task<SagaData> LookForInstanceAsync(SimpleSagaIntermediateMessage message)
         {
-            var sagaData =  await SagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData =  await SagaPersistence.GetSagaDataAsync<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }
 
-        public async Task<SagaData> LookForInstance(SimpleSagaTerminatingMessage message)
+        public async Task<SagaData> LookForInstanceAsync(SimpleSagaTerminatingMessage message)
         {
-            var sagaData = await SagaPersistence.GetSagaData<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData = await SagaPersistence.GetSagaDataAsync<SimpleTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }

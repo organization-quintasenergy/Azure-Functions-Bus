@@ -52,7 +52,7 @@ namespace AFBus.Tests
             var lockSaga = false;
             var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);
 
-            var sagaData = sagaPersistence.GetSagaData<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
+            var sagaData = sagaPersistence.GetSagaDataAsync<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
 
             Assert.IsTrue(sagaData.Counter == 11);
 
@@ -92,7 +92,7 @@ namespace AFBus.Tests
             var lockSaga = false;
             var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);
 
-            var sagaData = sagaPersistence.GetSagaData<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
+            var sagaData = sagaPersistence.GetSagaDataAsync<SimpleTestSagaData>("SimpleTestSaga", sagaId.ToString()).Result as SimpleTestSagaData;
 
             Assert.IsTrue(sagaData.Counter == 11);
 
@@ -117,7 +117,7 @@ namespace AFBus.Tests
             var lockSaga = false;
             var sagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), lockSaga);
 
-            var sagaData = sagaPersistence.GetSagaData<SingletonTestSagaData>("SingletonTestSaga", sagaId.ToString()).Result as SingletonTestSagaData;
+            var sagaData = sagaPersistence.GetSagaDataAsync<SingletonTestSagaData>("SingletonTestSaga", sagaId.ToString()).Result as SingletonTestSagaData;
 
             Assert.IsTrue(sagaData.Counter == 1);
         }

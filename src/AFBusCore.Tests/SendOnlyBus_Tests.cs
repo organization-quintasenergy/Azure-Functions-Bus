@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AFBus.Tests.TestClasses;
+using Microsoft.Azure.EventHubs;
+using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
@@ -10,6 +13,7 @@ namespace AFBus.Tests
     public class SendOnlyBus_Tests
     {
         readonly string SERVICENAME = "FAKESERVICE";
+        readonly static string TOPICNAME = "FAKETOPIC";
 
         [TestMethod]
         public void SendOnlyBus_SendAsync_Nominal()
@@ -82,6 +86,55 @@ namespace AFBus.Tests
             });
 
             Assert.IsTrue(after - before > timeDelayed, "Delay failed");
+        }
+
+        [TestMethod]
+        public void SendOnlyBus_PublishAsync_EventHub_Nominal()
+        {
+
+            var id = Guid.NewGuid();
+
+            bool testOk = false;
+
+            var message = new TestMessage()
+            {
+                SomeData = id.ToString()
+            };
+        
+            SendOnlyBus.PublishAsync(message, TOPICNAME).Wait();
+
+            var eventProcessorHost = new EventProcessorHost(TOPICNAME, PartitionReceiver.DefaultConsumerGroupName, SettingsUtil.GetSettings<string>(SETTINGS.AZURE_EVENTHUB), SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE), "eventhubcontainer");
+
+            // Registers the Event Processor Host and starts receiving messages
+            var readingTask = eventProcessorHost.RegisterEventProcessorFactoryAsync(new AzureStreamProcessorFactory(stringMessage =>
+
+            {
+                var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+
+                });
+
+                var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+                });
+
+                testOk = testOk || (id.ToString() == finalMessage.SomeData);
+            }));
+
+
+
+            Task.Delay(5000).Wait();
+
+
+            // Disposes of the Event Processor Host
+            eventProcessorHost.UnregisterEventProcessorAsync().Wait();
+
+            Assert.IsTrue(testOk);
+
         }
     }
 }

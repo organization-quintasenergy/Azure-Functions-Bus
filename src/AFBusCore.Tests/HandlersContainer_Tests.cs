@@ -31,7 +31,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
-            container.HandleAsync(new TestMessage(), null).Wait();
+            container.HandleCommandAsync(new TestMessage(), null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2);
         }
@@ -44,7 +44,7 @@ namespace AFBus.Tests
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
-            container.HandleAsync(new TestMessageHandler2(), null).Wait();
+            container.HandleCommandAsync(new TestMessageHandler2(), null).Wait();
             
         }
 
@@ -72,21 +72,21 @@ namespace AFBus.Tests
 
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed");
 
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");
@@ -116,32 +116,32 @@ namespace AFBus.Tests
 
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed");
 
             
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 0, "message not delayed 2");
 
             do
             {
-                stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+                stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
             }
             while (string.IsNullOrEmpty(stringMessage));
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class SingletonTestSaga : Saga<SingletonTestSagaData>, IHandleStartingSaga<SingletonSagaStartingMessage>, IHandleWithCorrelation<SingletonSagaStartingMessage>
+    public class SingletonTestSaga : Saga<SingletonTestSagaData>, IHandleCommandStartingSaga<SingletonSagaStartingMessage>, IHandleCommandWithCorrelation<SingletonSagaStartingMessage>
     {
         private const string PARTITION_KEY = "SingletonTestSaga";
 
-        Task IHandleStartingSaga<SingletonSagaStartingMessage>.HandleAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
         {
             Data.PartitionKey = PARTITION_KEY;
             Data.RowKey = message.Id.ToString();
@@ -21,15 +21,11 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        Task IHandleWithCorrelation<SingletonSagaStartingMessage>.HandleAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
-        {
+       
 
-            return Task.CompletedTask;
-        }
-
-        async Task<SagaData> IHandleWithCorrelation<SingletonSagaStartingMessage>.LookForInstance(SingletonSagaStartingMessage message)
+        public async Task<SagaData> LookForInstanceAsync(SingletonSagaStartingMessage message)
         {
-            var sagaData = await SagaPersistence.GetSagaData<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
+            var sagaData = await SagaPersistence.GetSagaDataAsync<SingletonTestSagaData>(PARTITION_KEY, message.Id.ToString());
 
             return sagaData;
         }

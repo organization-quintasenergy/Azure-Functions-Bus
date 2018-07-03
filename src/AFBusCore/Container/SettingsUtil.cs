@@ -15,6 +15,8 @@ namespace AFBus
     {
         public const string AZURE_STORAGE = "AzureWebJobsStorage";
         public const string LOCKSAGAS = "LockSagas";
+        public const string AZURE_SERVICEBUS = "AzureServiceBusConnectionString";
+        public const string AZURE_EVENTHUB = "AzureEventHubConnectionString";
     }
 
     public class SettingsUtil
@@ -26,6 +28,7 @@ namespace AFBus
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("gitignoreappsettings.json", true)
                 .AddJsonFile("appsettings.json",true).AddJsonFile("host.json",true).AddJsonFile("local.settings.json", true);
 
 

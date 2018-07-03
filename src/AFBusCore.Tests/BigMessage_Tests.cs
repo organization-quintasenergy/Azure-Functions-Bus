@@ -22,6 +22,9 @@ namespace AFBus.Tests
         [TestMethod]
         public void BigMessage_Going_To_File_In_Send()
         {
+            BlobReader.DeleteFilesAsync().Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
+
             InvocationCounter.Instance.Reset();
 
             var container = new HandlersContainer();
@@ -31,9 +34,9 @@ namespace AFBus.Tests
             
             SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
 
-            var stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(InvocationCounter.Instance.Counter==1);
         }
@@ -41,6 +44,9 @@ namespace AFBus.Tests
         [TestMethod]
         public void BigMessage_Bug_Small_After_Big_Mixes_Message_In_File_Flag()
         {
+            BlobReader.DeleteFilesAsync().Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
+
             InvocationCounter.Instance.Reset();
 
             var container = new HandlersContainer();
@@ -50,11 +56,11 @@ namespace AFBus.Tests
 
             SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
 
-            var stringMessage = QueueReader.ReadOneMessageFromQueue(SERVICENAME).Result;
+            var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
 
-            container.HandleAsync(stringMessage, null).Wait();
+            container.HandleCommandAsync(stringMessage, null).Wait();
 
-            Assert.IsTrue(BlobReader.ListFiles().Result.Count() == 0);
+            Assert.IsTrue(BlobReader.ListFilesAsync().Result.Count() == 0);
         }       
     
     }

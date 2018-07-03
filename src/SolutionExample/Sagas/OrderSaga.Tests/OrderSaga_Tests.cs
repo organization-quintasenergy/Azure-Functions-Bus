@@ -21,7 +21,7 @@ namespace OrderSaga.Tests
 
             busMock.Setup<ISerializeMessages>(m => m.Serializer).Returns(new JSONSerializer());
 
-            saga.HandleAsync(busMock.Object, new CartItemAdded() { ProductName = "any product", UserName = "username" }, null).Wait();
+            saga.HandleCommandAsync(busMock.Object, new CartItemAdded() { ProductName = "any product", UserName = "username" }, null).Wait();
 
             Assert.IsTrue(saga.Data != null);
         }
@@ -38,7 +38,7 @@ namespace OrderSaga.Tests
             busMock.Setup<Task>(m => m.SendAsync(It.IsAny<ShipOrder>(), It.IsAny<string>(),null)).Returns(Task.CompletedTask);
             busMock.Setup<Task>(m => m.SendAsync(It.IsAny<PayOrder>(), It.IsAny<string>(), null)).Returns(Task.CompletedTask);
 
-            saga.HandleAsync(busMock.Object, new ProcessOrder() {UserName = "username" }, null).Wait();
+            saga.HandleCommandAsync(busMock.Object, new ProcessOrder() {UserName = "username" }, null).Wait();
 
             busMock.Verify(foo => foo.SendAsync(It.IsAny<ShipOrder>(), It.IsAny<string>(), null), Times.Once());
             busMock.Verify(foo => foo.SendAsync(It.IsAny<PayOrder>(), It.IsAny<string>(), null), Times.Once());

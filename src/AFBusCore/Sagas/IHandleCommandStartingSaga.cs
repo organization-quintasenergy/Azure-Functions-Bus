@@ -10,8 +10,8 @@ namespace AFBus
     /// <summary>
     /// This interface defines that a message will start a saga. 
     /// </summary>
-    public interface IHandleStartingSaga<MessageType>
+    public interface IHandleCommandStartingSaga<MessageType>
     {
-        Task HandleAsync(IBus bus, MessageType message, TraceWriter log);
+        Task HandleCommandAsync(IBus bus, MessageType message, TraceWriter log);
     }
 }

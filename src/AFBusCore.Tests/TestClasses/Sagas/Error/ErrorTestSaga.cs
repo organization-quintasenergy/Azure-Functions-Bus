@@ -32,7 +32,7 @@ namespace AFBus.Tests.TestClasses
 
         public async Task HandleCommandAsync(IBus bus, ErrorSagaTerminatingMessage message, TraceWriter Log)
         {
-            await this.DeleteSaga();
+            await this.DeleteSagaAsync();
         }
 
         public async Task<SagaData> LookForInstanceAsync(ErrorSagaIntermediateMessage message)

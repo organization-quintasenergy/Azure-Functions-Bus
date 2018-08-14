@@ -74,7 +74,7 @@ namespace OrderSaga.Sagas
 
                 await bus.SendAsync(new OrderFinished { UserName = Data.UserName }, UI_SERVICE_NAME);
 
-                await this.DeleteSaga();
+                await this.DeleteSagaAsync();
             }
         }
 

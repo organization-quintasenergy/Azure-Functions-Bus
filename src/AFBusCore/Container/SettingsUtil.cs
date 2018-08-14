@@ -17,6 +17,8 @@ namespace AFBus
         public const string LOCKSAGAS = "LockSagas";
         public const string AZURE_SERVICEBUS = "AzureServiceBusConnectionString";
         public const string AZURE_EVENTHUB = "AzureEventHubConnectionString";
+        public const string ASPNETCORE_ENVIRONMENT = "ASPNETCORE_ENVIRONMENT";
+
     }
 
     public class SettingsUtil
@@ -26,11 +28,15 @@ namespace AFBus
 
         static SettingsUtil()
         {
+            var environment = Environment.GetEnvironmentVariable(SETTINGS.ASPNETCORE_ENVIRONMENT);
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("gitignoreappsettings.json", true)
-                .AddJsonFile("appsettings.json",true).AddJsonFile("host.json",true).AddJsonFile("local.settings.json", true);
-
+                .AddJsonFile("appsettings.json",true).AddJsonFile("host.json",true).AddJsonFile("local.settings.json", true)
+                .AddJsonFile("appsettings."+environment+".json", true);
+            
+            
 
             Configuration = builder.Build();
         }
@@ -47,6 +53,13 @@ namespace AFBus
             {
                 throw new Exception(settingName + " not found in the local.settings.json or host.json or appsettings.json",ex);
             }
+            
+        }
+
+        public static bool HasSettings(string settingName)
+        {
+            return System.Environment.GetEnvironmentVariable(settingName) != null || Configuration[settingName] != null;
+
             
         }
     }

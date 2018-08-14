@@ -31,11 +31,11 @@ namespace AFBus
         /// <summary>
         /// Scans the dlls and creates a dictionary in which each message in IFunctions is referenced to each function.
         /// </summary>
-        public HandlersContainer(bool? lockSaga = null)
+        public HandlersContainer(bool lockSaga = true)
         {
             lock (o)
             {
-                this.lockSaga = lockSaga ?? SettingsUtil.GetSettings<bool>(SETTINGS.LOCKSAGAS);
+                this.lockSaga = SettingsUtil.HasSettings(SETTINGS.LOCKSAGAS)? SettingsUtil.GetSettings<bool>(SETTINGS.LOCKSAGAS):lockSaga;
 
                 AddDependency<ISerializeMessages, JSONSerializer>();
                 AddDependency<ISagaLocker, SagaAzureStorageLocker>();

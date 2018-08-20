@@ -1,4 +1,4 @@
-﻿using AFBus;
+﻿
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AFBusCore.Sagas.AzureStoragePersistence
+namespace AFBus
 {
     public class StorePropertyInBlobUtil
     {

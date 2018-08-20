@@ -18,7 +18,7 @@ namespace OrderSaga.Sagas
         const string SERVICE_NAME = "ordersaga";
         const string UI_SERVICE_NAME = "uiexample";
 
-        public Task HandleCommandAsync(IBus bus, CartItemAdded message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, CartItemAdded message, TraceWriter log)
         {
             
             var productsList = new List<string>();
@@ -27,7 +27,7 @@ namespace OrderSaga.Sagas
             {
                 this.Data.PartitionKey = PARTITION_KEY;
                 this.Data.RowKey = message.UserName;
-                this.Data.Products = bus.Serializer.Serialize(productsList);
+                
                 this.Data.UserName = message.UserName;
             }
             else
@@ -37,9 +37,9 @@ namespace OrderSaga.Sagas
 
             productsList.Add(message.ProductName);
 
-            this.Data.Products = JsonConvert.SerializeObject(productsList);
-
-            return Task.CompletedTask;
+            await this.WriteBlobProperty(productsList);
+            //this.Data.Products = await StorePropertyInBlobUtil.StoreDataInBlob(productsList);
+            
         }
 
         public async Task HandleCommandAsync(IBus bus, ProcessOrder message, TraceWriter log)

@@ -46,7 +46,7 @@ namespace AFBus
                 Context = messageContext,
                 Body = messageAsString
             };
-
+            
             messageContext.Destination = serviceName;
 
             TimeSpan? initialVisibilityDelay = null;
@@ -111,8 +111,6 @@ namespace AFBus
 
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             return await blockBlob.DownloadTextAsync();
-
-           
         }
 
         public async Task DeleteFileWithMessageBodyAsync(string fileName)

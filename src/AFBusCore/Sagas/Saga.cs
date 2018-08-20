@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,17 @@ namespace AFBus
         public async Task DeleteSaga()
         {
             await SagaPersistence.DeleteAsync(Data);
+            await SagaPersistence.DeleteBlobAsync(Data);
+        }
 
+        /// <summary>
+        /// To write a property to the blob storage.
+        /// </summary>
+        /// <param name="property">Respective property</param>
+        /// <returns></returns>
+        public async Task WriteBlobProperty(List<string> property)
+        {
+            await SagaPersistence.StoreDataInBlob(property, Data);
         }
     }
 

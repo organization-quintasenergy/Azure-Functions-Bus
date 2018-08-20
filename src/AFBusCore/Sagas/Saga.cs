@@ -29,7 +29,7 @@ namespace AFBus
         /// <summary>
         /// Deletes the saga in the persistence
         /// </summary>       
-        public async Task DeleteSaga()
+        public async Task DeleteSagaAsync()
         {
             await SagaPersistence.DeleteAsync(Data);
             await SagaPersistence.DeleteBlobAsync(Data);

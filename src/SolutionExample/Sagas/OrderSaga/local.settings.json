@@ -1,4 +1,5 @@
 {
+
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
@@ -6,7 +7,4 @@
     "LockSagas": "True"
   },
 
-  "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-  "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-  "LockSagas": "True"
 }

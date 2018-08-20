@@ -9,7 +9,7 @@ namespace UIExample.ViewModels
 {
     public class CartViewModel
     {       
-
+        [DataType(DataType.MultilineText)]
         public string Product { get; set; }
 
         public List<CartItemAdded> CartItemsAdded { get; set; }

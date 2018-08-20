@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
@@ -11,20 +12,23 @@ namespace AFBus
     public class SagaAzureStoragePersistence : ISagaStoragePersistence
     {
         private const string TABLE_NAME = "sagapersistence";
+        private const string CONTAINER_NAME = "bigpropertiesstorage";
 
         ISagaLocker sagaLock;
-        bool lockSagas;
+        private bool lockSagas;
         CloudStorageAccount storageAccount;
+
+        public bool LockSagas { get => lockSagas; set => lockSagas = value; }
 
         public SagaAzureStoragePersistence(ISagaLocker sagaLock, bool lockSagas)
         {
             this.sagaLock = sagaLock;
-            this.lockSagas = lockSagas;
+            this.LockSagas = lockSagas;
             storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         }
 
         public async Task CreateSagaPersistenceTableAsync()
-        {          
+        {
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
@@ -40,27 +44,27 @@ namespace AFBus
             var sagaID = entity.PartitionKey + entity.RowKey;
             var lockID = string.Empty;
 
-            if (this.lockSagas)
-            {              
-                lockID = await sagaLock.CreateLock(sagaID).ConfigureAwait(false);               
-            }            
+            if (this.LockSagas)
+            {
+                lockID = await sagaLock.CreateLock(sagaID).ConfigureAwait(false);
+            }
 
             entity.CreationTimeStamp = DateTime.UtcNow;
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-                        
+
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
-            
+
             // Create the TableOperation object that inserts the customer entity.
             TableOperation insertOperation = TableOperation.Insert(entity as ITableEntity);
 
             // Execute the insert operation.
             await table.ExecuteAsync(insertOperation).ConfigureAwait(false);
 
-            if (this.lockSagas)
-            {               
+            if (this.LockSagas)
+            {
                 await sagaLock.ReleaseLock(sagaID, lockID).ConfigureAwait(false);
             }
         }
@@ -86,41 +90,69 @@ namespace AFBus
 
             var sagaID = entity.PartitionKey + entity.RowKey;
 
-            if(this.lockSagas && !entity.IsDeleted)
+            if (this.LockSagas && !entity.IsDeleted)
                 await sagaLock.ReleaseLock(sagaID, entity.LockID).ConfigureAwait(false);
         }
 
-        public async Task<T> GetSagaDataAsync<T>(string partitionKey, string rowKey) where T :SagaData
+        public async Task<T> GetSagaDataAsync<T>(string partitionKey, string rowKey) where T : SagaData
         {
             var sagaID = partitionKey + rowKey;
             var lockID = string.Empty;
 
-            if (this.lockSagas)
+            if (this.LockSagas)
             {
                 lockID = await sagaLock.CreateLock(sagaID).ConfigureAwait(false);
-            }            
+            }
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
-            CloudTable table = tableClient.GetTableReference(TABLE_NAME);            
-            
-            TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey,rowKey);
+            CloudTable table = tableClient.GetTableReference(TABLE_NAME);
+
+            TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
 
             // Execute the operation.
             var execution = await table.ExecuteAsync(retrieveOperation).ConfigureAwait(false);
 
             var result = execution.Result as T;
 
-            if (result != null && this.lockSagas)
+            if (result != null && this.LockSagas)
                 result.LockID = lockID;
 
-            if (result == null && this.lockSagas)
+            if (result == null && this.LockSagas)
             {
                 await sagaLock.ReleaseLock(sagaID, lockID).ConfigureAwait(false);
             }
 
             return result;
+        }
+
+        public async Task DeleteBlobAsync(SagaData entity)
+        {
+            var jsonSerializer = new JSONSerializer();
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+
+
+            // Create a container 
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
+            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+            //Get all the items into the container that contains the name (PartitionKey + RowKey) 
+            BlobContinuationToken blobContinuationToken = null;
+            do
+            {
+                var results = await cloudBlobContainer.ListBlobsSegmentedAsync(entity.PartitionKey + entity.RowKey, blobContinuationToken);
+
+                //Delete all of them
+                foreach (IListBlobItem item in results.Results)
+                {
+                    System.Diagnostics.Debug.WriteLine(item.Uri);
+                    CloudBlockBlob block = new CloudBlockBlob(item.Uri);
+                    await block.DeleteIfExistsAsync();
+                }
+            } while (blobContinuationToken != null);
         }
 
         public async Task DeleteAsync(SagaData entity)
@@ -130,17 +162,17 @@ namespace AFBus
 
             var sagaID = entity.PartitionKey + entity.RowKey;
 
-            if (this.lockSagas)
+            if (this.LockSagas)
             {
                 await sagaLock.DeleteLock(sagaID, entity.LockID).ConfigureAwait(false);
             }
-                       
+
 
             // Create the table client.
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
-            
+
             // Create the TableOperation object that inserts the customer entity.
             TableOperation replaceOperation = TableOperation.Delete(entity);
 
@@ -156,6 +188,8 @@ namespace AFBus
             {
                 await sagaLock.DeleteLock(sagaID, entity.LockID);
             }*/
+
+
         }
 
         public async Task<List<T>> FindSagaDataAsync<T>(TableQuery<T> tableQuery) where T : SagaData, ITableEntity, new()
@@ -164,13 +198,64 @@ namespace AFBus
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
-           
+
 
             // Execute the operation.
             var result = await table.ExecuteQueryAsync(tableQuery).ConfigureAwait(false);
-                     
+
 
             return result;
+        }
+
+        public class BigPropertyWrapper
+        {
+            public string FileName { get; set; }
+
+            public string PropertyType { get; set; }
+        }
+
+        public async Task<string> StoreDataInBlob<T>(T property, SagaData entity)
+        {
+            var jsonSerializer = new JSONSerializer();
+            var wrapper = new BigPropertyWrapper();
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+
+            var fileName = entity.PartitionKey + entity.RowKey + "-" + Guid.NewGuid().ToString("N").ToLower() + ".afbus";
+
+            // Create a container 
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
+            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
+
+            await blockBlob.UploadTextAsync(jsonSerializer.Serialize(property));
+
+            wrapper.PropertyType = typeof(T).AssemblyQualifiedName;
+            wrapper.FileName = blockBlob.Name;
+
+            return jsonSerializer.Serialize(wrapper);
+        }
+
+        public async Task<T> LoadDataFromBlob<T>(string bigPropertyWrapperSerialized)
+        {
+            var jsonSerializer = new JSONSerializer();
+            var wrapper = jsonSerializer.Deserialize(bigPropertyWrapperSerialized, typeof(BigPropertyWrapper)) as BigPropertyWrapper;
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+
+
+            // Create a container 
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
+            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(wrapper.FileName);
+
+            var fileContent = await blockBlob.DownloadTextAsync();
+
+            return (T)jsonSerializer.Deserialize(fileContent, Type.GetType(wrapper.PropertyType));
         }
     }
 }

@@ -16,6 +16,7 @@ namespace OrderSaga.Tests
         public void OrderSaga_CartItemAdded_SagaIsCreated()
         {
             var saga = new OrderSaga.Sagas.OrderSaga();
+            saga.SagaPersistence = new SagaAzureStoragePersistence(new SagaAzureStorageLocker(), true);
 
             var busMock = new Mock<IBus>();
 

@@ -10,7 +10,7 @@ namespace AFBus
 {
     public class AzureEventHubEventProcessor : IEventProcessor
     {
-        Stopwatch checkpointStopWatch;
+
         Action<string> messageProcessor;
 
         public AzureEventHubEventProcessor(Action<string> messageProcessor)
@@ -65,8 +65,6 @@ namespace AFBus
             this.messageProcessor = messageProcessor;
         }
 
-        private string randomString;
-        private int numCreated = 0;
         IEventProcessor IEventProcessorFactory.CreateEventProcessor(PartitionContext context)
         {
             return new AzureEventHubEventProcessor(messageProcessor);

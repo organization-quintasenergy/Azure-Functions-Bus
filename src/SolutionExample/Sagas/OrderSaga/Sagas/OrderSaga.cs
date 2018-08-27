@@ -45,7 +45,7 @@ namespace OrderSaga.Sagas
         public async Task HandleCommandAsync(IBus bus, ProcessOrder message, TraceWriter log)
         {
             await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "shippingservice");
-
+             
             await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "paymentservice");
         }
 

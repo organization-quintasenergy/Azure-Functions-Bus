@@ -38,7 +38,7 @@ namespace AFBus
         /// <param name="property"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        Task<string> StoreDataInBlob<T>(T property, SagaData entity);
+        Task<T> StoreDataInBlob<T>(T property, SagaData entity);
 
 
         /// <summary>

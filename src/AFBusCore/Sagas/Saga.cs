@@ -50,9 +50,9 @@ namespace AFBus
         /// </summary>
         /// <param name="bigPropertySerialized"></param>
         /// <returns></returns>
-        public async Task<T> LoadBlobPropertyAsync(string bigPropertySerialized)
+        public async Task<T2> LoadBlobPropertyAsync<T2>(string bigPropertySerialized)
         {
-            return await SagaPersistence.LoadDataFromBlob<T>(bigPropertySerialized);
+            return await SagaPersistence.LoadDataFromBlob<T2>(bigPropertySerialized);
         }
     }
 

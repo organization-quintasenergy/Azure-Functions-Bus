@@ -31,15 +31,15 @@ namespace OrderSaga.Sagas
                 this.Data.UserName = message.UserName;
             }
             else
-            {
-                productsList = JsonConvert.DeserializeObject<List<string>>(this.Data.Products);
+            {                
+                productsList = await this.LoadBlobPropertyAsync<List<string>>(Data.Products);
             }
 
             productsList.Add(message.ProductName);
 
-            await this.WriteBlobPropertyAsync(productsList);
-            
-            //this.Data.Products = await StorePropertyInBlobUtil.StoreDataInBlob(productsList);
+            Data.Products=await this.WriteBlobPropertyAsync(productsList);
+
+
             
         }
 

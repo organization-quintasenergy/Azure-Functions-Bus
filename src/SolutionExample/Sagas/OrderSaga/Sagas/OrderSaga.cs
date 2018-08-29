@@ -31,21 +31,22 @@ namespace OrderSaga.Sagas
                 this.Data.UserName = message.UserName;
             }
             else
-            {
-                productsList = JsonConvert.DeserializeObject<List<string>>(this.Data.Products);
+            {                
+                productsList = await this.LoadBlobPropertyAsync<List<string>>(Data.Products);
             }
 
             productsList.Add(message.ProductName);
 
-            await this.WriteBlobProperty(productsList);
-            //this.Data.Products = await StorePropertyInBlobUtil.StoreDataInBlob(productsList);
+            Data.Products=await this.WriteBlobPropertyAsync(productsList);
+
+
             
         }
 
         public async Task HandleCommandAsync(IBus bus, ProcessOrder message, TraceWriter log)
         {
             await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "shippingservice");
-
+             
             await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey, ReplyTo = SERVICE_NAME }, "paymentservice");
         }
 
@@ -76,7 +77,7 @@ namespace OrderSaga.Sagas
 
                 await this.DeleteSagaAsync();
             }
-        }
+        } 
 
         public async Task<SagaData> LookForInstanceAsync(CartItemAdded message)
         {

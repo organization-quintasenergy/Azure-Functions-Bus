@@ -12,7 +12,7 @@ namespace AFBus
     {
         private static readonly string CONTAINER_NAME = "bigpropertiesstorage";
 
-        public static async Task<string> StoreDataInBlob<T>(T property)
+        public static async Task<T> StoreDataInBlob<T>(T property)
         {
             var jsonSerializer = new JSONSerializer();
             var wrapper = new BigPropertyWrapper();                       
@@ -33,7 +33,7 @@ namespace AFBus
             wrapper.PropertyType = typeof(T).AssemblyQualifiedName;
             wrapper.FileName = blockBlob.Name;
 
-            return jsonSerializer.Serialize(wrapper);
+            return (T)jsonSerializer.Deserialize(jsonSerializer.Serialize(property), Type.GetType(wrapper.PropertyType));
         }
 
         public static async Task<T> LoadDataFromBlob<T>(string bigPropertyWrapperSerialized)

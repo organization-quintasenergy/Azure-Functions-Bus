@@ -151,6 +151,7 @@ namespace AFBus
                     System.Diagnostics.Debug.WriteLine(item.Uri);
                     CloudBlockBlob block = new CloudBlockBlob(item.Uri);
                     CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(block.Name);
+                    //NO ENTIENDO LA DIFERENCIA ENTRE LAS DOS LINEAS DE ARRIBA PERO NO FUNCIONA EL DELETE DEL BLOCK DE LA 152.
 
                     await blockBlob.DeleteIfExistsAsync();
                 }

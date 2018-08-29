@@ -77,7 +77,7 @@ namespace OrderSaga.Sagas
 
                 await this.DeleteSagaAsync();
             }
-        }
+        } 
 
         public async Task<SagaData> LookForInstanceAsync(CartItemAdded message)
         {

@@ -54,7 +54,5 @@ namespace AFBus
         {
             return await SagaPersistence.LoadDataFromBlob<T2>(bigPropertySerialized);
         }
-    }
-
-    
+    }    
 }

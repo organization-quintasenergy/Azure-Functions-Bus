@@ -20,5 +20,25 @@ namespace AFBus
 
         [IgnoreProperty]
         public string LockID { get; set; }
+
+        /// <summary>
+        /// Prefix for indexing into the blob storage.
+        /// 
+        /// = PartitionKey + RowKey
+        /// </summary>
+        public string Prefix
+        {
+            get
+            {
+                try
+                {
+                    return this.PartitionKey + this.RowKey;
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
+        }
     }
 }

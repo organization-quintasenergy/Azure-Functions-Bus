@@ -37,7 +37,8 @@ namespace OrderSaga.Sagas
 
             productsList.Add(message.ProductName);
 
-            await this.WriteBlobProperty(productsList);
+            await this.WriteBlobPropertyAsync(productsList);
+            
             //this.Data.Products = await StorePropertyInBlobUtil.StoreDataInBlob(productsList);
             
         }

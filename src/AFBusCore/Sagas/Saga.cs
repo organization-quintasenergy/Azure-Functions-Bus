@@ -12,7 +12,7 @@ namespace AFBus
     /// Base class for defining sagas
     /// </summary>
     /// <typeparam name="T">Type of the saga data stored in the persistence</typeparam>
-    public abstract class Saga<T, T2> where T: SagaData,new()
+    public abstract class Saga<T> where T: SagaData,new()
     {
         
 
@@ -40,9 +40,19 @@ namespace AFBus
         /// </summary>
         /// <param name="property">Respective property</param>
         /// <returns></returns>
-        public async Task<T2> WriteBlobProperty(List<T2> property)
+        public async Task<string> WriteBlobPropertyAsync<T2>(T2 property)
         {
             return await SagaPersistence.StoreDataInBlob(property, Data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bigPropertySerialized"></param>
+        /// <returns></returns>
+        public async Task<T> LoadBlobPropertyAsync(string bigPropertySerialized)
+        {
+            return await SagaPersistence.LoadDataFromBlob<T>(bigPropertySerialized);
         }
     }
 

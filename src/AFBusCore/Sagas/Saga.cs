@@ -40,11 +40,19 @@ namespace AFBus
         /// </summary>
         /// <param name="property">Respective property</param>
         /// <returns></returns>
-        public async Task WriteBlobProperty(List<string> property)
+        public async Task<string> WriteBlobPropertyAsync<T2>(T2 property)
         {
-            await SagaPersistence.StoreDataInBlob(property, Data);
+            return await SagaPersistence.StoreDataInBlob(property, Data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bigPropertySerialized"></param>
+        /// <returns></returns>
+        public async Task<T2> LoadBlobPropertyAsync<T2>(string bigPropertySerialized)
+        {
+            return await SagaPersistence.LoadDataFromBlob<T2>(bigPropertySerialized);
         }
     }
-
-    
 }

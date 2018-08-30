@@ -8,10 +8,12 @@ namespace OrderSaga
 {
     public static class Function1
     {
-        static HandlersContainer container = new HandlersContainer();
+        const string SERVICENAME = "ordersaga";
+
+        static HandlersContainer container = new HandlersContainer(SERVICENAME);
 
         [FunctionName("OrderSagaEndpointFunction")]
-        public static async Task Run([QueueTrigger("ordersaga")]string orderSagaMessage, TraceWriter log)
+        public static async Task Run([QueueTrigger(SERVICENAME)]string orderSagaMessage, TraceWriter log)
         {
             log.Info($"OrderSagaEndpointFunction message received: {orderSagaMessage}");
 

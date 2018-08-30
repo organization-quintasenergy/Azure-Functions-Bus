@@ -37,7 +37,8 @@ namespace AFBus
             newContext.TransactionID = Context.TransactionID ?? Guid.NewGuid();
             newContext.BodyType = typeof(T).AssemblyQualifiedName;
             newContext.BodyInFile = false;
-            newContext.Destination = serviceName;
+            newContext.Destination = serviceName;            
+            newContext.SenderServiceName = Context.ActualServiceName;
 
             if (initialVisibilityDelay != null)
             {
@@ -55,6 +56,32 @@ namespace AFBus
            
         }
 
+        public async Task ReplyAsync<T>(T input, TimeSpan? initialVisibilityDelay = null) where T : class
+        {
+            var newContext = new AFBusMessageContext();
+
+            newContext.MessageID = Guid.NewGuid();
+            newContext.TransactionID = Context.TransactionID ?? Guid.NewGuid();
+            newContext.BodyType = typeof(T).AssemblyQualifiedName;
+            newContext.BodyInFile = false;
+            newContext.Destination = Context.SenderServiceName;
+            newContext.SenderServiceName = Context.ActualServiceName;
+
+            if (initialVisibilityDelay != null)
+            {
+                newContext.MessageDelayedTime = initialVisibilityDelay;
+                newContext.MessageFinalWakeUpTimeStamp = DateTime.UtcNow + initialVisibilityDelay;
+            }
+            else
+            {
+                newContext.MessageDelayedTime = null;
+                newContext.MessageFinalWakeUpTimeStamp = null;
+            }
+
+
+            await sender.SendMessageAsync(input, newContext.Destination, newContext).ConfigureAwait(false);
+        }
+
         public async Task PublishAsync<T>(T input, string topic, TimeSpan? initialVisibilityDelay = null) where T : class
         {
             var newContext = new AFBusMessageContext();
@@ -64,6 +91,7 @@ namespace AFBus
             newContext.BodyType = typeof(T).AssemblyQualifiedName;
             newContext.BodyInFile = false;
             newContext.Destination = topic;
+            newContext.SenderServiceName = Context.ActualServiceName;
 
             if (initialVisibilityDelay != null)
             {

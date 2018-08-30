@@ -9,12 +9,12 @@ namespace AFBus.Tests
     [TestClass]
     public class SagaWithLock_Tests
     {
-        
+        readonly static string SERVICENAME = "TESTSERVICE";
 
         [TestMethod]
         public void Sagas_With_Locks_Are_Correctly_Scanned()
         {
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
         }
@@ -24,7 +24,7 @@ namespace AFBus.Tests
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -40,7 +40,7 @@ namespace AFBus.Tests
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -65,7 +65,7 @@ namespace AFBus.Tests
             InvocationCounter.Instance.Reset();
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SimpleSagaStartingMessage)].Count == 1);
 
@@ -106,7 +106,7 @@ namespace AFBus.Tests
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(SingletonSagaStartingMessage)].Count == 1);
 

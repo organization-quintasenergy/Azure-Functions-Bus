@@ -25,7 +25,7 @@ namespace ShippingService.Handlers
 
             rep.AddOrderShipped(new OrderShipped { User = message.UserName });
 
-            await bus.SendAsync(new ShipOrderResponse() { UserName = message.UserName }, message.ReplyTo);
+            await bus.ReplyAsync(new ShipOrderResponse() { UserName = message.UserName });
 
             
         }

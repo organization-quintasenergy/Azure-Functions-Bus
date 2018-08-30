@@ -7,10 +7,12 @@ namespace AFBus.Tests
     [TestClass]
     public class DI_Tests
     {
+        public static string SERVICENAME = "FAKESERVICE";
+
         [TestMethod]
         public void DI_Nominal()
         {
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
             HandlersContainer.AddDependency<IUoWTest, UoWTest>();
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(DIMessage)].Count == 1);
@@ -22,7 +24,7 @@ namespace AFBus.Tests
         [ExpectedException(typeof(AggregateException))]
         public void DI_Dependency_not_found()
         {            
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
             HandlersContainer.ClearDependencies();
            
             Assert.IsTrue(container.messageHandlersDictionary[typeof(DIMessage)].Count == 1);

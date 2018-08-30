@@ -16,7 +16,7 @@ namespace AFBus.Tests
         [TestMethod]
         public void HandlersContainer_IHandleTypesAreCorrectlyScanned()
         {
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
@@ -27,7 +27,7 @@ namespace AFBus.Tests
         {
             InvocationCounter.Instance.Reset();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
@@ -40,7 +40,7 @@ namespace AFBus.Tests
         [ExpectedException(typeof(AggregateException))]
         public void HandlersContainer_HandlerNotFoundForThisMessage()
         {
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
 
             Assert.IsTrue(container.messageHandlersDictionary[typeof(TestMessage)].Count == 2);
 
@@ -53,7 +53,7 @@ namespace AFBus.Tests
         {
             InvocationCounter.Instance.Reset();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
            
             HandlersContainer.AddDependencyWithInstance<ISendMessages>(new AzureStorageQueueSendTransportShortMaxDelay(HandlersContainer.SolveDependency<ISerializeMessages>()));
 
@@ -97,7 +97,7 @@ namespace AFBus.Tests
         {
             InvocationCounter.Instance.Reset();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
 
             HandlersContainer.AddDependencyWithInstance<ISendMessages>(new AzureStorageQueueSendTransportShortMaxDelay(HandlersContainer.SolveDependency<ISerializeMessages>()));
 

@@ -21,6 +21,10 @@ namespace AFBus
         public string Destination { get; set; }
 
         public bool BodyInFile { get; set; }
+
+        public string SenderServiceName { get; set; }
+
+        public string ActualServiceName { get; set; }
     }
 
     public class AFBusMessageEnvelope

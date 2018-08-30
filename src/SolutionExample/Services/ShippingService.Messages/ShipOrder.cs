@@ -10,6 +10,6 @@ namespace ShippingService.Messages
     {
         public string UserName { get; set; }
 
-        public string ReplyTo { get; set; }
+       
     }
 }

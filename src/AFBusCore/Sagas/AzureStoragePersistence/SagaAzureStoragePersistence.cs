@@ -41,7 +41,7 @@ namespace AFBus
 
         public async Task InsertAsync(SagaData entity)
         {
-            var sagaID = entity.PartitionKey + entity.RowKey;
+            var sagaID = entity.Prefix;
             var lockID = string.Empty;
 
             if (this.LockSagas)
@@ -88,7 +88,7 @@ namespace AFBus
             // Execute the insert operation.
             await table.ExecuteAsync(replaceOperation).ConfigureAwait(false);
 
-            var sagaID = entity.PartitionKey + entity.RowKey;
+            var sagaID = entity.Prefix;
 
             if (this.LockSagas && !entity.IsDeleted)
                 await sagaLock.ReleaseLock(sagaID, entity.LockID).ConfigureAwait(false);
@@ -143,14 +143,17 @@ namespace AFBus
             BlobContinuationToken blobContinuationToken = null;
             do
             {
-                var results = await cloudBlobContainer.ListBlobsSegmentedAsync(entity.PartitionKey + entity.RowKey, blobContinuationToken);
-
+                var results = await cloudBlobContainer.ListBlobsSegmentedAsync(entity.Prefix, blobContinuationToken);
+                
                 //Delete all of them
                 foreach (IListBlobItem item in results.Results)
                 {
                     System.Diagnostics.Debug.WriteLine(item.Uri);
                     CloudBlockBlob block = new CloudBlockBlob(item.Uri);
-                    await block.DeleteIfExistsAsync();
+                    CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(block.Name);
+                    //NO ENTIENDO LA DIFERENCIA ENTRE LAS DOS LINEAS DE ARRIBA PERO NO FUNCIONA EL DELETE DEL BLOCK DE LA 152.
+
+                    await blockBlob.DeleteIfExistsAsync();
                 }
             } while (blobContinuationToken != null);
         }
@@ -160,7 +163,7 @@ namespace AFBus
             entity.IsDeleted = true;
             entity.FinishingTimeStamp = DateTime.UtcNow;
 
-            var sagaID = entity.PartitionKey + entity.RowKey;
+            var sagaID = entity.Prefix;
 
             if (this.LockSagas)
             {
@@ -222,7 +225,7 @@ namespace AFBus
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
             CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
-            var fileName = entity.PartitionKey + entity.RowKey + "-" + Guid.NewGuid().ToString("N").ToLower() + ".afbus";
+            var fileName = entity.Prefix + "-" + Guid.NewGuid().ToString("N").ToLower() + ".afbus";
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());

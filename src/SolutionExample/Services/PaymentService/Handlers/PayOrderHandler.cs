@@ -24,7 +24,7 @@ namespace PaymentService.Handlers
 
             repository.AddOrderPayed(new OrderPayed { User = message.UserName });
 
-            await bus.SendAsync(new PayOrderResponse() { UserName = message.UserName}, message.ReplyTo);
+            await bus.ReplyAsync(new PayOrderResponse() { UserName = message.UserName});
 
         }
     }

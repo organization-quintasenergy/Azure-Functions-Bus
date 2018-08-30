@@ -72,6 +72,45 @@ namespace AFBus.Tests
         }
 
         [TestMethod]
+        public void Bus_ReplyAsync_Nominal()
+        {
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
+
+            var id = Guid.NewGuid();
+
+            var message = new TestMessage()
+            {
+                SomeData = id.ToString()
+            };
+
+            var serializer = new JSONSerializer();
+            var publisher = new Mock<IPublishEvents>();
+            IBus bus = new Bus(serializer, new AzureStorageQueueSendTransport(serializer), publisher.Object);
+            bus.Context = new AFBusMessageContext()
+            {SenderServiceName=SERVICENAME };
+
+            bus.ReplyAsync(message).Wait();
+
+            var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
+
+            var finalMessageEnvelope = JsonConvert.DeserializeObject<AFBusMessageEnvelope>(stringMessage, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+
+            });
+
+            var finalMessage = JsonConvert.DeserializeObject<TestMessage>(finalMessageEnvelope.Body, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+            });
+
+            Assert.IsTrue(id.ToString() == finalMessage.SomeData);
+
+        }
+
+        [TestMethod]
         public void Bus_SendAsync_DelayedMessage()
         {
             QueueReader.CleanQueueAsync(SERVICENAME).Wait();

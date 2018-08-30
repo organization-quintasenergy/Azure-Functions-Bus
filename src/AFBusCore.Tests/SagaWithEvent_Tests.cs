@@ -10,6 +10,8 @@ namespace AFBus.Tests
     [TestClass]
     public class SagaWithEvent_Tests
     {
+        readonly static string SERVICENAME = "TESTSERVICE";
+
         [TestMethod]
         public void Sagas_With_Events_Multiple_Saga_Can_Receive_An_Event()
         {
@@ -18,7 +20,7 @@ namespace AFBus.Tests
             var sagaId1 = Guid.NewGuid();
             var sagaId2 = Guid.NewGuid();
 
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(EventSagaStartingMessage)].Count == 1);
 

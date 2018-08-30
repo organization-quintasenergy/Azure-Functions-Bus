@@ -27,7 +27,7 @@ namespace AFBus.Tests
 
             InvocationCounter.Instance.Reset();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
 
             var message = new BigMessage();
             message.Data = new string('*', 66000);
@@ -49,7 +49,7 @@ namespace AFBus.Tests
 
             InvocationCounter.Instance.Reset();
 
-            var container = new HandlersContainer();
+            var container = new HandlersContainer(SERVICENAME);
            
             var message = new BigMessage2();
             message.Data = new string('*', 66000);

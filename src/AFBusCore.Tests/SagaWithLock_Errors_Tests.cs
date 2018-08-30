@@ -10,12 +10,14 @@ namespace AFBus.Tests
     [TestClass]
     public class SagaWithLock_Errors_Tests
     {
+        readonly static string SERVICENAME = "TESTSERVICE";
+
         [TestMethod]
         public void Sagas_With_Locks_Lock_is_freed_in_exception()
         {
             var sagaId = Guid.NewGuid();
 
-            var container = new HandlersContainer(true);
+            var container = new HandlersContainer(SERVICENAME,true);
 
             Assert.IsTrue(container.messageToSagaDictionary[typeof(ErrorSagaStartingMessage)].Count == 1);
 

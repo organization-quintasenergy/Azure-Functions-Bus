@@ -14,9 +14,9 @@ namespace AFBus.Tests
 
     [TestClass]
     public class Performance_Tests
-    {      
-
-        static HandlersContainer container = new HandlersContainer();
+    {
+        readonly static string SERVICENAME = "FAKESERVICE";
+        static HandlersContainer container = new HandlersContainer(SERVICENAME);
 
         readonly int NUMBER_OF_MESSAGES = 1000000;
 

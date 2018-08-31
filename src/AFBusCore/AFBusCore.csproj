@@ -10,7 +10,7 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
 
     <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
 
     <PackageId>AFBusCore</PackageId>
     <RootNamespace>AFBus</RootNamespace>
@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.EventHubs" Version="2.1.0" />
     <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.0.2" />
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.1.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.0-beta5" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.1" />
   </ItemGroup>

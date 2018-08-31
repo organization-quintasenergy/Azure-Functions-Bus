@@ -14,10 +14,11 @@ namespace UIExample
 {
 
     public class AFBusService : IHostedService
-    {
-        public static HandlersContainer handlerContainer = new HandlersContainer();
+    {       
 
         public static string UI_SERVICE_NAME = "uiexample";
+
+        public static HandlersContainer handlerContainer = new HandlersContainer(UI_SERVICE_NAME);
 
         IHubContext<Events> hubcontext;
 

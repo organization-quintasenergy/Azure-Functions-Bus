@@ -8,7 +8,8 @@ namespace ShippingService
 {
     public static class ShippingService
     {
-        static HandlersContainer container = new HandlersContainer();
+        const string SERVICENAME = "shippingservice";
+        static HandlersContainer container = new HandlersContainer(SERVICENAME);
 
         static ShippingService()
         {

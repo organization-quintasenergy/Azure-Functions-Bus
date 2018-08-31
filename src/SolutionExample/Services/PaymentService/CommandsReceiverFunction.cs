@@ -8,7 +8,8 @@ namespace PaymentService
 {
     public static class CommandsReceiverFunction
     {
-        public static HandlersContainer container = new HandlersContainer();
+        const string SERVICENAME = "paymentservice";
+        public static HandlersContainer container = new HandlersContainer(SERVICENAME);
 
         static CommandsReceiverFunction()
         {

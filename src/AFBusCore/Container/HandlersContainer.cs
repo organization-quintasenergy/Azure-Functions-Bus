@@ -26,15 +26,18 @@ namespace AFBus
         private ISerializeMessages serializer = null;
         private ISendMessages messageSender;
         private bool lockSaga = false;
+        private string serviceName;
         
 
         /// <summary>
         /// Scans the dlls and creates a dictionary in which each message in IFunctions is referenced to each function.
         /// </summary>
-        public HandlersContainer(bool lockSaga = true)
+        public HandlersContainer(string serviceName, bool lockSaga = true)
         {
             lock (o)
             {
+                this.serviceName = serviceName;
+
                 this.lockSaga = SettingsUtil.HasSettings(SETTINGS.LOCKSAGAS)? SettingsUtil.GetSettings<bool>(SETTINGS.LOCKSAGAS):lockSaga;
 
                 AddDependency<ISerializeMessages, JSONSerializer>();
@@ -254,7 +257,7 @@ namespace AFBus
                     return;
                 }
             }
-
+                        
             await InvokeStatelessHandlers(message, messageContext, log).ConfigureAwait(false);
 
             await InvokeSagaHandlers(message, messageContext, log).ConfigureAwait(false);
@@ -280,7 +283,10 @@ namespace AFBus
             }
 
             var deserializedMessage = serializer.Deserialize(messageBody, Type.GetType(deserializedMessageWrapper.Context.BodyType));
-            
+
+            deserializedMessageWrapper.Context.ActualServiceName = serviceName;
+
+
             await HandleAsync(deserializedMessage, deserializedMessageWrapper.Context, log).ConfigureAwait(false);
 
             if (deserializedMessageWrapper.Context.BodyInFile)
@@ -307,6 +313,7 @@ namespace AFBus
             {
                 MessageID = Guid.NewGuid(),
                 TransactionID = Guid.NewGuid()
+                
             };
 
             await InvokeStatelessHandlers(message, messageContext, log).ConfigureAwait(false);

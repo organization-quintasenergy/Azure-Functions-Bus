@@ -351,15 +351,14 @@
           "lib/netstandard2.0/Microsoft.Azure.EventHubs.Processor.dll": {}
         }
       },
-      "Microsoft.Azure.ServiceBus/3.0.2": {
+      "Microsoft.Azure.ServiceBus/3.1.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.Azure.Amqp": "[2.3.0, 3.0.0)",
           "Microsoft.Azure.Services.AppAuthentication": "[1.0.1, 2.0.0)",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "[3.17.2, 4.0.0)",
           "System.Diagnostics.DiagnosticSource": "4.4.1",
-          "System.IdentityModel.Tokens.Jwt": "[5.2.2, 6.0.0)",
-          "System.Runtime.Serialization.Xml": "4.3.0"
+          "System.IdentityModel.Tokens.Jwt": "[5.2.2, 6.0.0)"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Azure.ServiceBus.dll": {}
@@ -3248,13 +3247,13 @@
           "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {}
         }
       },
-      "AFBusCore/1.0.1": {
+      "AFBusCore/1.1.1": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Microsoft.Azure.EventHubs": "2.1.0",
           "Microsoft.Azure.EventHubs.Processor": "2.1.0",
-          "Microsoft.Azure.ServiceBus": "3.0.2",
+          "Microsoft.Azure.ServiceBus": "3.1.0",
           "Microsoft.Azure.WebJobs": "3.0.0-beta5",
           "WindowsAzure.Storage": "9.3.1"
         },
@@ -3269,7 +3268,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "AFBusCore": "1.0.1",
+          "AFBusCore": "1.1.1",
           "Microsoft.Azure.WebJobs.Extensions.Storage": "3.0.0-beta8",
           "Microsoft.NET.Sdk.Functions": "1.0.19",
           "OrderSaga.Messages": "1.0.0",
@@ -3622,16 +3621,16 @@
         "microsoft.azure.eventhubs.processor.nuspec"
       ]
     },
-    "Microsoft.Azure.ServiceBus/3.0.2": {
-      "sha512": "1vQbGGmWGp6skP19lDePcZNEF9WarUvP9odWVQMkDJEuthad3wNLrCNE8AW017d7rroyoNd+9VYUU/wqrP2S1w==",
+    "Microsoft.Azure.ServiceBus/3.1.0": {
+      "sha512": "Ig+63JIv0lGMorJ4GKUgFol8Bgl1vJxhLoExcmFJj+gdhseAqret8l/+UdxBsrjDu5X5PttjaqZLh048gxhcrQ==",
       "type": "package",
-      "path": "microsoft.azure.servicebus/3.0.2",
+      "path": "microsoft.azure.servicebus/3.1.0",
       "files": [
         ".signature.p7s",
         "lib/netstandard2.0/Microsoft.Azure.ServiceBus.dll",
         "lib/netstandard2.0/Microsoft.Azure.ServiceBus.pdb",
         "lib/netstandard2.0/Microsoft.Azure.ServiceBus.xml",
-        "microsoft.azure.servicebus.3.0.2.nupkg.sha512",
+        "microsoft.azure.servicebus.3.1.0.nupkg.sha512",
         "microsoft.azure.servicebus.nuspec"
       ]
     },
@@ -9736,7 +9735,7 @@
         "windowsazure.storage.nuspec"
       ]
     },
-    "AFBusCore/1.0.1": {
+    "AFBusCore/1.1.1": {
       "type": "project",
       "path": "../../../AFBusCore/AFBusCore.csproj",
       "msbuildProject": "../../../AFBusCore/AFBusCore.csproj"
@@ -9764,7 +9763,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
-      "AFBusCore >= 1.0.1",
+      "AFBusCore >= 1.1.1",
       "MSTest.TestAdapter >= 1.2.1",
       "MSTest.TestFramework >= 1.2.1",
       "Microsoft.NET.Test.Sdk >= 15.7.0",

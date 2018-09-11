@@ -17,7 +17,7 @@ namespace AFBus
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
 
             });
 
@@ -38,7 +38,7 @@ namespace AFBus
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
         }
     }

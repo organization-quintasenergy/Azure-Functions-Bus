@@ -16,8 +16,9 @@ namespace AFBus
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind
-                                
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize
+
             });
 
             return deserialized;
@@ -36,7 +37,8 @@ namespace AFBus
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize
             });
         }
     }

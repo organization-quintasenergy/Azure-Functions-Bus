@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AFBus;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace OrderSaga
 {
@@ -13,9 +13,9 @@ namespace OrderSaga
         static HandlersContainer container = new HandlersContainer(SERVICENAME);
 
         [FunctionName("OrderSagaEndpointFunction")]
-        public static async Task Run([QueueTrigger(SERVICENAME)]string orderSagaMessage, TraceWriter log)
+        public static async Task Run([QueueTrigger(SERVICENAME)]string orderSagaMessage, ILogger log)
         {
-            log.Info($"OrderSagaEndpointFunction message received: {orderSagaMessage}");
+            log.LogInformation($"OrderSagaEndpointFunction message received: {orderSagaMessage}");
 
             await container.HandleAsync(orderSagaMessage, log);
         }

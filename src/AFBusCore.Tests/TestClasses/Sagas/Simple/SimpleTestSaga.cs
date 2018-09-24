@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.WebJobs.Host;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace AFBus.Tests.TestClasses
         private const string PARTITION_KEY = "SimpleTestSaga";
 
         
-        public Task HandleCommandAsync(IBus bus, SimpleSagaStartingMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SimpleSagaStartingMessage input, ILogger Log)
         {           
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -23,7 +23,7 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        public Task HandleCommandAsync(IBus bus, SimpleSagaIntermediateMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SimpleSagaIntermediateMessage input, ILogger Log)
         {
             this.Data.Counter++;
 
@@ -32,7 +32,7 @@ namespace AFBus.Tests.TestClasses
             return Task.CompletedTask;
         }
 
-        public async Task HandleCommandAsync(IBus bus, SimpleSagaTerminatingMessage message, TraceWriter Log)
+        public async Task HandleCommandAsync(IBus bus, SimpleSagaTerminatingMessage message, ILogger Log)
         {
             await this.DeleteSagaAsync();
         }

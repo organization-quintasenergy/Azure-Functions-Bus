@@ -1,5 +1,5 @@
 ﻿using AFBus;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrderSaga.Messages;
 using PaymentService.Messages;
@@ -18,7 +18,7 @@ namespace OrderSaga.Sagas
         const string SERVICE_NAME = "ordersaga";
         const string UI_SERVICE_NAME = "uiexample";
 
-        public async Task HandleCommandAsync(IBus bus, CartItemAdded message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, CartItemAdded message, ILogger log)
         {
             
             var productsList = new List<string>();
@@ -43,14 +43,14 @@ namespace OrderSaga.Sagas
             
         }
 
-        public async Task HandleCommandAsync(IBus bus, ProcessOrder message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, ProcessOrder message, ILogger log)
         {
             await bus.SendAsync(new ShipOrder() { UserName = this.Data.RowKey}, "shippingservice");
              
             await bus.SendAsync(new PayOrder() { UserName = this.Data.RowKey}, "paymentservice");
         }
 
-        public async Task HandleCommandAsync(IBus bus, ShipOrderResponse message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, ShipOrderResponse message, ILogger log)
         {
             this.Data.Shipped = true;
             await EndOfOrder(bus, log);
@@ -59,7 +59,7 @@ namespace OrderSaga.Sagas
 
         
 
-        public async Task HandleCommandAsync(IBus bus, PayOrderResponse message, TraceWriter log)
+        public async Task HandleCommandAsync(IBus bus, PayOrderResponse message, ILogger log)
         {
             this.Data.Payed = true;
 
@@ -67,11 +67,11 @@ namespace OrderSaga.Sagas
 
         }
 
-        private async Task EndOfOrder(IBus bus, TraceWriter Log)
+        private async Task EndOfOrder(IBus bus, ILogger Log)
         {
             if (Data.Shipped && Data.Payed)
             {
-                Log.Info("Process finished");
+                Log.LogInformation("Process finished");
 
                 await bus.SendAsync(new OrderFinished { UserName = Data.UserName }, UI_SERVICE_NAME);
 

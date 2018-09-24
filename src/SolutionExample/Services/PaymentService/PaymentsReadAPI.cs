@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using AFBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace PaymentService
 {
     public static class PaymentsReadAPI
     {
         [FunctionName("GetPayments")]
-        public static HttpResponseMessage RunGetPayments([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage RunGetPayments([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, ILogger log)
         {
-            log.Info("GetPayments received a request.");
+            log.LogInformation("GetPayments received a request.");
 
             var repository = HandlersContainer.SolveDependency<IPaymentsRepository>();
             
@@ -25,9 +25,9 @@ namespace PaymentService
         }
 
         [FunctionName("GetPaymentsByUser")]
-        public static HttpResponseMessage RunGetPaymentsByUser([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage RunGetPaymentsByUser([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, ILogger log)
         {
-            log.Info("GetPaymentsByUser received a request.");
+            log.LogInformation("GetPaymentsByUser received a request.");
             
             var repository = HandlersContainer.SolveDependency<IPaymentsRepository>();
 

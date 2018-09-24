@@ -1,7 +1,7 @@
 ﻿using AFBus;
 using AFBus.Tests;
 using AFBus.Tests.TestClasses;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
@@ -77,7 +77,7 @@ namespace AFBus.Tests
 
     public class TestMessageHandler : IHandle<BigMessage>
     {
-        public Task HandleAsync(IBus bus, BigMessage input, TraceWriter Log)
+        public Task HandleAsync(IBus bus, BigMessage input, ILogger Log)
         {
             InvocationCounter.Instance.AddOne();
 
@@ -87,7 +87,7 @@ namespace AFBus.Tests
 
     public class TestMessageHandler2 : IHandle<BigMessage2>
     {
-        public Task HandleAsync(IBus bus, BigMessage2 input, TraceWriter Log)
+        public Task HandleAsync(IBus bus, BigMessage2 input, ILogger Log)
         {
             bus.SendAsync(new BigMessage(), BigMessage_Tests.SERVICENAME).Wait();
 

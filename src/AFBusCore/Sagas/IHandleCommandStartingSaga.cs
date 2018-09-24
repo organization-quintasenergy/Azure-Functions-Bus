@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace AFBus
     /// </summary>
     public interface IHandleCommandStartingSaga<MessageType>
     {
-        Task HandleCommandAsync(IBus bus, MessageType message, TraceWriter log);
+        Task HandleCommandAsync(IBus bus, MessageType message, ILogger log);
     }
 }

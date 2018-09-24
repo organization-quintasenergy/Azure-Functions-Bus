@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.WebJobs.Host;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace AFBus
         /// <param name="bus"></param>
         /// <param name="message"></param>
         /// <param name="Log"></param>
-        Task HandleCommandAsync(IBus bus, MessageType message, TraceWriter log);
+        Task HandleCommandAsync(IBus bus, MessageType message, ILogger log);
 
         /// <summary>
         /// Defines how a message correlates to a saga instance

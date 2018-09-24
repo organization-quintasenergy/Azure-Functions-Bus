@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AFBus;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace ShippingService
 {
@@ -18,9 +18,9 @@ namespace ShippingService
 
 
         [FunctionName("ShippingServiceEndpointFunction")]
-        public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, TraceWriter log)
+        public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, ILogger log)
         {
-            log.Info($"C# Queue trigger function processed: {myQueueItem}");
+            log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
 
             await container.HandleAsync(myQueueItem, log);
         }

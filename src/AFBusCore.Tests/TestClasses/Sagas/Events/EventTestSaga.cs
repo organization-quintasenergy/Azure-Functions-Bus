@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.WebJobs.Host;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace AFBus.Tests.TestClasses
         private const string PARTITION_KEY = "EventTestSaga";
 
         
-        public Task HandleCommandAsync(IBus bus, EventSagaStartingMessage input, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, EventSagaStartingMessage input, ILogger Log)
         {           
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -25,14 +25,14 @@ namespace AFBus.Tests.TestClasses
         }
 
       
-        public Task HandleEventAsync(IBus bus, EventSagaIntermediateMessage message, TraceWriter log)
+        public Task HandleEventAsync(IBus bus, EventSagaIntermediateMessage message, ILogger log)
         {
             InvocationCounter.Instance.AddOne();
 
             return Task.CompletedTask;
         }
 
-        public async Task HandleCommandAsync(IBus bus, EventSagaTerminatingMessage message, TraceWriter Log)
+        public async Task HandleCommandAsync(IBus bus, EventSagaTerminatingMessage message, ILogger Log)
         {
             await this.DeleteSagaAsync();
         }

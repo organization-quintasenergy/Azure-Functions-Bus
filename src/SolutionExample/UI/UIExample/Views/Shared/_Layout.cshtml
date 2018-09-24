@@ -17,13 +17,17 @@
     </environment>
     <script src="~/js/signalr.js"></script>
     <script>
-        let connection = new signalR.HubConnection('/events');
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/events")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();       
 
         connection.on('Send', data => {
             alert('Payment and shipping for user '+data+' done');
         });
 
-        connection.start();
+        connection.start().catch(err => console.error(err.toString()));
 
     </script>
 </head>

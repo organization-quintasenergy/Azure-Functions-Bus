@@ -1,0 +1,6 @@
+﻿{
+
+  "AzureServiceBusConnectionString": "Endpoint=sb://pcvtest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OGQpHzO7ZlYQhJcaMPflsX3Fd2gimthWa3JSXvbCoq4=",
+
+  "AzureEventHubConnectionString": "Endpoint=sb://pcvtests.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=CZZ+/NqJnYoBg1BK/Uq3R2Mv9AoK9W6mwETWiBCh3Ew="
+}

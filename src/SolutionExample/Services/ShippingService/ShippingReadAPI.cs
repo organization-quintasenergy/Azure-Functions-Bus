@@ -11,7 +11,7 @@ namespace ShippingService
     public static class ShippingReadAPI
     {
       /*  [FunctionName("GetOrdersShipped")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, ILogger log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

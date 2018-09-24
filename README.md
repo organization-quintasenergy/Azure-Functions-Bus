@@ -60,10 +60,10 @@ Each message gets passed to its handlers when the handle method of the container
         static HandlersContainer container = new HandlersContainer();
 
         [FunctionName("ShippingServiceEndpointFunction")]
-        public static async Task Run([QueueTrigger("shippingservice", Connection = "")]string myQueueItem, TraceWriter log)
+        public static async Task Run([QueueTrigger("shippingservice", Connection = "")]string myQueueItem, ILogger log)
         {            
             //Calls to every handler that receives that message
-            await container.HandleAsync(myQueueItem, new AFTraceWriter(log));
+            await container.HandleAsync(myQueueItem, new Logger(log));
             
         }
     }
@@ -81,7 +81,7 @@ Defining a stateless handler is just implementing the IHandle<MessageType> inter
             this.rep = rep;
         }
 
-        public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, ShipOrder message, ILogger Log)
         {
             Log.Info("order shipped");
 
@@ -107,7 +107,7 @@ Sagas are stateful components that orchestrates differents messages. In a saga y
         private const string PARTITION_KEY = "SimpleTestSaga";
 
         
-        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, SimpleSagaStartingMessage input, ILogger Log)
         {           
 
             this.Data.PartitionKey = PARTITION_KEY;
@@ -117,13 +117,13 @@ Sagas are stateful components that orchestrates differents messages. In a saga y
             return Task.CompletedTask;
         }
 
-        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, ITraceWriter Log)
+        public Task HandleAsync(IBus bus, SimpleSagaIntermediateMessage input, ILogger Log)
         {
             this.Data.Counter++;
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, ITraceWriter Log)
+        public async Task HandleAsync(IBus bus, SimpleSagaTerminatingMessage message, ILogger Log)
         {
             await this.DeleteSaga();
         }
@@ -173,7 +173,7 @@ public static class ShippingService
 
 
     [FunctionName("ShippingServiceEndpointFunction")]
-    public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, TraceWriter log)
+    public static async Task Run([QueueTrigger("shippingservice")]string myQueueItem, ILogger log)
     {
         log.Info($"C# Queue trigger function processed: {myQueueItem}");
 
@@ -194,7 +194,7 @@ public class ShipOrderHandler : IHandle<ShipOrder>
         this.rep = rep;
     }
 
-    public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
+    public async Task HandleAsync(IBus bus, ShipOrder message, ILogger Log)
     {
         Log.Info("order shipped");
 

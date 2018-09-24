@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Globalization;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("AFBusCore.Tests")]
 namespace AFBus
@@ -227,7 +228,7 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {            
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
@@ -270,7 +271,7 @@ namespace AFBus
         /// <param name="serializedMessage"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public async Task HandleAsync(string serializedMessage, TraceWriter log)
+        public async Task HandleAsync(string serializedMessage, ILogger log)
         {
 
             var deserializedMessageWrapper = serializer.Deserialize(serializedMessage,typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
@@ -299,7 +300,7 @@ namespace AFBus
         /// <summary>
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
-        public async Task HandleAsync<T>(T message, TraceWriter log) where T : class
+        public async Task HandleAsync<T>(T message, ILogger log) where T : class
         {
             if(message.GetType()==typeof(AFBusMessageEnvelope))
             {
@@ -322,7 +323,7 @@ namespace AFBus
 
         }
 
-        private async Task InvokeSagaHandlers<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        private async Task InvokeSagaHandlers<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {
             //The message can not be executed in a Saga
             if (!messageToSagaDictionary.ContainsKey(message.GetType()))
@@ -332,11 +333,11 @@ namespace AFBus
             instantiated = instantiated || await LookForEventsProcessedBySagas(message, messageContext, log).ConfigureAwait(false);
 
             if (!instantiated)
-                log?.Info("Saga not found for message " + serializer.Serialize(message));
+                log?.LogInformation("Saga not found for message " + serializer.Serialize(message));
 
         }
 
-        private async Task<bool> LookForCommandsProcessedByASaga<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        private async Task<bool> LookForCommandsProcessedByASaga<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {
             var instantiated = false;
 
@@ -378,7 +379,7 @@ namespace AFBus
                         catch (Exception ex)
                         {
                             //if there is an error release the lock.
-                            log?.Error(ex.Message, ex);
+                            log?.LogError(ex.Message, ex);
                             var sagaID = sagaData.PartitionKey + sagaData.RowKey;
                             await locker.ReleaseLock(sagaID, sagaData.LockID);
                             throw ex;
@@ -410,7 +411,7 @@ namespace AFBus
             return instantiated;
         }
 
-        private async Task<bool> LookForEventsProcessedBySagas<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        private async Task<bool> LookForEventsProcessedBySagas<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {
             var instantiated = false;
 
@@ -462,7 +463,7 @@ namespace AFBus
                             catch (Exception ex)
                             {
                                 //if there is an error release the lock.
-                                log?.Error(ex.Message, ex);
+                                log?.LogError(ex.Message, ex);
                                 var sagaID = sagaData.PartitionKey + sagaData.RowKey;
                                 await locker.ReleaseLock(sagaID, sagaData.LockID);
                                 throw ex;
@@ -476,7 +477,7 @@ namespace AFBus
             return instantiated;
         }
 
-        private async Task InvokeStatelessHandlers<T>(T message, AFBusMessageContext messageContext, TraceWriter log) where T : class
+        private async Task InvokeStatelessHandlers<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {
             //The message can not be executed in a stateless handler
             if (!messageHandlersDictionary.ContainsKey(message.GetType()))

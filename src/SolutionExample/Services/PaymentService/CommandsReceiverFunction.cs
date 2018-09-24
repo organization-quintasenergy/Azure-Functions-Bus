@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AFBus;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace PaymentService
 {
@@ -18,9 +18,9 @@ namespace PaymentService
 
 
         [FunctionName("PaymentServiceEndpointFunction")]
-        public static async Task Run([QueueTrigger("paymentservice")]string myQueueItem, TraceWriter log)
+        public static async Task Run([QueueTrigger("paymentservice")]string myQueueItem, ILogger log)
         {
-            log.Info($"PaymentServiceCommandReceiverFunction received a message: {myQueueItem}");
+            log.LogInformation($"PaymentServiceCommandReceiverFunction received a message: {myQueueItem}");
 
             await container.HandleAsync(myQueueItem, log);
         }

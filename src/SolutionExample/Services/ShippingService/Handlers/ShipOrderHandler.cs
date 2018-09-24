@@ -1,5 +1,5 @@
 ﻿using AFBus;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using ShippingService.Messages;
 using System;
 using System.Collections.Generic;
@@ -19,9 +19,9 @@ namespace ShippingService.Handlers
             this.rep = rep;
         }
 
-        public async Task HandleAsync(IBus bus, ShipOrder message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, ShipOrder message, ILogger Log)
         {
-            Log.Info("order shipped");
+            Log.LogInformation("order shipped");
 
             rep.AddOrderShipped(new OrderShipped { User = message.UserName });
 

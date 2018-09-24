@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace AFBus.Tests.TestClasses.DI
 {
@@ -14,7 +14,7 @@ namespace AFBus.Tests.TestClasses.DI
 
         }
 
-        public Task HandleAsync(IBus bus, DIMessage message, TraceWriter Log)
+        public Task HandleAsync(IBus bus, DIMessage message, ILogger Log)
         {
             return Task.CompletedTask;
         }

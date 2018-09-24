@@ -1,6 +1,6 @@
 ﻿using AFBus;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using OrderSaga.Messages;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace UIExample.Handlers
             this.hub = hub;
         }
 
-        public async Task HandleAsync(IBus bus, OrderFinished message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, OrderFinished message, ILogger Log)
         {
             await hub.Clients.All.SendAsync("Send", message.UserName);
             

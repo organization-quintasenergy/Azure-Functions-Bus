@@ -1,5 +1,5 @@
 ﻿using AFBus;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using PaymentService.Messages;
 using System;
 using System.Collections.Generic;
@@ -18,9 +18,9 @@ namespace PaymentService.Handlers
             this.repository = rep;
         }
 
-        public async Task HandleAsync(IBus bus, PayOrder message, TraceWriter Log)
+        public async Task HandleAsync(IBus bus, PayOrder message, ILogger Log)
         {
-            Log.Info("Order payed");            
+            Log.LogInformation("Order payed");            
 
             repository.AddOrderPayed(new OrderPayed { User = message.UserName });
 

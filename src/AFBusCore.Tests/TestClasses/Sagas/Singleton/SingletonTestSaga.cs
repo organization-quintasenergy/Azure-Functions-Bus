@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.WebJobs.Host;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace AFBus.Tests.TestClasses
     {
         private const string PARTITION_KEY = "SingletonTestSaga";
 
-        public Task HandleCommandAsync(IBus bus, SingletonSagaStartingMessage message, TraceWriter Log)
+        public Task HandleCommandAsync(IBus bus, SingletonSagaStartingMessage message, ILogger Log)
         {
             Data.PartitionKey = PARTITION_KEY;
             Data.RowKey = message.Id.ToString();

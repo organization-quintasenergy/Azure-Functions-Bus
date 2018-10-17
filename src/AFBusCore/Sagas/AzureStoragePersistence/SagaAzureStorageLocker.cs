@@ -17,6 +17,9 @@ namespace AFBus
         TimeSpan LOCK_DURATION = new TimeSpan(0, 0, 15);
         CloudStorageAccount storageAccount;
 
+        int MIN_WAITING_FOR_LOCK_RELEASING = 1000;
+        int MAX_WAITING_FOR_LOCK_RELEASING = 2000;
+
         public SagaAzureStorageLocker()
         {
             storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
@@ -55,12 +58,12 @@ namespace AFBus
             {
                 leaseId = await blob.AcquireLeaseAsync(LOCK_DURATION);
             }
-            catch (StorageException)
+            catch (StorageException ex)
             {
                 Random rnd = new Random();
-                await Task.Delay(rnd.Next(0, 1000));
+                await Task.Delay(rnd.Next(MIN_WAITING_FOR_LOCK_RELEASING, MAX_WAITING_FOR_LOCK_RELEASING));
 
-                throw;
+                throw ex;
             }          
 
             return leaseId;
@@ -89,7 +92,7 @@ namespace AFBus
             catch (StorageException)
             {
                 Random rnd = new Random();
-                await Task.Delay(rnd.Next(0, 1000));
+                await Task.Delay(rnd.Next(MIN_WAITING_FOR_LOCK_RELEASING, MAX_WAITING_FOR_LOCK_RELEASING));
 
                 throw;
             }
@@ -118,7 +121,7 @@ namespace AFBus
             catch (StorageException)
             {
                 Random rnd = new Random();
-                await Task.Delay(rnd.Next(0, 1000));
+                await Task.Delay(rnd.Next(MIN_WAITING_FOR_LOCK_RELEASING, MAX_WAITING_FOR_LOCK_RELEASING));
 
                 throw;
             }

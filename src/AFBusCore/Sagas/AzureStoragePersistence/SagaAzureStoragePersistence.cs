@@ -16,7 +16,9 @@ namespace AFBus
 
         ISagaLocker sagaLock;
         private bool lockSagas;
-        CloudStorageAccount storageAccount;
+        static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        static CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+        static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
         public bool LockSagas { get => lockSagas; set => lockSagas = value; }
 
@@ -24,14 +26,12 @@ namespace AFBus
         {
             this.sagaLock = sagaLock;
             this.LockSagas = lockSagas;
-            storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+            
         }
 
         public async Task CreateSagaPersistenceTableAsync()
         {
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-
+            
             // Retrieve a reference to the table.
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
@@ -50,9 +50,7 @@ namespace AFBus
             }
 
             entity.CreationTimeStamp = DateTime.UtcNow;
-
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+          
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
@@ -74,10 +72,6 @@ namespace AFBus
             if (entity.IsDeleted)
                 return;
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
@@ -104,8 +98,6 @@ namespace AFBus
                 lockID = await sagaLock.CreateLock(sagaID).ConfigureAwait(false);
             }
 
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
@@ -130,10 +122,6 @@ namespace AFBus
         public async Task DeleteBlobAsync(SagaData entity)
         {
             var jsonSerializer = new JSONSerializer();
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
-
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
@@ -171,9 +159,6 @@ namespace AFBus
             }
 
 
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
             // Create the TableOperation object that inserts the customer entity.
@@ -198,8 +183,6 @@ namespace AFBus
         public async Task<List<T>> FindSagaDataAsync<T>(TableQuery<T> tableQuery) where T : SagaData, ITableEntity, new()
         {
 
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
 
@@ -222,9 +205,6 @@ namespace AFBus
             var jsonSerializer = new JSONSerializer();
             var wrapper = new BigPropertyWrapper();
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
-
             var fileName = entity.Prefix + "-" + Guid.NewGuid().ToString("N").ToLower() + ".afbus";
 
             // Create a container 
@@ -245,10 +225,6 @@ namespace AFBus
         {
             var jsonSerializer = new JSONSerializer();
             var wrapper = jsonSerializer.Deserialize(bigPropertyWrapperSerialized, typeof(BigPropertyWrapper)) as BigPropertyWrapper;
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
-
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());

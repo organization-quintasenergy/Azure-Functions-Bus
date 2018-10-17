@@ -11,14 +11,13 @@ namespace AFBus
     public class StorePropertyInBlobUtil
     {
         private static readonly string CONTAINER_NAME = "bigpropertiesstorage";
+        static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
         public static async Task<string> StoreDataInBlob<T>(T property)
         {
             var jsonSerializer = new JSONSerializer();
             var wrapper = new BigPropertyWrapper();
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
             var fileName = Guid.NewGuid().ToString("N").ToLower() + ".afbus";
 
@@ -41,10 +40,6 @@ namespace AFBus
             var jsonSerializer = new JSONSerializer();
             var wrapper = jsonSerializer.Deserialize(bigPropertyWrapperSerialized,typeof(BigPropertyWrapper)) as BigPropertyWrapper;
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
-                       
-
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
             await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
@@ -61,10 +56,6 @@ namespace AFBus
         {
             var jsonSerializer = new JSONSerializer();
             var wrapper = jsonSerializer.Deserialize(bigPropertyWrapperSerialized, typeof(BigPropertyWrapper)) as BigPropertyWrapper;
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
-
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());

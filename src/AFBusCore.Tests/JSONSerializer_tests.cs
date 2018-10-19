@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AFBusCore.Tests
+namespace AFBus.Tests
 {
     [TestClass]
     public class JSONSerializer_tests

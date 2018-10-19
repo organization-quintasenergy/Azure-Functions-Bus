@@ -14,6 +14,9 @@ namespace AFBus
         private const string CONTAINER_NAME = "bigmessages";
         ISerializeMessages serializer;
 
+        static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+
         public AzureEventHubPublishTransport(ISerializeMessages serializer)
         {
             this.serializer = serializer;
@@ -49,8 +52,7 @@ namespace AFBus
                 {
                     var fileName = Guid.NewGuid().ToString("N").ToLower() + ".afbus";
                     messageWithEnvelope.Context.BodyInFile = true;
-
-                    CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+                                        
 
                     // Create a container 
                     var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
@@ -75,10 +77,7 @@ namespace AFBus
         }
 
         public async Task<string> ReadMessageBodyFromFileAsync(string fileName)
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
-
+        {            
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
             await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
@@ -91,8 +90,6 @@ namespace AFBus
 
         public async Task DeleteFileWithMessageBodyAsync(string fileName)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());

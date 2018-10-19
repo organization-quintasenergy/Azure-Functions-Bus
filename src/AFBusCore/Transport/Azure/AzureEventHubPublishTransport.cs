@@ -14,20 +14,46 @@ namespace AFBus
         private const string CONTAINER_NAME = "bigmessages";
         ISerializeMessages serializer;
 
+        static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
+        static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+
+        static Dictionary<string, EventHubClient> eventHubClients = new Dictionary<string, EventHubClient>();
+        static object o = new object();
+
         public AzureEventHubPublishTransport(ISerializeMessages serializer)
         {
             this.serializer = serializer;
         }
 
+        private EventHubClient GetClientByTopic(string topicName)
+        {            
+
+            if(!eventHubClients.ContainsKey(topicName))
+            {
+                lock (o)
+                {
+                    if (!eventHubClients.ContainsKey(topicName))
+                    {
+                        var connectionStringBuilder = new EventHubsConnectionStringBuilder(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_EVENTHUB))
+                        {
+                            EntityPath = topicName
+                        };
+
+                        var eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+
+                        eventHubClients.Add(topicName, eventHubClient);
+                    }
+                }
+            }
+
+            return eventHubClients[topicName];
+
+        }
+
         public async Task PublishEventsAsync<T>(T message, string topicName, AFBusMessageContext messageContext) where T : class
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_EVENTHUB))
-            {
-                EntityPath = topicName
-            };
+            var eventHubClient = GetClientByTopic(topicName);
 
-            var eventHubClient = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
 
             try
             {
@@ -48,9 +74,7 @@ namespace AFBus
                 if ((finalMessage.Length * sizeof(Char)) > MAX_MESSAGE_SIZE)
                 {
                     var fileName = Guid.NewGuid().ToString("N").ToLower() + ".afbus";
-                    messageWithEnvelope.Context.BodyInFile = true;
-
-                    CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+                    messageWithEnvelope.Context.BodyInFile = true;                   
 
                     // Create a container 
                     var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
@@ -76,8 +100,6 @@ namespace AFBus
 
         public async Task<string> ReadMessageBodyFromFileAsync(string fileName)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
@@ -91,8 +113,6 @@ namespace AFBus
 
         public async Task DeleteFileWithMessageBodyAsync(string fileName)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
-            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());

@@ -161,11 +161,14 @@ namespace AFBus
 
             CloudTable table = tableClient.GetTableReference(TABLE_NAME);
 
-            // Create the TableOperation object that inserts the customer entity.
-            TableOperation replaceOperation = TableOperation.Delete(entity);
+            if (entity.ETag != null)
+            {
+                // Create the TableOperation object that deletes.
+                TableOperation deleteOperation = TableOperation.Delete(entity);
 
-            // Execute the insert operation.
-            await table.ExecuteAsync(replaceOperation);
+                // Execute the delete operation.
+                await table.ExecuteAsync(deleteOperation);
+            }
             /*
             entity.IsDeleted = true;
             entity.FinishingTimeStamp = DateTime.UtcNow;

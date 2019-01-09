@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Globalization;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage;
 
 [assembly: InternalsVisibleTo("AFBusCore.Tests")]
 namespace AFBus
@@ -273,14 +274,32 @@ namespace AFBus
         /// <returns></returns>
         public async Task HandleAsync(string serializedMessage, ILogger log)
         {
-
-            var deserializedMessageWrapper = serializer.Deserialize(serializedMessage,typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
+         
+            var deserializedMessageWrapper = serializer.Deserialize(serializedMessage, typeof(AFBusMessageEnvelope)) as AFBusMessageEnvelope;
 
             string messageBody = deserializedMessageWrapper.Body;
 
             if (deserializedMessageWrapper.Context.BodyInFile)
             {
-                messageBody = await messageSender.ReadMessageBodyFromFileAsync(messageBody).ConfigureAwait(false);
+                try
+                {
+                    messageBody = await messageSender.ReadMessageBodyFromFileAsync(messageBody).ConfigureAwait(false);
+                }
+                catch (StorageException ex)
+                {
+                    if(ex.Message.Contains("The specified blob does not exist"))
+                    {
+                        log?.LogWarning("message ignored because file " + messageBody + " has not been found");
+                        return;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+
+                  
+                }
+
             }
 
             var deserializedMessage = serializer.Deserialize(messageBody, Type.GetType(deserializedMessageWrapper.Context.BodyType));
@@ -294,7 +313,7 @@ namespace AFBus
             {
                 await messageSender.DeleteFileWithMessageBodyAsync(deserializedMessageWrapper.Body).ConfigureAwait(false);
             }
-
+          
         }
 
         /// <summary>

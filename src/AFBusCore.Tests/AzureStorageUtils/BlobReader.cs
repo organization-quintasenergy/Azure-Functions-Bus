@@ -36,9 +36,8 @@ namespace AFBus.Tests
             // Create a container 
             var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
             await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
-
-            await cloudBlobContainer.DeleteAsync();            
-
+            await cloudBlobContainer.DeleteAsync();
+            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
 
         }
     }

@@ -17,6 +17,7 @@ namespace AFBus
         TimeSpan LOCK_DURATION = new TimeSpan(0, 0, 15);
         static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+        static bool containerCreated = false;
 
         int MIN_WAITING_FOR_LOCK_RELEASING = 1000;
         int MAX_WAITING_FOR_LOCK_RELEASING = 2000;
@@ -24,10 +25,15 @@ namespace AFBus
 
         
         public async Task CreateLocksContainer()
-        {            
+        {
             // Create a container 
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
-            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+            if (!containerCreated)
+            {
+               
+                var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
+                await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+                containerCreated = true;
+            }
 
         }
 

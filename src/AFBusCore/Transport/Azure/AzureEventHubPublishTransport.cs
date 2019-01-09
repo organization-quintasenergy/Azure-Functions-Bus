@@ -16,10 +16,19 @@ namespace AFBus
 
         static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+        static bool containerCreated = false;
 
         public AzureEventHubPublishTransport(ISerializeMessages serializer)
         {
             this.serializer = serializer;
+
+            // Create a container 
+            if (!containerCreated)
+            {
+                var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
+                cloudBlobContainer.CreateIfNotExistsAsync().Wait();
+                containerCreated = true;
+            }
         }
 
         public async Task PublishEventsAsync<T>(T message, string topicName, AFBusMessageContext messageContext) where T : class
@@ -55,8 +64,7 @@ namespace AFBus
                                         
 
                     // Create a container 
-                    var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
-                    await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+                    var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());                   
 
                     CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
                     await blockBlob.UploadTextAsync(messageWithEnvelope.Body);
@@ -79,8 +87,7 @@ namespace AFBus
         public async Task<string> ReadMessageBodyFromFileAsync(string fileName)
         {            
             // Create a container 
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
-            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());           
 
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             return await blockBlob.DownloadTextAsync();
@@ -92,8 +99,7 @@ namespace AFBus
         {
 
             // Create a container 
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());
-            await cloudBlobContainer.CreateIfNotExistsAsync().ConfigureAwait(false);
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(CONTAINER_NAME.ToLower());           
 
             CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
             await blockBlob.DeleteIfExistsAsync();

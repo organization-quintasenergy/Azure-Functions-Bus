@@ -61,8 +61,32 @@ namespace AFBus.Tests
             container.HandleAsync(stringMessage, null).Wait();
 
             Assert.IsTrue(BlobReader.ListFilesAsync().Result.Count() == 0);
-        }       
-    
+        }
+
+        [TestMethod]
+        public void BigMessage_IgnoreMessageIfBlobNotFound()
+        {
+            BlobReader.DeleteFilesAsync().Wait();
+            QueueReader.CleanQueueAsync(SERVICENAME).Wait();
+
+            InvocationCounter.Instance.Reset();
+
+            var container = new HandlersContainer(SERVICENAME);
+
+            var message = new BigMessage2();
+            message.Data = new string('*', 66000);
+
+            SendOnlyBus.SendAsync(message, SERVICENAME).Wait();
+            BlobReader.DeleteFilesAsync().Wait();
+
+            var stringMessage = QueueReader.ReadOneMessageFromQueueAsync(SERVICENAME).Result;
+
+            container.HandleAsync(stringMessage, null).Wait();
+
+            Assert.IsTrue(BlobReader.ListFilesAsync().Result.Count() == 0);
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 0);
+        }
+
     }
 
     public class BigMessage

@@ -230,7 +230,8 @@ namespace AFBus
         /// Calls each function referenced by each message in the dictionary.
         /// </summary>
         internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
-        {            
+        {
+            log?.LogInformation("message of type " + message.GetType().ToString() + " received in AFBus");
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));
@@ -321,6 +322,8 @@ namespace AFBus
         /// </summary>
         public async Task HandleAsync<T>(T message, ILogger log) where T : class
         {
+            log?.LogInformation("message of type "+message.GetType().ToString()+" received in AFBus");
+
             if(message.GetType()==typeof(AFBusMessageEnvelope))
             {
                 throw new Exception("AFBusMessageEnvelope type not permited");

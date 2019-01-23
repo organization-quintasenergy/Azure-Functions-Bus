@@ -203,23 +203,25 @@ namespace AFBus
 
             foreach (var t in ifunctionTypes)
             {
-                var interfaceType = t.GetInterfaces()[0];
-                var messageType = interfaceType.GetGenericArguments()[0];
-
-                List<Type> handlerTypeList;
-
-                if (!messageHandlersDictionary.ContainsKey(messageType))
+                foreach (var interfaceType in t.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandle<>)))
                 {
-                    handlerTypeList = new List<Type>();
-                    handlerTypeList.Add(t);
-                    messageHandlersDictionary.Add(messageType, handlerTypeList);
+                    var messageType = interfaceType.GetGenericArguments()[0];
 
-                }
-                else
-                {
-                    handlerTypeList = messageHandlersDictionary[messageType];
-                    handlerTypeList.Add(t);
-                    
+                    List<Type> handlerTypeList;
+
+                    if (!messageHandlersDictionary.ContainsKey(messageType))
+                    {
+                        handlerTypeList = new List<Type>();
+                        handlerTypeList.Add(t);
+                        messageHandlersDictionary.Add(messageType, handlerTypeList);
+
+                    }
+                    else
+                    {
+                        handlerTypeList = messageHandlersDictionary[messageType];
+                        handlerTypeList.Add(t);
+
+                    }
                 }
 
 

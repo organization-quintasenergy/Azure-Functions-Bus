@@ -146,5 +146,18 @@ namespace AFBus.Tests
 
             Assert.IsTrue(InvocationCounter.Instance.Counter == 2, "message delayed more than once");
         }
+
+        [TestMethod]
+        public void HandlersContainer_IHandle2HandlersInOneClass()
+        {
+            InvocationCounter.Instance.Reset();
+            var container = new HandlersContainer(SERVICENAME);
+
+            container.HandleAsync(new ClassWithTwoHandlersMessage1(), null).Wait();
+            container.HandleAsync(new ClassWithTwoHandlersMessage2(), null).Wait();
+
+            Assert.IsTrue(InvocationCounter.Instance.Counter == 2);
+
+        }
     }
 }

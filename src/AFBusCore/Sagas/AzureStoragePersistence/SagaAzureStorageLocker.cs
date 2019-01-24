@@ -14,7 +14,7 @@ namespace AFBus
     {
 
         const string CONTAINER_NAME = "afblocks";
-        TimeSpan LOCK_DURATION = new TimeSpan(0, 0, 15);
+        TimeSpan LOCK_DURATION = new TimeSpan(0, 1, 0);
         static CloudStorageAccount storageAccount = CloudStorageAccount.Parse(SettingsUtil.GetSettings<string>(SETTINGS.AZURE_STORAGE));
         static CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
         static bool containerCreated = false;

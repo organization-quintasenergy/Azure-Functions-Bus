@@ -233,7 +233,7 @@ namespace AFBus
         /// </summary>
         internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {
-            log?.LogInformation("Message of type " + message.GetType().ToString() + " received in AFBus");
+            log?.LogInformation("Message of type " + message.GetType().ToString() + " received in AFBus" + " for transaction " + messageContext.TransactionID);
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));

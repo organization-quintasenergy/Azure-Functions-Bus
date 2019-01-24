@@ -233,7 +233,7 @@ namespace AFBus
         /// </summary>
         internal async Task HandleAsync<T>(T message, AFBusMessageContext messageContext, ILogger log) where T : class
         {
-            log?.LogInformation("message of type " + message.GetType().ToString() + " received in AFBus");
+            log?.LogInformation("Message of type " + message.GetType().ToString() + " received in AFBus");
 
             if (!messageHandlersDictionary.ContainsKey(message.GetType()) && !messageToSagaDictionary.ContainsKey(message.GetType()))
                 throw new Exception("Handler not found for this message." + serializer.Serialize(message));
@@ -357,7 +357,7 @@ namespace AFBus
             instantiated = instantiated || await LookForEventsProcessedBySagas(message, messageContext, log).ConfigureAwait(false);
 
             if (!instantiated)
-                log?.LogInformation("Saga not found for message " + serializer.Serialize(message));
+                log?.LogInformation("Saga not found for message " + serializer.Serialize(message) + " for transaction " + messageContext.TransactionID);
 
         }
 
@@ -394,6 +394,8 @@ namespace AFBus
 
                             object[] parametersArray = new object[] { bus, message, log };
 
+                            SagaData typedSagaData = (SagaData)sagaData;
+                            log?.LogInformation("Invoke saga handler " + sagaMessageToMethod.HandlingMethod.ToString() + " for transaction " + messageContext.TransactionID + " with key (" + typedSagaData.PartitionKey.ToString()+","+ typedSagaData.RowKey+")");
                             await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
                             await sagaPersistence.UpdateAsync(sagaDynamic.Data).ConfigureAwait(false);
@@ -423,10 +425,13 @@ namespace AFBus
 
                     object[] parametersArray = new object[] { bus, message, log };
 
+                    log?.LogInformation("Invoke saga handler " + sagaMessageToMethod.HandlingMethod.ToString() + " for transaction " + messageContext.TransactionID+" creating new saga");
                     await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
-
+                                      
                     await sagaPersistence.InsertAsync(sagaDynamic.Data).ConfigureAwait(false);
 
+                    SagaData typedSagaData = (SagaData)sagaDynamic.Data;
+                    log?.LogInformation("Saga data inserted " + sagaMessageToMethod.HandlingMethod.ToString() + " for transaction " + messageContext.TransactionID + " with key (" + typedSagaData.PartitionKey.ToString() + "," + typedSagaData.RowKey.ToString() + ")");
                     instantiated = true;
                 }
                                                
@@ -477,6 +482,9 @@ namespace AFBus
 
                                 object[] parametersArray = new object[] { bus, message, log };
 
+                                SagaData typedSagaData = (SagaData)sagaData;
+                                log?.LogInformation("Invoke event saga handler " + sagaMessageToMethod.HandlingMethod.ToString() + " for transaction " + messageContext.TransactionID);
+
                                 await ((Task)sagaMessageToMethod.HandlingMethod.Invoke(saga, parametersArray)).ConfigureAwait(false);
 
                                 await sagaPersistence.UpdateAsync(sagaDynamic.Data).ConfigureAwait(false);
@@ -510,7 +518,8 @@ namespace AFBus
             var handlerTypeList = messageHandlersDictionary[message.GetType()];
 
             foreach (var t in handlerTypeList)
-            {
+            {              
+
                 var handler = CreateInstance(t);
 
                 var bus = new Bus(serializer, SolveDependency<ISendMessages>(), SolveDependency<IPublishEvents>())
@@ -524,6 +533,8 @@ namespace AFBus
                                
                 foreach (var m in methodsToInvoke)
                 {
+                    log?.LogInformation("Invoke stateless handler " + t.ToString() + " for transaction " + messageContext.TransactionID);
+
                     await ((Task)m.Invoke(handler, parametersArray)).ConfigureAwait(false);
                 }
 

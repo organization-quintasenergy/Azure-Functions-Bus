@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AFBus.Tests.TestClasses
 {
-    public class SingletonSagaIntermediateMessage
+    public class SingletonSagaTerminatingMessage
     {
         public Guid Id { get; set; }
     }

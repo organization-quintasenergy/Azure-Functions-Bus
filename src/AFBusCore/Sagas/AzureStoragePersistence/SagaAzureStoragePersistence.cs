@@ -121,7 +121,8 @@ namespace AFBus
 
             if (result == null && this.LockSagas)
             {
-                await sagaLock.ReleaseLock(sagaID, lockID).ConfigureAwait(false);
+                //await sagaLock.ReleaseLock(sagaID, lockID).ConfigureAwait(false);
+                await sagaLock.DeleteLock(sagaID, lockID).ConfigureAwait(false);
             }
 
             return result;

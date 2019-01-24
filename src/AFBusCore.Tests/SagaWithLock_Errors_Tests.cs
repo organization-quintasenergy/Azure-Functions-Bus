@@ -32,7 +32,10 @@ namespace AFBus.Tests
 
             var locker = new SagaAzureStorageLocker();
 
-            locker.CreateLock(ErrorTestSaga.PARTITION_KEY + sagaId.ToString()).Wait();
+            var lease = locker.CreateLock(ErrorTestSaga.PARTITION_KEY + sagaId.ToString()).Result;
+            locker.DeleteLock(ErrorTestSaga.PARTITION_KEY + sagaId.ToString(),lease).Wait();
+
+            container.HandleAsync(new ErrorSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
     }
 }

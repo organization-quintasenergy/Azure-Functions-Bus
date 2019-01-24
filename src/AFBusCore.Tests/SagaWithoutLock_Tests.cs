@@ -32,8 +32,9 @@ namespace AFBus.Tests
             container.HandleAsync(new SimpleSagaStartingMessage() { Id = sagaId }, null).Wait();
                         
             //non correlating message
-            container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = Guid.NewGuid() }, null).Wait();          
-            
+            container.HandleAsync(new SimpleSagaIntermediateMessage() { Id = Guid.NewGuid() }, null).Wait();
+
+            container.HandleAsync(new SimpleSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
 
         [TestMethod]
@@ -80,6 +81,8 @@ namespace AFBus.Tests
             var sagaData = sagaPersistence.GetSagaDataAsync<SingletonTestSagaData>("SingletonTestSaga", sagaId.ToString()).Result as SingletonTestSagaData;
 
             Assert.IsTrue(sagaData.Counter == 1);
+
+            container.HandleAsync(new SingletonSagaTerminatingMessage() { Id = sagaId }, null).Wait();
         }
     }
 }

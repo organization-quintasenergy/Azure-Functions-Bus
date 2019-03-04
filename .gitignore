@@ -42,5 +42,6 @@
 /src/AFBusCore/bin/Debug/netstandard2.0
 /src/AFBusCore/obj/
 /src/AFBusCore.Tests/obj
-/src/AFBusCore/bin/Debug
+/src/AFBusCore/bin/Debug/
 /src/AFBusCore.Tests/gitignoreappsettings.json
+/src/SolutionExample/Sagas/OrderSaga.Tests/obj/

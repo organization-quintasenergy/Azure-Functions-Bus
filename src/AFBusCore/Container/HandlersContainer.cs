@@ -408,7 +408,7 @@ namespace AFBus
                             log?.LogError(ex.Message, ex);
                             var sagaID = sagaData.PartitionKey + sagaData.RowKey;
                             await locker.ReleaseLock(sagaID, sagaData.LockID);
-                            throw ex;
+                            throw;
                         }
                     }
                 }
@@ -498,7 +498,7 @@ namespace AFBus
                                 log?.LogError(ex.Message, ex);
                                 var sagaID = sagaData.PartitionKey + sagaData.RowKey;
                                 await locker.ReleaseLock(sagaID, sagaData.LockID);
-                                throw ex;
+                                throw;
                             }
                         }
                     }

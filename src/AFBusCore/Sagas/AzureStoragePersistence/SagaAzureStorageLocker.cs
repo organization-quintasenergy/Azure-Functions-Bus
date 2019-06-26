@@ -60,7 +60,7 @@ namespace AFBus
                 Random rnd = new Random();
                 await Task.Delay(rnd.Next(MIN_WAITING_FOR_LOCK_RELEASING, MAX_WAITING_FOR_LOCK_RELEASING));
 
-                throw ex;
+                throw;
             }          
 
             return leaseId;
